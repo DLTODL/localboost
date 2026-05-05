@@ -198,7 +198,7 @@ export default function SEOScanner() {
                   <div className="bg-slate-900/50 rounded-lg p-3">
                     <div className="text-slate-500 mb-1">SSL</div>
                     <div className={results.summary.hasSSL ? 'text-emerald-400' : 'text-red-400'}>
-                      {results.summary.hasSSL ? '✓ Beveiligd' : '✗ Onbeveiligd'}
+                      {results.summary.hasSSL ? 'Beveiligd' : 'Onbeveiligd'}
                     </div>
                   </div>
                 </div>
@@ -242,11 +242,11 @@ export default function SEOScanner() {
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-1">
                             <span className="font-semibold capitalize">{issue.severity}</span>
-                            <span>—</span>
+                            <span>-</span>
                             <span>{issue.message}</span>
                           </div>
                           <div className="text-sm opacity-80 flex items-start gap-2">
-                            <span>💡</span>
+                            <span>Tip:</span>
                             <span>{issue.recommendation}</span>
                           </div>
                         </div>
@@ -274,7 +274,7 @@ export default function SEOScanner() {
                 href="/#contact" 
                 className="inline-block bg-gradient-to-r from-violet-600 to-purple-600 text-white px-6 py-3 rounded-xl font-semibold hover:opacity-90 transition"
               >
-                Vraag gratis analyse aan →
+                Vraag gratis analyse aan
               </a>
             </div>
           </div>

@@ -710,6 +710,7 @@ export default function Home() {
   return (
     <main>
       <Hero />
+      <FreeTools />
       <GuaranteeBanner />
       <TrustStrip />
       <Services />
