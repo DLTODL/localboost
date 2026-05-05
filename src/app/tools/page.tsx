@@ -151,9 +151,9 @@ export default function ToolsHub() {
           
           <div className="grid md:grid-cols-3 gap-4">
             {[
-              { name: 'Local Keyword Finder', icon: '🔑', desc: 'Vind de beste lokale zoekwoorden' },
               { name: 'Competitor Scanner', icon: '🔍', desc: 'Analyseer wat je concurrenten doen' },
               { name: 'Quote Generator', icon: '📋', desc: 'Genereer professionele offertes' },
+              { name: 'ROI Calculator', icon: '📈', desc: 'Bereken je return on investment' },
             ].map((tool, i) => (
               <div 
                 key={tool.name}
