@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -9,6 +9,7 @@ import {
   MapPin, TrendingUp, Clock, CheckCircle, ArrowRight, Phone, Mail, Send, Zap, Target, Shield, 
   ChevronDown, ChevronUp, BadgeCheck, RefreshCw, Check, X, MessageCircle
 } from 'lucide-react'
+import OnboardingModal from '@/components/OnboardingModal'
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
@@ -733,16 +734,42 @@ function Footer() {
 
 export default function Home() {
   return (
-    <main>
-      <Hero />
-      <FreeTools />
-      <GuaranteeBanner />
-      <TrustStrip />
-      <Services />
-      <Results />
-      <FAQ />
-      <Contact />
-      <Footer />
-    </main>
+    <OnboardingWrapper>
+      <main>
+        <Hero />
+        <FreeTools />
+        <GuaranteeBanner />
+        <TrustStrip />
+        <Services />
+        <Results />
+        <FAQ />
+        <Contact />
+        <Footer />
+      </main>
+    </OnboardingWrapper>
+  )
+}
+
+// Onboarding wrapper component
+function OnboardingWrapper({ children }: { children: React.ReactNode }) {
+  const [showOnboarding, setShowOnboarding] = useState(false)
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+    const onboardingDone = localStorage.getItem('localboost_onboarding_done')
+    if (!onboardingDone) {
+      const timer = setTimeout(() => setShowOnboarding(true), 2000)
+      return () => clearTimeout(timer)
+    }
+  }, [])
+
+  if (!mounted) return <>{children}</>
+
+  return (
+    <>
+      {children}
+      {showOnboarding && <OnboardingModal onComplete={() => setShowOnboarding(false)} />}
+    </>
   )
 }

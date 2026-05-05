@@ -1,7 +1,7 @@
 'use client'
 
-import { useState } from 'react'
-import { Search, MapPin, Building, Phone, Mail, Globe, Copy, Check, Filter, Download, Star, ExternalLink } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { Search, MapPin, Building, Phone, Mail, Globe, Copy, Check, Filter, Download, Star, ExternalLink, Save, Trash2 } from 'lucide-react'
 
 interface Lead {
   id: number
@@ -100,6 +100,9 @@ export default function LeadFinder() {
     
     navigator.clipboard.writeText(text)
     setCopiedId(lead.id)
+    if (typeof window !== 'undefined' && (window as any).showToast) {
+      (window as any).showToast(field === 'phone' ? 'Telefoonnummer gekopieerd!' : 'Lead info gekopieerd!')
+    }
     setTimeout(() => setCopiedId(null), 2000)
   }
 
@@ -121,8 +124,13 @@ export default function LeadFinder() {
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = `leads_${city}_${industry}.csv`
+    a.download = `leads_${city}_${industry}_${new Date().toISOString().split('T')[0]}.csv`
     a.click()
+    URL.revokeObjectURL(url)
+    
+    if (typeof window !== 'undefined' && (window as any).showToast) {
+      (window as any).showToast(`${filteredLeads.length} leads geexporteerd!`)
+    }
   }
 
   return (
