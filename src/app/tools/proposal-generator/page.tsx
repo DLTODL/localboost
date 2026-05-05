@@ -319,6 +319,15 @@ Handtekening: _______________________`
                   className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl focus:ring-2 focus:ring-violet-500 outline-none resize-none transition"
                 />
               </div>
+
+              {/* Cross-tool: Email Campaign */}
+              <a
+                href="/tools/email-campaign-builder"
+                className="flex items-center justify-center gap-2 px-4 py-3 bg-slate-700 hover:bg-slate-600 rounded-xl text-sm transition"
+              >
+                <Mail className="w-4 h-4" />
+                Bijbehorende Email Campaign Bouwen →
+              </a>
             </div>
 
             <div className="bg-gradient-to-r from-violet-600 to-purple-600 rounded-2xl p-6">

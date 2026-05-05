@@ -376,12 +376,31 @@ Groet`,
               Email Sequence Preview
             </h2>
             
-            {campaign.length === 0 ? (
+            {campaign.length === 0 && !generating ? (
               <div className="bg-slate-800 rounded-2xl p-12 border border-slate-700 text-center">
                 <Mail className="w-16 h-16 text-slate-600 mx-auto mb-4" />
                 <p className="text-slate-400">
                   Vul de klantgegevens in en klik op "Genereer Campaign"
                 </p>
+              </div>
+            ) : generating ? (
+              <div className="space-y-4 animate-pulse">
+                {[1, 2, 3, 4].map(i => (
+                  <div key={i} className="bg-slate-800 rounded-2xl border border-slate-700 overflow-hidden">
+                    <div className="p-4 border-b border-slate-700 flex items-center gap-3">
+                      <div className="w-8 h-8 bg-slate-700 rounded-lg"></div>
+                      <div>
+                        <div className="h-4 w-32 bg-slate-700 rounded mb-1"></div>
+                        <div className="h-3 w-16 bg-slate-700 rounded"></div>
+                      </div>
+                    </div>
+                    <div className="p-4 space-y-2">
+                      <div className="h-3 w-full bg-slate-700 rounded"></div>
+                      <div className="h-3 w-3/4 bg-slate-700 rounded"></div>
+                      <div className="h-3 w-1/2 bg-slate-700 rounded"></div>
+                    </div>
+                  </div>
+                ))}
               </div>
             ) : (
               <div className="space-y-4">
