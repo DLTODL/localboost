@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Mail, Copy, Check, Send, Clock, Users, MessageSquare, Tag } from 'lucide-react'
+import { Mail, Copy, Check, Send, Clock, Users, MessageSquare, Tag, FileText } from 'lucide-react'
 
 interface Sequence {
   id: string
@@ -173,11 +173,22 @@ export default function EmailSequences() {
       <div className="max-w-4xl mx-auto p-6">
         {/* Header */}
         <div className="mb-8">
-          <div className="flex items-center gap-3 mb-2">
-            <span className="text-4xl">📧</span>
-            <h1 className="text-3xl font-black">Email Sequences</h1>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3 mb-2">
+              <span className="text-4xl">📧</span>
+              <div>
+                <h1 className="text-3xl font-black">Email Sequences</h1>
+                <p className="text-slate-400">Kopieer bewezen email templates voor klantwerving en nurturing</p>
+              </div>
+            </div>
+            <a
+              href="/tools/email-campaign-builder"
+              className="flex items-center gap-2 px-4 py-2 bg-slate-700 hover:bg-slate-600 rounded-xl text-sm transition"
+            >
+              <FileText className="w-4 h-4" />
+              Bouw Campaign →
+            </a>
           </div>
-          <p className="text-slate-400">Kopieer bewezen email templates voor klantwerving en nurturing</p>
         </div>
 
         {/* Stats */}

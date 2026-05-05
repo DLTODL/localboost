@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Sparkles, Copy, Check, RefreshCw, Instagram, Facebook, Linkedin, Calendar, X } from 'lucide-react'
+import { Sparkles, Copy, Check, RefreshCw, Instagram, Facebook, Linkedin, Calendar, X, ExternalLink, Send } from 'lucide-react'
 import { useBusinessProfile, useToolInputs, useSelectedBusiness, copyWithToast } from '@/lib/useSharedData'
 import TemplateSwitcher from '@/components/polish/TemplateSwitcher'
 
@@ -79,27 +79,32 @@ const generatePosts = (business: string, type: string): GeneratedPost[] => {
 export default function SocialPostGenerator() {
   const { profile } = useBusinessProfile()
   const { inputs, saveInputs } = useToolInputs('social-post-generator')
-  
+  const { business: selectedBusiness } = useSelectedBusiness()
+
   const [business, setBusiness] = useState('')
+  const [industry, setIndustry] = useState('')
   const [postType, setPostType] = useState('')
   const [posts, setPosts] = useState<GeneratedPost[]>([])
   const [loading, setLoading] = useState(false)
   const [copiedId, setCopiedId] = useState<string | null>(null)
   const [activeTab, setActiveTab] = useState('Instagram')
 
-  // Pre-fill from profile
+  // Pre-fill from profile or shared business selection
   useEffect(() => {
-    if (profile && profile.name && !inputs.business) {
+    if (selectedBusiness) {
+      if (selectedBusiness.name && !inputs.business) setBusiness(selectedBusiness.name)
+      if (selectedBusiness.industry && !inputs.industry) setIndustry(selectedBusiness.industry)
+    } else if (profile && profile.name && !inputs.business) {
       setBusiness(profile.name)
     }
-  }, [profile, inputs.business])
+  }, [profile, selectedBusiness, inputs.business, inputs.industry])
 
   // Save inputs on change
   useEffect(() => {
     if (business || postType) {
-      saveInputs({ business, postType })
+      saveInputs({ business, postType, industry })
     }
-  }, [business, postType, saveInputs])
+  }, [business, postType, industry, saveInputs])
 
   const handleGenerate = () => {
     if (!business || !postType) return
@@ -136,7 +141,7 @@ export default function SocialPostGenerator() {
 
         {/* Input */}
         <div className="bg-slate-800 rounded-2xl p-6 mb-8 border border-slate-700">
-          <div className="grid md:grid-cols-2 gap-4">
+          <div className="grid md:grid-cols-3 gap-4">
             <div>
               <label className="block text-sm font-medium text-slate-400 mb-2">Bedrijfsnaam</label>
               <input
@@ -144,6 +149,16 @@ export default function SocialPostGenerator() {
                 value={business}
                 onChange={(e) => setBusiness(e.target.value)}
                 placeholder="De Loodgieter Amsterdam"
+                className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl focus:ring-2 focus:ring-violet-500 outline-none transition"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-400 mb-2">Branche</label>
+              <input
+                type="text"
+                value={industry}
+                onChange={(e) => setIndustry(e.target.value)}
+                placeholder="Bijv. Loodgieter"
                 className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl focus:ring-2 focus:ring-violet-500 outline-none transition"
               />
             </div>
@@ -271,6 +286,23 @@ export default function SocialPostGenerator() {
                     <pre className="text-sm text-slate-400 whitespace-pre-wrap">{post.content.slice(0, 100)}...</pre>
                   </div>
                 ))}
+              </div>
+            </div>
+
+            {/* Cross-tool: Create Email Sequence */}
+            <div className="bg-gradient-to-r from-violet-600/20 to-purple-600/20 rounded-2xl p-6 border border-violet-500/20">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="font-bold mb-1">📧 Bijpassende Email Sequence</h3>
+                  <p className="text-sm text-slate-400">Genereer een email campaign gebaseerd op dit bedrijf</p>
+                </div>
+                <a
+                  href="/tools/email-campaign-builder"
+                  className="px-4 py-2 bg-violet-600 hover:bg-violet-700 rounded-xl font-medium flex items-center gap-2 transition"
+                >
+                  <Send className="w-4 h-4" />
+                  Maak Sequence
+                </a>
               </div>
             </div>
           </>

@@ -1,7 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { FileText, Clock, Send, Check, AlertCircle, User, Briefcase, TrendingUp, Target, DollarSign, Users, Calendar, Loader2, Mail } from 'lucide-react'
+import { FileText, Clock, Send, Check, AlertCircle, User, Briefcase, TrendingUp, Target, DollarSign, Users, Calendar, Loader2, Mail, Import } from 'lucide-react'
+import { useBusinessProfile, useToolInputs, useSelectedBusiness, copyWithToast } from '@/lib/useSharedData'
 
 interface ClientData {
   name: string
@@ -45,6 +46,10 @@ const industryTemplates: Record<string, { painPoints: string[], services: string
 }
 
 export default function EmailCampaignBuilder() {
+  const { profile } = useBusinessProfile()
+  const { inputs, saveInputs } = useToolInputs('email-campaign-builder')
+  const { business: selectedBusiness } = useSelectedBusiness()
+
   const [clientData, setClientData] = useState<ClientData>({
     name: '',
     company: '',
@@ -174,37 +179,69 @@ Groet`,
     if (window.showToast) window.showToast('Email gekopieerd!')
   }
 
-  // Load saved data
+  // Pre-fill from business profile or selected business (cross-tool)
   useEffect(() => {
-    const saved = localStorage.getItem('localboost_business_profile')
-    if (saved) {
-      const profile = JSON.parse(saved)
-      setClientData(prev => ({
-        ...prev,
-        name: profile.name || '',
-        company: profile.name || '',
-        industry: profile.type || '',
-        email: profile.email || ''
-      }))
+    if (selectedBusiness) {
+      if (selectedBusiness.name && !inputs.company) {
+        setClientData(prev => ({ ...prev, name: selectedBusiness.name, company: selectedBusiness.name }))
+      }
+      if (selectedBusiness.industry) {
+        setClientData(prev => ({ ...prev, industry: selectedBusiness.industry }))
+        const template = Object.keys(industryTemplates).find(t =>
+          selectedBusiness.industry?.toLowerCase().includes(t)
+        ) || 'default'
+        selectTemplate(template)
+      }
+      if (selectedBusiness.email) setClientData(prev => ({ ...prev, email: selectedBusiness.email }))
+    } else if (profile) {
+      if (profile.name && !inputs.company) {
+        setClientData(prev => ({ ...prev, name: profile.name, company: profile.name }))
+      }
       if (profile.type) {
-        const template = Object.keys(industryTemplates).find(t => 
+        setClientData(prev => ({ ...prev, industry: profile.type }))
+        const template = Object.keys(industryTemplates).find(t =>
           profile.type?.toLowerCase().includes(t)
         ) || 'default'
         selectTemplate(template)
       }
+      if (profile.email) setClientData(prev => ({ ...prev, email: profile.email }))
     }
-  }, [])
+  }, [profile, selectedBusiness, inputs.company])
+
+  // Save inputs on change
+  useEffect(() => {
+    if (clientData.name || clientData.company) {
+      saveInputs(clientData)
+    }
+  }, [clientData, saveInputs])
 
   return (
     <div className="min-h-screen bg-slate-900 text-white">
       <div className="max-w-6xl mx-auto p-6">
         {/* Header */}
         <div className="mb-8">
-          <div className="flex items-center gap-3 mb-2">
-            <span className="text-4xl">📧</span>
-            <h1 className="text-3xl font-black">Email Campaign Builder</h1>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3 mb-2">
+              <span className="text-4xl">📧</span>
+              <div>
+                <h1 className="text-3xl font-black">Email Campaign Builder</h1>
+                <p className="text-slate-400">Bouwen automatische email sequences die verkopen - geen adviseur nodig</p>
+              </div>
+            </div>
+            {(selectedBusiness || profile) && (
+              <div className="flex items-center gap-2 px-3 py-2 bg-green-500/20 border border-green-500/30 rounded-xl">
+                <span className="text-green-400 text-sm">✓ Zakelijke data geladen</span>
+                <button
+                  onClick={() => {
+                    setClientData({ name: '', company: '', industry: '', service: '', budget: '', timeline: '', goals: '', painPoints: [], email: '' })
+                  }}
+                  className="text-slate-400 hover:text-white text-xs"
+                >
+                  Reset
+                </button>
+              </div>
+            )}
           </div>
-          <p className="text-slate-400">Bouwen automatische email sequences die verkopen - geen adviseur nodig</p>
         </div>
 
         <div className="grid lg:grid-cols-2 gap-8">
