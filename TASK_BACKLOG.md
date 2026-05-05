@@ -114,4 +114,11 @@ f36d102 v10: Add Local Keyword Finder tool
 
 ---
 
-Last Updated: 2026-05-06 00:41
+Last Updated: 2026-05-06 01:15
+
+## Polish Session 2026-05-06 (v12.2 patch)
+- SEO Scanner: Added TemplateSwitcher with URL persistence
+- Marketing Strategy Builder: Added TemplateSwitcher with industry/location pre-fill
+- Lead Finder: Review Generator button now auto-saves lead to CRM before opening
+- SEO Scanner: Cleaned up redundant header wrapper
+- Build verified: all 26 routes compile successfully

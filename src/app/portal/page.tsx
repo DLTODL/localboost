@@ -1,10 +1,12 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { 
   CheckCircle, Clock, AlertCircle, Package, MapPin, TrendingUp,
-  FileText, Star, MessageSquare, Camera, ChevronRight, Eye
+  FileText, Star, MessageSquare, Camera, ChevronRight, Eye, Loader2,
+  LogOut
 } from 'lucide-react'
+import { showToast } from '@/lib/toast'
 
 interface Service {
   id: string
@@ -52,12 +54,11 @@ const milestones: Record<string, Milestone[]> = {
   ],
 }
 
-const taskCategories = [
-  { id: 'setup', label: 'Setup', icon: Package, color: 'violet' },
-  { id: 'optimize', label: 'Optimalisatie', icon: TrendingUp, color: 'blue' },
-  { id: 'content', label: 'Content', icon: FileText, color: 'green' },
-  { id: 'reviews', label: 'Reviews', icon: Star, color: 'yellow' },
-  { id: 'ads', label: 'Ads', icon: MessageSquare, color: 'purple' },
+const quickActions = [
+  { icon: MessageSquare, label: 'Stel een vraag', color: 'text-blue-400', bg: 'bg-blue-600/20 hover:bg-blue-600/30' },
+  { icon: FileText, label: 'Bekijk rapport', color: 'text-green-400', bg: 'bg-green-600/20 hover:bg-green-600/30' },
+  { icon: Camera, label: 'Upload foto\'s', color: 'text-purple-400', bg: 'bg-purple-600/20 hover:bg-purple-600/30' },
+  { icon: Star, label: 'Geef feedback', color: 'text-yellow-400', bg: 'bg-yellow-600/20 hover:bg-yellow-600/30' },
 ]
 
 export default function ClientPortal() {
@@ -66,20 +67,20 @@ export default function ClientPortal() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [activeService, setActiveService] = useState<string>('google-dominance')
+  const [activeMilestone, setActiveMilestone] = useState<string | null>(null)
 
   const handleLookup = async () => {
     if (!email) {
       setError('Voer je e-mailadres in')
+      showToast('Vul eerst je e-mailadres in', 'error')
       return
     }
     
     setLoading(true)
     setError('')
     
-    // Simulate API call - in production this would check a database
     setTimeout(() => {
-      // Mock client data
-      if (email.includes('@')) {
+      if (email.includes('@') && email.includes('.')) {
         setClientData({
           name: 'Demo Klant',
           email: email,
@@ -88,11 +89,23 @@ export default function ClientPortal() {
           milestones: milestones['google-dominance'],
           tasks: []
         })
+        showToast('Welkom terug!', 'success')
       } else {
         setError('Ongeldig e-mailadres')
+        showToast('Ongeldig e-mailadres', 'error')
       }
       setLoading(false)
-    }, 1000)
+    }, 1200)
+  }
+
+  const handleLogout = () => {
+    setClientData(null)
+    setEmail('')
+    showToast('Je bent uitgelogd', 'info')
+  }
+
+  const toggleMilestone = (id: string) => {
+    setActiveMilestone(activeMilestone === id ? null : id)
   }
 
   const getProgress = () => {
@@ -118,8 +131,13 @@ export default function ClientPortal() {
       <header className="bg-slate-800 border-b border-slate-700 py-6 px-8">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold">LocalBoost Client Portal</h1>
-            <p className="text-slate-400 text-sm">Volg je voortgang in real-time</p>
+            <h1 className="text-2xl font-bold flex items-center gap-3">
+              <div className="w-10 h-10 bg-gradient-to-br from-violet-600 to-purple-600 rounded-xl flex items-center justify-center">
+                <Eye className="w-5 h-5 text-white" />
+              </div>
+              Client Portal
+            </h1>
+            <p className="text-slate-400 text-sm mt-1">Volg je voortgang in real-time</p>
           </div>
           <div className="text-right">
             <div className="text-sm text-slate-400">Hulp nodig?</div>
@@ -128,12 +146,14 @@ export default function ClientPortal() {
         </div>
       </header>
 
-      <main className="max-w-4xl mx-auto p-8">
+      <main className="max-w-4xl mx-auto p-6 space-y-6">
         {!clientData ? (
           /* Login Section */
-          <div className="bg-slate-800 rounded-2xl p-8 border border-slate-700">
+          <div className="bg-slate-800 rounded-2xl p-8 border border-slate-700 shadow-xl">
             <div className="text-center mb-8">
-              <Eye className="w-12 h-12 text-violet-400 mx-auto mb-4" />
+              <div className="w-16 h-16 bg-gradient-to-br from-violet-600 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-violet-500/30">
+                <Eye className="w-8 h-8 text-white" />
+              </div>
               <h2 className="text-2xl font-bold">Welkom bij je Klantportaal</h2>
               <p className="text-slate-400 mt-2">
                 Voer je e-mailadres in om je voortgang te bekijken
@@ -147,37 +167,53 @@ export default function ClientPortal() {
                   placeholder="je@email.nl"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="flex-1 bg-slate-700 border border-slate-600 rounded-lg px-4 py-3 text-white placeholder-slate-400 focus:outline-none focus:border-violet-500"
+                  onKeyDown={(e) => e.key === 'Enter' && handleLookup()}
+                  className="flex-1 bg-slate-700 border border-slate-600 rounded-xl px-4 py-3 text-white placeholder:text-slate-400 focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 transition"
                 />
                 <button
                   onClick={handleLookup}
                   disabled={loading}
-                  className="bg-gradient-to-r from-violet-600 to-purple-600 px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition disabled:opacity-50"
+                  className="bg-gradient-to-r from-violet-600 to-purple-600 px-6 py-3 rounded-xl font-semibold hover:opacity-90 transition disabled:opacity-70 flex items-center gap-2 shadow-lg shadow-violet-500/20"
                 >
-                  {loading ? 'Zoeken...' : 'Bekijk'}
+                  {loading ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Zoeken
+                    </>
+                  ) : (
+                    'Bekijk'
+                  )}
                 </button>
               </div>
               {error && (
-                <p className="text-red-400 text-sm mt-3">{error}</p>
+                <p className="text-red-400 text-sm mt-3 flex items-center gap-2">
+                  <AlertCircle className="w-4 h-4" />
+                  {error}
+                </p>
               )}
             </div>
             
-            <div className="mt-8 text-center text-sm text-slate-500">
-              <p>Test e-mail: any@valid.email</p>
+            <div className="mt-8 text-center text-sm text-slate-500 bg-slate-900/50 rounded-xl p-4">
+              <p className="font-medium">Test e-mail: any@valid.email</p>
             </div>
           </div>
         ) : (
           /* Client Dashboard */
           <div className="space-y-6">
             {/* Welcome Banner */}
-            <div className="bg-gradient-to-r from-violet-600/20 to-purple-600/20 rounded-2xl p-6 border border-violet-600/30">
-              <div className="flex items-center justify-between">
+            <div className="bg-gradient-to-r from-violet-600/20 to-purple-600/20 rounded-2xl p-6 border border-violet-600/30 shadow-lg shadow-violet-500/10">
+              <div className="flex items-center justify-between flex-wrap gap-4">
                 <div>
-                  <h2 className="text-xl font-bold">Welkom terug, {clientData.name}!</h2>
-                  <p className="text-slate-400">Je {services.find(s => s.id === clientData.service)?.label} service is actief</p>
+                  <h2 className="text-xl font-bold flex items-center gap-2">
+                    👋 Welkom terug, {clientData.name}!
+                  </h2>
+                  <p className="text-slate-400 flex items-center gap-2 mt-1">
+                    <span className="inline-block w-2 h-2 bg-green-400 rounded-full animate-pulse" />
+                    Je {services.find(s => s.id === clientData.service)?.label} service is actief
+                  </p>
                 </div>
                 <div className="text-right">
-                  <div className="text-3xl font-bold text-green-400">{getProgress()}%</div>
+                  <div className="text-4xl font-black text-green-400">{getProgress()}%</div>
                   <div className="text-sm text-slate-400">Voltooid</div>
                 </div>
               </div>
@@ -185,16 +221,19 @@ export default function ClientPortal() {
 
             {/* Progress Bar */}
             <div className="bg-slate-800 rounded-xl p-6 border border-slate-700">
-              <h3 className="font-semibold mb-4">Service Voortgang</h3>
-              <div className="h-4 bg-slate-700 rounded-full overflow-hidden">
+              <h3 className="font-semibold mb-4 flex items-center gap-2">
+                <TrendingUp className="w-5 h-5 text-violet-400" />
+                Service Voortgang
+              </h3>
+              <div className="h-3 bg-slate-700 rounded-full overflow-hidden">
                 <div 
-                  className="h-full bg-gradient-to-r from-violet-600 to-purple-600 transition-all duration-500"
+                  className="h-full bg-gradient-to-r from-violet-600 to-purple-600 transition-all duration-500 ease-out"
                   style={{ width: `${getProgress()}%` }}
                 />
               </div>
-              <div className="flex justify-between mt-2 text-sm text-slate-400">
-                <span>Gestart: {new Date(clientData.startDate).toLocaleDateString('nl-NL')}</span>
-                <span>{getDaysRemaining()} dagen resterend</span>
+              <div className="flex justify-between mt-3 text-sm">
+                <span className="text-slate-400">Gestart: {new Date(clientData.startDate).toLocaleDateString('nl-NL')}</span>
+                <span className="text-violet-400 font-medium">{getDaysRemaining()} dagen resterend</span>
               </div>
             </div>
 
@@ -204,43 +243,61 @@ export default function ClientPortal() {
                 <Clock className="w-5 h-5 text-blue-400" />
                 Mijlpalen
               </h3>
-              <div className="space-y-4">
-                {currentMilestones.map((milestone: Milestone, index: number) => (
-                  <div key={milestone.id} className="flex items-start gap-4">
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                      milestone.completed 
-                        ? 'bg-green-600' 
-                        : index === currentMilestones.filter((m: Milestone) => !m.completed).length 
-                          ? 'bg-violet-600 animate-pulse' 
-                          : 'bg-slate-600'
-                    }`}>
-                      {milestone.completed ? (
-                        <CheckCircle className="w-5 h-5 text-white" />
-                      ) : (
-                        <span className="text-sm font-bold">{index + 1}</span>
-                      )}
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2">
-                        <h4 className={`font-medium ${milestone.completed ? 'text-slate-400 line-through' : ''}`}>
-                          {milestone.title}
-                        </h4>
-                        {milestone.completed && milestone.completedAt && (
-                          <span className="text-xs text-slate-500">
-                            {new Date(milestone.completedAt).toLocaleDateString('nl-NL')}
-                          </span>
+              <div className="space-y-3">
+                {currentMilestones.map((milestone: Milestone, index: number) => {
+                  const isNext = index === currentMilestones.filter((m: Milestone) => !m.completed).length - 1
+                  return (
+                    <div
+                      key={milestone.id}
+                      className={`flex items-start gap-4 p-4 rounded-xl transition-all cursor-pointer ${
+                        activeMilestone === milestone.id ? 'bg-slate-700/50' : 'hover:bg-slate-700/30'
+                      }`}
+                      onClick={() => toggleMilestone(milestone.id)}
+                    >
+                      <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 transition-all ${
+                        milestone.completed 
+                          ? 'bg-green-600 shadow-lg shadow-green-500/30' 
+                          : isNext
+                            ? 'bg-gradient-to-br from-violet-600 to-purple-600 shadow-lg shadow-violet-500/30'
+                            : 'bg-slate-600'
+                      }`}>
+                        {milestone.completed ? (
+                          <CheckCircle className="w-5 h-5 text-white" />
+                        ) : (
+                          <span className="text-sm font-bold">{index + 1}</span>
                         )}
                       </div>
-                      <p className="text-sm text-slate-400">{milestone.description}</p>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <h4 className={`font-medium ${milestone.completed ? 'text-slate-400 line-through' : 'text-white'}`}>
+                            {milestone.title}
+                          </h4>
+                          {milestone.completed && milestone.completedAt && (
+                            <span className="text-xs text-slate-500 bg-slate-700 px-2 py-0.5 rounded">
+                              {new Date(milestone.completedAt).toLocaleDateString('nl-NL')}
+                            </span>
+                          )}
+                          {isNext && !milestone.completed && (
+                            <span className="text-xs text-violet-400 bg-violet-600/20 px-2 py-0.5 rounded">
+                              Volgende
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-sm text-slate-400 mt-1">{milestone.description}</p>
+                      </div>
+                      <ChevronRight className={`w-4 h-4 text-slate-500 transition-transform flex-shrink-0 ${activeMilestone === milestone.id ? 'rotate-90' : ''}`} />
                     </div>
-                  </div>
-                ))}
+                  )
+                })}
               </div>
             </div>
 
-            {/* Service Selector (for demo) */}
+            {/* Service Selector */}
             <div className="bg-slate-800 rounded-xl p-6 border border-slate-700">
-              <h3 className="font-semibold mb-4">Switch Service (Demo)</h3>
+              <h3 className="font-semibold mb-4 flex items-center gap-2">
+                <Package className="w-5 h-5 text-green-400" />
+                Switch Service (Demo)
+              </h3>
               <div className="grid grid-cols-3 gap-3">
                 {services.map(service => (
                   <button
@@ -255,8 +312,8 @@ export default function ClientPortal() {
                     }}
                     className={`p-4 rounded-xl border transition ${
                       clientData.service === service.id
-                        ? `bg-gradient-to-br ${service.color} border-transparent`
-                        : 'bg-slate-700 border-slate-600 hover:bg-slate-600'
+                        ? `bg-gradient-to-br ${service.color} border-transparent shadow-lg`
+                        : 'bg-slate-700 border-slate-600 hover:bg-slate-600 hover:border-slate-500'
                     }`}
                   >
                     <service.icon className="w-6 h-6 mx-auto mb-2" />
@@ -268,32 +325,30 @@ export default function ClientPortal() {
 
             {/* Quick Actions */}
             <div className="bg-slate-800 rounded-xl p-6 border border-slate-700">
-              <h3 className="font-semibold mb-4">Snelle Acties</h3>
+              <h3 className="font-semibold mb-4 flex items-center gap-2">
+                <Star className="w-5 h-5 text-yellow-400" />
+                Snelle Acties
+              </h3>
               <div className="grid grid-cols-2 gap-4">
-                <button className="flex items-center gap-3 bg-slate-700 p-4 rounded-xl hover:bg-slate-600 transition text-left">
-                  <MessageSquare className="w-5 h-5 text-blue-400" />
-                  <span>Stel een vraag</span>
-                </button>
-                <button className="flex items-center gap-3 bg-slate-700 p-4 rounded-xl hover:bg-slate-600 transition text-left">
-                  <FileText className="w-5 h-5 text-green-400" />
-                  <span>Bekijk rapport</span>
-                </button>
-                <button className="flex items-center gap-3 bg-slate-700 p-4 rounded-xl hover:bg-slate-600 transition text-left">
-                  <Camera className="w-5 h-5 text-purple-400" />
-                  <span>Upload foto's</span>
-                </button>
-                <button className="flex items-center gap-3 bg-slate-700 p-4 rounded-xl hover:bg-slate-600 transition text-left">
-                  <Star className="w-5 h-5 text-yellow-400" />
-                  <span>Geef feedback</span>
-                </button>
+                {quickActions.map((action, i) => (
+                  <button
+                    key={i}
+                    onClick={() => showToast(`${action.label} - binnenkort beschikbaar`, 'info')}
+                    className={`flex items-center gap-3 p-4 rounded-xl ${action.bg} transition-all hover:scale-[1.02] active:scale-[0.98]`}
+                  >
+                    <action.icon className={`w-5 h-5 ${action.color}`} />
+                    <span className="font-medium">{action.label}</span>
+                  </button>
+                ))}
               </div>
             </div>
 
             {/* Logout */}
             <button
-              onClick={() => setClientData(null)}
-              className="w-full py-3 text-slate-400 hover:text-white transition"
+              onClick={handleLogout}
+              className="w-full py-3 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition flex items-center justify-center gap-2"
             >
+              <LogOut className="w-4 h-4" />
               Uitloggen
             </button>
           </div>
@@ -302,7 +357,10 @@ export default function ClientPortal() {
 
       {/* Footer */}
       <footer className="mt-12 py-6 text-center text-sm text-slate-500 border-t border-slate-800">
-        LocalBoost - Lokale Groei, Meetbaar Resultaat
+        <div className="flex items-center justify-center gap-2">
+          <span>🚀</span>
+          <span>LocalBoost - Lokale Groei, Meetbaar Resultaat</span>
+        </div>
       </footer>
     </div>
   )
