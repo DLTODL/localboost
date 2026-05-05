@@ -1,7 +1,8 @@
 'use client'
 
-import { useState } from 'react'
-import { Star, Copy, Check, MessageSquare, Send, Phone, Mail, MessageCircle, ExternalLink, Sparkles, Building } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { Star, Copy, Check, MessageSquare, Sparkles, Building, ChevronRight, RotateCcw, ExternalLink } from 'lucide-react'
+import { useBusinessProfile, useToolInputs, copyWithToast } from '@/lib/useSharedData'
 
 const businessTypes = [
   { id: 'restaurant', label: 'Restaurant/Café', emoji: '🍽️' },
@@ -26,24 +27,25 @@ interface GeneratedMessage {
   message: string
 }
 
-const generateMessages = (businessName: string, businessType: string, customerName: string): GeneratedMessage[] => {
+const generateMessages = (businessName: string, businessType: string, customerName: string, reviewLink: string): GeneratedMessage[] => {
   const firstName = customerName.split(' ')[0] || 'daar'
+  const linkText = reviewLink || '[JE REVIEW LINK]'
   
   const templates: Record<string, { sms: string; whatsapp: string; email: string }> = {
     restaurant: {
-      sms: `Hoi ${firstName}! Bedankt dat je bij ons gegeten hebt 🌟 Zou je ons een review willen geven? Het helpt ons enorm! Hier is de link: [JE REVIEW LINK] - Team ${businessName}`,
-      whatsapp: `Hey ${firstName}! 👋\n\nLeuk dat je bij ${businessName} bent geweest! \n\nZou je ons een review willen geven? Het helpt ons enorm om meer mensen te helpen 😊\n\n👉 [JE REVIEW LINK]\n\nAlvast bedankt! 🍽️`,
-      email: `Hey ${firstName},\n\nBedankt voor je bezoek aan ${businessName}! 🙏\n\nWe hopen dat je een heerlijke tijd hebt gehad. Als je even momentje hebt, zouden we het enorm waarderen als je een review achterlaat.\n\n👉 [JE REVIEW LINK]\n\nMet vriendelijke groet,\nTeam ${businessName}`
+      sms: `Hoi ${firstName}! Bedankt dat je bij ons gegeten hebt 🌟 Zou je ons een review willen geven? Het helpt ons enorm! Hier is de link: ${linkText} - Team ${businessName}`,
+      whatsapp: `Hey ${firstName}! 👋\n\nLeuk dat je bij ${businessName} bent geweest! \n\nZou je ons een review willen geven? Het helpt ons enorm om meer mensen te helpen 😊\n\n👉 ${linkText}\n\nAlvast bedankt! 🍽️`,
+      email: `Hey ${firstName},\n\nBedankt voor je bezoek aan ${businessName}! 🙏\n\nWe hopen dat je een heerlijke tijd hebt gehad. Als je even momentje hebt, zouden we het enorm waarderen als je een review achterlaat.\n\n👉 ${linkText}\n\nMet vriendelijke groet,\nTeam ${businessName}`
     },
     salon: {
-      sms: `Hoi ${firstName}! Vond het leuk je te zien bij ${businessName} 💅 Check deze link en laat een review achter als je even tijd hebt: [JE REVIEW LINK] - Thanks!`,
-      whatsapp: `Hey ${firstName}! 💕\n\nLeuk om je weer te zien in de salon! \n\nZou je ons een review willen geven? Het helpt andere mensen om ons te vinden 😊\n\n👉 [JE REVIEW LINK]\n\nBedankt! ✨`,
-      email: `Hey ${firstName},\n\nBedankt voor je bezoek aan ${businessName}! 💅\n\nWe waarderen het enorm als je even de tijd neemt om een review achter te laten. Het helpt ons om te groeien!\n\n👉 [JE REVIEW LINK]\n\nTot snel!\n${businessName}`
+      sms: `Hoi ${firstName}! Vond het leuk je te zien bij ${businessName} 💅 Check deze link en laat een review achter als je even tijd hebt: ${linkText} - Thanks!`,
+      whatsapp: `Hey ${firstName}! 💕\n\nLeuk om je weer te zien in de salon! \n\nZou je ons een review willen geven? Het helpt andere mensen om ons te vinden 😊\n\n👉 ${linkText}\n\nBedankt! ✨`,
+      email: `Hey ${firstName},\n\nBedankt voor je bezoek aan ${businessName}! 💅\n\nWe waarderen het enorm als je even de tijd neemt om een review achter te laten. Het helpt ons om te groeien!\n\n👉 ${linkText}\n\nTot snel!\n${businessName}`
     },
     default: {
-      sms: `Hoi ${firstName}! Bedankt voor je vertrouwen in ${businessName} 🌟 Laat even een review achter via deze link: [JE REVIEW LINK] - Alvast bedankt!`,
-      whatsapp: `Hey ${firstName}! 👋\n\nBedankt voor je vertrouwen in ${businessName}. We waarderen het enorm als je even de tijd neemt voor een review!\n\n👉 [JE REVIEW LINK]\n\nAlvast bedankt! 🙏`,
-      email: `Hey ${firstName},\n\nBedankt voor je vertrouwen in ${businessName}.\n\nZou je ons een review willen geven? Het helpt ons enorm om meer mensen te helpen.\n\n👉 [JE REVIEW LINK]\n\nMet vriendelijke groet,\n${businessName}`
+      sms: `Hoi ${firstName}! Bedankt voor je vertrouwen in ${businessName} 🌟 Laat even een review achter via deze link: ${linkText} - Alvast bedankt!`,
+      whatsapp: `Hey ${firstName}! 👋\n\nBedankt voor je vertrouwen in ${businessName}. We waarderen het enorm als je even de tijd neemt voor een review!\n\n👉 ${linkText}\n\nAlvast bedankt! 🙏`,
+      email: `Hey ${firstName},\n\nBedankt voor je vertrouwen in ${businessName}.\n\nZou je ons een review willen geven? Het helpt ons enorm om meer mensen te helpen.\n\n👉 ${linkText}\n\nMet vriendelijke groet,\n${businessName}`
     }
   }
 
@@ -57,24 +59,57 @@ const generateMessages = (businessName: string, businessType: string, customerNa
 }
 
 export default function ReviewGenerator() {
+  const { profile } = useBusinessProfile()
+  const { inputs, saveInputs } = useToolInputs('review-generator')
+  
   const [step, setStep] = useState(1)
   const [businessName, setBusinessName] = useState('')
   const [businessType, setBusinessType] = useState('')
   const [customerName, setCustomerName] = useState('')
+  const [reviewLink, setReviewLink] = useState('')
   const [messages, setMessages] = useState<GeneratedMessage[]>([])
   const [copiedId, setCopiedId] = useState<string | null>(null)
   const [activeTab, setActiveTab] = useState<'sms' | 'whatsapp' | 'email'>('whatsapp')
+  const [loading, setLoading] = useState(false)
+
+  // Pre-fill from profile
+  useEffect(() => {
+    if (profile) {
+      if (profile.name && !inputs.businessName) setBusinessName(profile.name)
+      if (profile.googleReviewLink && !inputs.reviewLink) setReviewLink(profile.googleReviewLink)
+    }
+  }, [profile, inputs.businessName, inputs.reviewLink])
+
+  // Save inputs on change
+  useEffect(() => {
+    if (businessName || customerName) {
+      saveInputs({ businessName, customerName, reviewLink })
+    }
+  }, [businessName, customerName, reviewLink, saveInputs])
 
   const handleGenerate = () => {
-    const generated = generateMessages(businessName, businessType, customerName)
-    setMessages(generated)
-    setStep(3)
+    if (!businessName || !customerName) return
+    setLoading(true)
+    
+    setTimeout(() => {
+      const generated = generateMessages(businessName, businessType, customerName, reviewLink)
+      setMessages(generated)
+      setStep(3)
+      setLoading(false)
+    }, 800)
   }
 
-  const copyMessage = (type: string, text: string) => {
-    navigator.clipboard.writeText(text)
+  const handleCopy = async (type: string, text: string) => {
+    await copyWithToast(text, `${type === 'sms' ? 'SMS' : type === 'whatsapp' ? 'WhatsApp' : 'Email'} gekopieerd!`)
     setCopiedId(type)
     setTimeout(() => setCopiedId(null), 2000)
+  }
+
+  const handleReset = () => {
+    setStep(1)
+    setCustomerName('')
+    setMessages([])
+    setCopiedId(null)
   }
 
   const currentMessage = messages.find(m => m.type === activeTab)
@@ -88,7 +123,7 @@ export default function ReviewGenerator() {
             <span className="text-4xl">⭐</span>
             <h1 className="text-3xl font-black">Review Generator</h1>
           </div>
-          <p className="text-slate-400">Genereer gepersonaliseerde review-verzoeken in 30 seconden</p>
+          <p className="text-slate-400">Genereer gepersonaliseerde review-verzoeken</p>
         </div>
 
         {/* Progress */}
@@ -105,7 +140,7 @@ export default function ReviewGenerator() {
 
         {/* Step 1: Business Info */}
         {step === 1 && (
-          <div className="bg-slate-800 rounded-2xl p-6 border border-slate-700">
+          <div className="bg-slate-800 rounded-2xl p-6 border border-slate-700 animate-slide-up">
             <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
               <Building className="w-5 h-5 text-violet-400" />
               Jouw Bedrijf
@@ -118,8 +153,8 @@ export default function ReviewGenerator() {
                   type="text"
                   value={businessName}
                   onChange={(e) => setBusinessName(e.target.value)}
-                  placeholder="Bijv. De Loodgieter Amsterdam"
-                  className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl focus:ring-2 focus:ring-violet-500 outline-none"
+                  placeholder="De Loodgieter Amsterdam"
+                  className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl focus:ring-2 focus:ring-violet-500 outline-none transition"
                 />
               </div>
               
@@ -130,7 +165,7 @@ export default function ReviewGenerator() {
                     <button
                       key={type.id}
                       onClick={() => setBusinessType(type.id)}
-                      className={`p-3 rounded-xl border text-left transition ${
+                      className={`p-3 rounded-xl border text-left transition hover-lift ${
                         businessType === type.id
                           ? 'bg-violet-600/20 border-violet-500'
                           : 'bg-slate-900 border-slate-700 hover:border-slate-600'
@@ -142,21 +177,32 @@ export default function ReviewGenerator() {
                   ))}
                 </div>
               </div>
+              
+              <div>
+                <label className="block text-sm text-slate-400 mb-2">Google Review Link (optioneel)</label>
+                <input
+                  type="url"
+                  value={reviewLink}
+                  onChange={(e) => setReviewLink(e.target.value)}
+                  placeholder="https://g.page/r/.../review"
+                  className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl focus:ring-2 focus:ring-violet-500 outline-none transition"
+                />
+              </div>
             </div>
 
             <button
               onClick={() => setStep(2)}
               disabled={!businessName}
-              className="w-full mt-6 py-4 bg-violet-600 hover:bg-violet-700 disabled:opacity-50 rounded-xl font-semibold transition"
+              className="w-full mt-6 py-4 bg-violet-600 hover:bg-violet-700 disabled:opacity-50 rounded-xl font-semibold flex items-center justify-center gap-2 transition"
             >
-              Volgende stap →
+              Volgende <ChevronRight className="w-5 h-5" />
             </button>
           </div>
         )}
 
         {/* Step 2: Customer Info */}
         {step === 2 && (
-          <div className="bg-slate-800 rounded-2xl p-6 border border-slate-700">
+          <div className="bg-slate-800 rounded-2xl p-6 border border-slate-700 animate-slide-up">
             <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
               <MessageSquare className="w-5 h-5 text-violet-400" />
               Klantgegevens
@@ -168,8 +214,8 @@ export default function ReviewGenerator() {
                 type="text"
                 value={customerName}
                 onChange={(e) => setCustomerName(e.target.value)}
-                placeholder="Bijv. Jan de Vries"
-                className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl focus:ring-2 focus:ring-violet-500 outline-none"
+                placeholder="Jan de Vries"
+                className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl focus:ring-2 focus:ring-violet-500 outline-none transition"
               />
               <p className="text-xs text-slate-500 mt-2">
                 Vul de naam in van de klant die je een review-verzoek wilt sturen
@@ -179,17 +225,20 @@ export default function ReviewGenerator() {
             <div className="flex gap-3 mt-6">
               <button
                 onClick={() => setStep(1)}
-                className="flex-1 py-4 bg-slate-700 hover:bg-slate-600 rounded-xl font-semibold transition"
+                className="px-6 py-4 bg-slate-700 hover:bg-slate-600 rounded-xl font-semibold transition"
               >
                 ← Terug
               </button>
               <button
                 onClick={handleGenerate}
-                disabled={!customerName}
+                disabled={!customerName || loading}
                 className="flex-1 py-4 bg-gradient-to-r from-violet-600 to-purple-600 hover:opacity-90 disabled:opacity-50 rounded-xl font-semibold flex items-center justify-center gap-2 transition"
               >
-                <Sparkles className="w-5 h-5" />
-                Genereer Berichten
+                {loading ? (
+                  <><Sparkles className="w-5 h-5 animate-pulse" /> Genereren...</>
+                ) : (
+                  <><Sparkles className="w-5 h-5" /> Genereer Berichten</>
+                )}
               </button>
             </div>
           </div>
@@ -197,22 +246,24 @@ export default function ReviewGenerator() {
 
         {/* Step 3: Results */}
         {step === 3 && messages.length > 0 && (
-          <div className="space-y-4">
+          <div className="space-y-4 animate-slide-up">
             <div className="bg-slate-800 rounded-2xl p-6 border border-slate-700">
               <div className="flex items-center gap-3 mb-4">
-                <Check className="w-6 h-6 text-green-500" />
+                <div className="w-10 h-10 bg-green-500/20 rounded-full flex items-center justify-center">
+                  <Check className="w-5 h-5 text-green-500" />
+                </div>
                 <div>
                   <div className="font-bold">Berichten gegenereerd voor {customerName}!</div>
-                  <div className="text-sm text-slate-400">{businessName} - {businessTypes.find(t => t.id === businessType)?.label}</div>
+                  <div className="text-sm text-slate-400">{businessName}</div>
                 </div>
               </div>
               
               {/* Channel Tabs */}
               <div className="flex gap-2 mb-4">
                 {[
-                  { id: 'sms', icon: MessageCircle, label: 'SMS' },
-                  { id: 'whatsapp', icon: MessageSquare, label: 'WhatsApp' },
-                  { id: 'email', icon: Mail, label: 'Email' }
+                  { id: 'sms', icon: '💬', label: 'SMS' },
+                  { id: 'whatsapp', icon: '📱', label: 'WhatsApp' },
+                  { id: 'email', icon: '📧', label: 'Email' }
                 ].map(tab => (
                   <button
                     key={tab.id}
@@ -223,7 +274,7 @@ export default function ReviewGenerator() {
                         : 'bg-slate-700 text-slate-400 hover:bg-slate-600'
                     }`}
                   >
-                    <tab.icon className="w-4 h-4" />
+                    <span>{tab.icon}</span>
                     {tab.label}
                   </button>
                 ))}
@@ -237,58 +288,27 @@ export default function ReviewGenerator() {
               </div>
 
               {/* Actions */}
-              <div className="flex gap-3 mt-4">
-                <button
-                  onClick={() => copyMessage(activeTab, currentMessage?.message || '')}
-                  className="flex-1 py-3 bg-violet-600 hover:bg-violet-700 rounded-xl font-semibold flex items-center justify-center gap-2 transition"
-                >
-                  {copiedId === activeTab ? (
-                    <><Check className="w-5 h-5" /> Gekopieerd!</>
-                  ) : (
-                    <><Copy className="w-5 h-5" /> Kopieer {activeTab === 'sms' ? 'SMS' : activeTab === 'whatsapp' ? 'WhatsApp' : 'Email'}</>
-                  )}
-                </button>
-              </div>
-            </div>
-
-            {/* Google Review Link Section */}
-            <div className="bg-slate-800 rounded-2xl p-6 border border-slate-700">
-              <h3 className="font-bold mb-4">📍 Google Review Link</h3>
-              <p className="text-sm text-slate-400 mb-4">
-                Vervang [JE REVIEW LINK] in de berichten met je daadwerkelijke Google review link.
-              </p>
-              <div className="bg-slate-900 rounded-xl p-4">
-                <code className="text-sm text-violet-400">
-                  https://g.page/r/[JOUW-BEDRIJF]/review
-                </code>
-              </div>
-              <p className="text-xs text-slate-500 mt-2">
-                Tip: Zoek op Google naar je bedrijf en klik op "Review achterlaten" om je link te kopiëren
-              </p>
+              <button
+                onClick={() => handleCopy(activeTab, currentMessage?.message || '')}
+                className="w-full mt-4 py-3 bg-violet-600 hover:bg-violet-700 rounded-xl font-semibold flex items-center justify-center gap-2 transition"
+              >
+                {copiedId === activeTab ? (
+                  <><Check className="w-5 h-5" /> Gekopieerd!</>
+                ) : (
+                  <><Copy className="w-5 h-5" /> Kopieer Bericht</>
+                )}
+              </button>
             </div>
 
             {/* Generate Another */}
             <button
-              onClick={() => {
-                setStep(1)
-                setCustomerName('')
-                setMessages([])
-              }}
-              className="w-full py-4 bg-slate-700 hover:bg-slate-600 rounded-xl font-semibold transition"
+              onClick={handleReset}
+              className="w-full py-4 bg-slate-700 hover:bg-slate-600 rounded-xl font-semibold flex items-center justify-center gap-2 transition"
             >
-              ← Genereer nieuw bericht
+              <RotateCcw className="w-5 h-5" /> Nieuw bericht genereren
             </button>
           </div>
         )}
-
-        {/* CTA */}
-        <div className="mt-8 bg-gradient-to-r from-violet-600 to-purple-600 rounded-2xl p-6 text-center">
-          <h3 className="font-bold mb-2">Wil je dit automatiseren?</h3>
-          <p className="text-white/80 text-sm mb-4">Wij zetten een automatisch review-verzoek systeem op dat na elke klant een bericht stuurt</p>
-          <a href="/#contact" className="inline-block bg-white text-violet-600 px-6 py-3 rounded-xl font-semibold">
-            Vraag offer aan →
-          </a>
-        </div>
       </div>
     </div>
   )

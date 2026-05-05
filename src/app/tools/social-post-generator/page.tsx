@@ -1,17 +1,12 @@
 'use client'
 
-import { useState } from 'react'
-import { Sparkles, Copy, Check, RefreshCw, MessageSquare, Instagram, Facebook, Linkedin, Twitter, Calendar } from 'lucide-react'
-
-const businessTypes = [
-  'Restaurant/Café', 'Salon/Schoonheid', 'Auto Werkplaats', 'Loodgieter',
-  'Elektricien', 'Timmerman', 'Schilder', 'Hovenier', 'Makelaar',
-  'Tandarts', 'Fysiotherapie', 'Winkel', 'Hotel', 'Sportclub', 'Overig'
-]
+import { useState, useEffect } from 'react'
+import { Sparkles, Copy, Check, RefreshCw, Instagram, Facebook, Linkedin, Calendar, X } from 'lucide-react'
+import { useBusinessProfile, useToolInputs, copyWithToast } from '@/lib/useSharedData'
 
 const postTypes = [
   { id: 'promo', label: 'Aanbieding', emoji: '🎁', desc: 'Promotie of korting' },
-  { id: 'info', label: ' Informatie', emoji: 'ℹ️', desc: 'Over je diensten' },
+  { id: 'info', label: 'Informatie', emoji: 'ℹ️', desc: 'Over je diensten' },
   { id: 'social', label: 'Sociaal', emoji: '👥', desc: 'Team, achter de schermen' },
   { id: 'testimonial', label: 'Review', emoji: '⭐', desc: 'Klanttevredenheid' },
   { id: 'seasonal', label: 'Seizoensgebonden', emoji: '🌸', desc: 'Jaargetijde, feestdagen' },
@@ -28,7 +23,6 @@ interface GeneratedPost {
 const generatePosts = (business: string, type: string): GeneratedPost[] => {
   const posts: GeneratedPost[] = []
   
-  // Instagram
   const instagramTemplates: Record<string, string[]> = {
     promo: [
       `✂️ Nieuwe aanbieding bij ${business}! ✂️\n\nDit seizoen sparen we je geld. Bestel nu en krijg [X]% korting!\n\n💬 DM voor meer info\n📍 [ADRES]`,
@@ -43,11 +37,11 @@ const generatePosts = (business: string, type: string): GeneratedPost[] => {
       `Achter de schermen bij ${business} 🔧\n\nZo ziet een werkdag eruit bij ons. Geen dag is hetzelfde!`,
     ],
     testimonial: [
-      `⭐ " Zo'n goede ervaring bij ${business}! "\n\n- Tevreden klant\n\nBedankt voor het vertrouwen! 🙏`,
-      `Review van de week: " ${business} heeft mijn verwachtingen overtroffen! "\n\nBedankt! ⭐⭐⭐⭐⭐`,
+      `⭐ "Zo'n goede ervaring bij ${business}!"\n\n- Tevreden klant\n\nBedankt voor het vertrouwen! 🙏`,
+      `Review van de week: "${business} heeft mijn verwachtingen overtroffen!"\n\nBedankt! ⭐⭐⭐⭐⭐`,
     ],
     seasonal: [
-      `${new Date().getMonth() === 11 ? '🎄' : new Date().getMonth() === 5 ? '☀️' : '🌸'} Seizoens-tip van ${business}!\n\nDit is het perfecte moment om [dienst] te boeken. Bel nu voor een afspraak!`,
+      `🌸 Seizoens-tip van ${business}!\n\nDit is het perfecte moment om [dienst] te boeken. Bel nu voor een afspraak!`,
     ]
   }
 
@@ -62,7 +56,6 @@ const generatePosts = (business: string, type: string): GeneratedPost[] => {
     optimalTime: '9:00 - 11:00 uur'
   })
 
-  // Facebook
   posts.push({
     platform: 'Facebook',
     icon: <Facebook className="w-5 h-5" />,
@@ -71,7 +64,6 @@ const generatePosts = (business: string, type: string): GeneratedPost[] => {
     optimalTime: '13:00 - 15:00 uur'
   })
 
-  // LinkedIn
   posts.push({
     platform: 'LinkedIn',
     icon: <Linkedin className="w-5 h-5" />,
@@ -84,12 +76,29 @@ const generatePosts = (business: string, type: string): GeneratedPost[] => {
 }
 
 export default function SocialPostGenerator() {
+  const { profile } = useBusinessProfile()
+  const { inputs, saveInputs } = useToolInputs('social-post-generator')
+  
   const [business, setBusiness] = useState('')
   const [postType, setPostType] = useState('')
   const [posts, setPosts] = useState<GeneratedPost[]>([])
   const [loading, setLoading] = useState(false)
   const [copiedId, setCopiedId] = useState<string | null>(null)
   const [activeTab, setActiveTab] = useState('Instagram')
+
+  // Pre-fill from profile
+  useEffect(() => {
+    if (profile && profile.name && !inputs.business) {
+      setBusiness(profile.name)
+    }
+  }, [profile, inputs.business])
+
+  // Save inputs on change
+  useEffect(() => {
+    if (business || postType) {
+      saveInputs({ business, postType })
+    }
+  }, [business, postType, saveInputs])
 
   const handleGenerate = () => {
     if (!business || !postType) return
@@ -100,12 +109,12 @@ export default function SocialPostGenerator() {
       setPosts(generated)
       setActiveTab(generated[0].platform)
       setLoading(false)
-    }, 1500)
+    }, 1200)
   }
 
-  const copyPost = (platform: string, post: GeneratedPost) => {
+  const handleCopy = async (platform: string, post: GeneratedPost) => {
     const fullPost = `${post.content}\n\n${post.hashtags.map(h => '#' + h).join(' ')}`
-    navigator.clipboard.writeText(fullPost)
+    await copyWithToast(fullPost, 'Post gekopieerd!')
     setCopiedId(platform)
     setTimeout(() => setCopiedId(null), 2000)
   }
@@ -121,28 +130,28 @@ export default function SocialPostGenerator() {
             <span className="text-4xl">📱</span>
             <h1 className="text-3xl font-black">Social Post Generator</h1>
           </div>
-          <p className="text-slate-400">Genereer Social Media posts voor je lokale bedrijf - gratis</p>
+          <p className="text-slate-400">Genereer Social Media posts voor je lokale bedrijf</p>
         </div>
 
         {/* Input */}
         <div className="bg-slate-800 rounded-2xl p-6 mb-8 border border-slate-700">
           <div className="grid md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-slate-400 mb-2">Bedrijfsnaam *</label>
+              <label className="block text-sm font-medium text-slate-400 mb-2">Bedrijfsnaam</label>
               <input
                 type="text"
                 value={business}
                 onChange={(e) => setBusiness(e.target.value)}
-                placeholder="Bijv. De Loodgieter Amsterdam"
-                className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl focus:ring-2 focus:ring-violet-500 outline-none"
+                placeholder="De Loodgieter Amsterdam"
+                className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl focus:ring-2 focus:ring-violet-500 outline-none transition"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-400 mb-2">Type post *</label>
+              <label className="block text-sm font-medium text-slate-400 mb-2">Type post</label>
               <select
                 value={postType}
                 onChange={(e) => setPostType(e.target.value)}
-                className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl focus:ring-2 focus:ring-violet-500 outline-none"
+                className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl focus:ring-2 focus:ring-violet-500 outline-none transition"
               >
                 <option value="">Selecteer type...</option>
                 {postTypes.map(t => (
@@ -165,8 +174,16 @@ export default function SocialPostGenerator() {
           </button>
         </div>
 
+        {/* Loading Skeleton */}
+        {loading && (
+          <div className="bg-slate-800 rounded-2xl border border-slate-700 p-6 animate-pulse">
+            <div className="h-8 w-32 bg-slate-700 rounded mb-4"></div>
+            <div className="h-32 bg-slate-700 rounded"></div>
+          </div>
+        )}
+
         {/* Results */}
-        {posts.length > 0 && (
+        {!loading && posts.length > 0 && (
           <>
             {/* Platform Tabs */}
             <div className="flex gap-2 mb-4 overflow-x-auto pb-2">
@@ -220,7 +237,7 @@ export default function SocialPostGenerator() {
                     Beste tijd: {currentPost.optimalTime}
                   </div>
                   <button
-                    onClick={() => copyPost(activeTab, currentPost)}
+                    onClick={() => handleCopy(activeTab, currentPost)}
                     className="px-4 py-2 bg-violet-600 hover:bg-violet-700 rounded-xl font-medium flex items-center gap-2 transition"
                   >
                     {copiedId === activeTab ? (
@@ -244,7 +261,7 @@ export default function SocialPostGenerator() {
                         {post.icon} {post.platform}
                       </span>
                       <button
-                        onClick={() => copyPost(post.platform, post)}
+                        onClick={() => handleCopy(post.platform, post)}
                         className="text-sm text-violet-400 hover:text-violet-300"
                       >
                         {copiedId === post.platform ? '✓ Gekopieerd' : 'Kopieer'}
@@ -258,14 +275,13 @@ export default function SocialPostGenerator() {
           </>
         )}
 
-        {/* CTA */}
-        <div className="mt-8 bg-gradient-to-r from-violet-600 to-purple-600 rounded-2xl p-6 text-center">
-          <h3 className="font-bold mb-2">Wil je dit automatiseren?</h3>
-          <p className="text-white/80 text-sm mb-4">Wij zetten een complete social media strategie op voor je bedrijf</p>
-          <a href="/#contact" className="inline-block bg-white text-violet-600 px-6 py-3 rounded-xl font-semibold">
-            Vraag offer aan →
-          </a>
-        </div>
+        {/* Empty State */}
+        {!loading && posts.length === 0 && (
+          <div className="text-center py-16 text-slate-500 animate-fade-in">
+            <span className="text-6xl mb-4 block">📱</span>
+            <p>Voer een bedrijfsnaam en type post in om te beginnen</p>
+          </div>
+        )}
       </div>
     </div>
   )

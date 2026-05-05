@@ -24,6 +24,16 @@ export interface SavedLead {
   status: 'new' | 'contacted' | 'qualified' | 'won' | 'lost'
   createdAt: string
   lastContacted: string | null
+  address?: string
+  industry?: string
+}
+
+export interface ToolTemplate {
+  id: string
+  tool: string
+  name: string
+  data: Record<string, any>
+  createdAt: string
 }
 
 const STORAGE_KEYS = {
@@ -31,9 +41,13 @@ const STORAGE_KEYS = {
   leads: 'localboost_leads',
   templates: 'localboost_templates',
   onboardingComplete: 'localboost_onboarding_done',
-  favoriteTools: 'localboost_favorite_tools'
+  favoriteTools: 'localboost_favorite_tools',
+  toolInputs: 'localboost_tool_inputs',
 }
 
+// ==================
+// BUSINESS PROFILE
+// ==================
 export function useBusinessProfile() {
   const [profile, setProfile] = useState<BusinessProfile | null>(null)
   const [loading, setLoading] = useState(true)
@@ -41,7 +55,11 @@ export function useBusinessProfile() {
   useEffect(() => {
     const stored = localStorage.getItem(STORAGE_KEYS.businessProfile)
     if (stored) {
-      setProfile(JSON.parse(stored))
+      try {
+        setProfile(JSON.parse(stored))
+      } catch (e) {
+        console.error('Failed to parse business profile:', e)
+      }
     }
     setLoading(false)
   }, [])
@@ -59,6 +77,9 @@ export function useBusinessProfile() {
   return { profile, saveProfile, clearProfile, loading }
 }
 
+// ==================
+// LEADS CRM
+// ==================
 export function useLeads() {
   const [leads, setLeads] = useState<SavedLead[]>([])
   const [loading, setLoading] = useState(true)
@@ -66,7 +87,11 @@ export function useLeads() {
   useEffect(() => {
     const stored = localStorage.getItem(STORAGE_KEYS.leads)
     if (stored) {
-      setLeads(JSON.parse(stored))
+      try {
+        setLeads(JSON.parse(stored))
+      } catch (e) {
+        console.error('Failed to parse leads:', e)
+      }
     }
     setLoading(false)
   }, [])
@@ -101,9 +126,125 @@ export function useLeads() {
     })
   }, [])
 
-  return { leads, addLead, updateLead, deleteLead, loading }
+  const saveLeadFromFinder = useCallback((finderLead: {
+    name: string
+    phone: string
+    website: string
+    address: string
+    city: string
+    needs: string[]
+  }) => {
+    return addLead({
+      name: finderLead.name,
+      phone: finderLead.phone,
+      email: '',
+      company: finderLead.name,
+      city: finderLead.city,
+      notes: `Needs: ${finderLead.needs.join(', ')}`,
+      status: 'new',
+      lastContacted: null,
+      address: finderLead.address,
+      industry: finderLead.needs[0] || ''
+    })
+  }, [addLead])
+
+  return { leads, addLead, updateLead, deleteLead, saveLeadFromFinder, loading }
 }
 
+// ==================
+// TEMPLATES
+// ==================
+export function useTemplates() {
+  const [templates, setTemplates] = useState<ToolTemplate[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const stored = localStorage.getItem(STORAGE_KEYS.templates)
+    if (stored) {
+      try {
+        setTemplates(JSON.parse(stored))
+      } catch (e) {
+        console.error('Failed to parse templates:', e)
+      }
+    }
+    setLoading(false)
+  }, [])
+
+  const saveTemplate = useCallback((tool: string, name: string, data: Record<string, any>) => {
+    const newTemplate: ToolTemplate = {
+      id: `${tool}_${Date.now()}`,
+      tool,
+      name,
+      data,
+      createdAt: new Date().toISOString()
+    }
+    setTemplates(prev => {
+      const updated = [newTemplate, ...prev]
+      localStorage.setItem(STORAGE_KEYS.templates, JSON.stringify(updated))
+      return updated
+    })
+    return newTemplate
+  }, [])
+
+  const deleteTemplate = useCallback((id: string) => {
+    setTemplates(prev => {
+      const updated = prev.filter(t => t.id !== id)
+      localStorage.setItem(STORAGE_KEYS.templates, JSON.stringify(updated))
+      return updated
+    })
+  }, [])
+
+  const getTemplatesForTool = useCallback((tool: string) => {
+    return templates.filter(t => t.tool === tool)
+  }, [templates])
+
+  return { templates, saveTemplate, deleteTemplate, getTemplatesForTool, loading }
+}
+
+// ==================
+// TOOL INPUT PERSISTENCE
+// ==================
+export function useToolInputs(toolId: string) {
+  const [inputs, setInputs] = useState<Record<string, any>>({})
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const stored = localStorage.getItem(STORAGE_KEYS.toolInputs)
+    if (stored) {
+      try {
+        const allInputs = JSON.parse(stored)
+        setInputs(allInputs[toolId] || {})
+      } catch (e) {
+        console.error('Failed to parse tool inputs:', e)
+      }
+    }
+    setLoading(false)
+  }, [toolId])
+
+  const saveInputs = useCallback((newInputs: Record<string, any>) => {
+    setInputs(newInputs)
+    const stored = localStorage.getItem(STORAGE_KEYS.toolInputs)
+    const allInputs = stored ? JSON.parse(stored) : {}
+    allInputs[toolId] = newInputs
+    localStorage.setItem(STORAGE_KEYS.toolInputs, JSON.stringify(allInputs))
+  }, [toolId])
+
+  const clearInputs = useCallback(() => {
+    setInputs({})
+    const stored = localStorage.getItem(STORAGE_KEYS.toolInputs)
+    if (stored) {
+      const allInputs = JSON.parse(stored)
+      delete allInputs[toolId]
+      localStorage.setItem(STORAGE_KEYS.toolInputs, JSON.stringify(allInputs))
+    }
+  }, [toolId])
+
+  return { inputs, saveInputs, clearInputs, loading }
+}
+
+// ==================
+// ONBOARDING
+// ==================
 export function useOnboarding() {
   const [complete, setComplete] = useState(false)
   const [loading, setLoading] = useState(true)
@@ -127,29 +268,42 @@ export function useOnboarding() {
   return { complete, finishOnboarding, resetOnboarding, loading }
 }
 
-export function useToast() {
-  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null)
-
-  const showToast = useCallback((message: string, type: 'success' | 'error' | 'info' = 'success') => {
-    setToast({ message, type })
-    setTimeout(() => setToast(null), 3000)
-  }, [])
-
-  return { toast, showToast }
+// ==================
+// TOAST SYSTEM
+// ==================
+interface ToastData {
+  message: string
+  type: 'success' | 'error' | 'info'
 }
 
-export function Toast({ toast }: { toast: { message: string; type: string } | null }) {
-  if (!toast) return null
-  
-  const bgColor = {
-    success: 'bg-green-600',
-    error: 'bg-red-600',
-    info: 'bg-violet-600'
-  }[toast.type] || 'bg-violet-600'
+declare global {
+  interface Window {
+    showToast?: (message: string, type?: string) => void
+  }
+}
 
-  return (
-    <div className={`fixed bottom-6 right-6 ${bgColor} text-white px-6 py-3 rounded-xl shadow-2xl z-50 animate-pulse`}>
-      {toast.message}
-    </div>
-  )
+let toastCallback: ((message: string, type: string) => void) | null = null
+
+export function setToastCallback(callback: (message: string, type: string) => void) {
+  toastCallback = callback
+}
+
+export function showToast(message: string, type: 'success' | 'error' | 'info' = 'success') {
+  if (toastCallback) {
+    toastCallback(message, type)
+  }
+  if (typeof window !== 'undefined' && window.showToast) {
+    window.showToast(message, type)
+  }
+}
+
+export async function copyWithToast(text: string, successMessage: string = 'Gekopieerd!') {
+  try {
+    await navigator.clipboard.writeText(text)
+    showToast(successMessage, 'success')
+    return true
+  } catch {
+    showToast('Kon niet kopiëren', 'error')
+    return false
+  }
 }

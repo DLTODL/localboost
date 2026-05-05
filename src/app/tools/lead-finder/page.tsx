@@ -1,7 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Search, MapPin, Building, Phone, Mail, Globe, Copy, Check, Filter, Download, Star, ExternalLink, Save, Trash2 } from 'lucide-react'
+import { Search, MapPin, Phone, Mail, Globe, Copy, Check, Download, Star, Save, Trash2, Building, User, ChevronDown, X } from 'lucide-react'
+import { useBusinessProfile, useLeads, useToolInputs, useTemplates, copyWithToast } from '@/lib/useSharedData'
 
 interface Lead {
   id: number
@@ -53,7 +54,7 @@ const generateLeads = (city: string, industry: string): Lead[] => {
     leads.push({
       id: i + 1,
       name: `${industry} Bedrijf ${i + 1}`,
-      address: `${Math.floor(Math.random() * 200) + 1} ${['Kerkstraat', 'Dorpsstraat', 'Hoofdstraat', 'Industrieweg', ' Stationsstraat'][Math.floor(Math.random() * 5)]}`,
+      address: `${Math.floor(Math.random() * 200) + 1} ${['Kerkstraat', 'Dorpsstraat', 'Hoofdstraat', 'Industrieweg', 'Stationsstraat'][Math.floor(Math.random() * 5)]}`,
       city: city,
       phone: hasPhone ? `06 ${Math.floor(Math.random() * 90000000) + 10000000}` : '',
       website: hasWebsite ? `https://${industry.toLowerCase()}${i + 1}${city.toLowerCase()}.nl` : '',
@@ -71,7 +72,49 @@ const generateLeads = (city: string, industry: string): Lead[] => {
   })
 }
 
+function LeadSkeleton() {
+  return (
+    <div className="bg-slate-800 rounded-xl p-5 border border-slate-700 animate-pulse">
+      <div className="flex items-start justify-between gap-4">
+        <div className="flex-1">
+          <div className="flex items-center gap-3 mb-2">
+            <div className="h-6 w-16 bg-slate-700 rounded"></div>
+            <div className="h-6 w-40 bg-slate-700 rounded"></div>
+          </div>
+          <div className="flex flex-wrap gap-4 mb-3">
+            <div className="h-4 w-32 bg-slate-700 rounded"></div>
+            <div className="h-4 w-24 bg-slate-700 rounded"></div>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <div className="h-6 w-24 bg-slate-700 rounded"></div>
+            <div className="h-6 w-32 bg-slate-700 rounded"></div>
+          </div>
+        </div>
+        <div className="flex gap-2">
+          <div className="h-10 w-10 bg-slate-700 rounded-lg"></div>
+          <div className="h-10 w-10 bg-slate-700 rounded-lg"></div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function EmptyState() {
+  return (
+    <div className="text-center py-16 animate-fade-in">
+      <Search className="w-16 h-16 mx-auto mb-4 text-slate-600" />
+      <h3 className="text-xl font-bold text-slate-400 mb-2">Geen leads gevonden</h3>
+      <p className="text-slate-500">Voer een stad en branche in om te beginnen</p>
+    </div>
+  )
+}
+
 export default function LeadFinder() {
+  const { profile } = useBusinessProfile()
+  const { leads: savedLeads, saveLeadFromFinder } = useLeads()
+  const { inputs, saveInputs } = useToolInputs('lead-finder')
+  const { templates, saveTemplate, getTemplatesForTool } = useTemplates()
+  
   const [city, setCity] = useState('')
   const [industry, setIndustry] = useState('')
   const [searched, setSearched] = useState(false)
@@ -79,6 +122,26 @@ export default function LeadFinder() {
   const [leads, setLeads] = useState<Lead[]>([])
   const [copiedId, setCopiedId] = useState<number | null>(null)
   const [filterPriority, setFilterPriority] = useState<'all' | 'hot' | 'warm' | 'cold'>('all')
+  const [showSaveModal, setShowSaveModal] = useState<Lead | null>(null)
+  const [showSavedLeads, setShowSavedLeads] = useState(false)
+
+  const savedTemplates = getTemplatesForTool('lead-finder')
+
+  // Pre-fill from profile and saved inputs
+  useEffect(() => {
+    if (profile) {
+      if (profile.city && !inputs.city) setCity(profile.city)
+    }
+    if (inputs.city) setCity(inputs.city)
+    if (inputs.industry) setIndustry(inputs.industry)
+  }, [profile, inputs.city, inputs.industry])
+
+  // Save inputs on change
+  useEffect(() => {
+    if (city || industry) {
+      saveInputs({ city, industry })
+    }
+  }, [city, industry, saveInputs])
 
   const handleSearch = () => {
     if (!city || !industry) return
@@ -90,20 +153,30 @@ export default function LeadFinder() {
       setLeads(results)
       setSearched(true)
       setLoading(false)
-    }, 1500)
+    }, 1200)
   }
 
-  const copyLead = (lead: Lead, field: 'phone' | 'all') => {
+  const handleCopy = async (lead: Lead, field: 'phone' | 'all') => {
     const text = field === 'phone' && lead.phone 
       ? lead.phone 
       : `${lead.name}\n${lead.address}, ${lead.city}\n${lead.phone}\n${lead.website}\n\nBehoeften: ${lead.needs.join(', ')}`
     
-    navigator.clipboard.writeText(text)
+    await copyWithToast(text, field === 'phone' ? 'Telefoonnummer gekopieerd!' : 'Lead info gekopieerd!')
     setCopiedId(lead.id)
-    if (typeof window !== 'undefined' && (window as any).showToast) {
-      (window as any).showToast(field === 'phone' ? 'Telefoonnummer gekopieerd!' : 'Lead info gekopieerd!')
-    }
     setTimeout(() => setCopiedId(null), 2000)
+  }
+
+  const handleSaveLead = async (lead: Lead) => {
+    await saveLeadFromFinder({
+      name: lead.name,
+      phone: lead.phone,
+      website: lead.website,
+      address: lead.address,
+      city: lead.city,
+      needs: lead.needs
+    })
+    setShowSaveModal(null)
+    await copyWithToast('Lead opgeslagen in CRM!', 'success')
   }
 
   const filteredLeads = filterPriority === 'all' 
@@ -113,7 +186,7 @@ export default function LeadFinder() {
   const hotLeads = leads.filter(l => l.priority === 'hot').length
   const warmLeads = leads.filter(l => l.priority === 'warm').length
 
-  const exportCSV = () => {
+  const handleExportCSV = async () => {
     const headers = ['Naam', 'Adres', 'Plaats', 'Telefoon', 'Website', 'Rating', 'Reviews', 'Prioriteit', 'Behoeften']
     const rows = filteredLeads.map(l => [
       l.name, l.address, l.city, l.phone, l.website, l.rating, l.reviewCount, l.priority, l.needs.join('; ')
@@ -128,9 +201,7 @@ export default function LeadFinder() {
     a.click()
     URL.revokeObjectURL(url)
     
-    if (typeof window !== 'undefined' && (window as any).showToast) {
-      (window as any).showToast(`${filteredLeads.length} leads geexporteerd!`)
-    }
+    await copyWithToast(`${filteredLeads.length} leads geëxporteerd!`, 'success')
   }
 
   return (
@@ -138,11 +209,22 @@ export default function LeadFinder() {
       <div className="max-w-6xl mx-auto p-6">
         {/* Header */}
         <div className="mb-8">
-          <div className="flex items-center gap-3 mb-2">
-            <span className="text-4xl">🎯</span>
-            <h1 className="text-3xl font-black">Lead Finder</h1>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <span className="text-4xl">🎯</span>
+              <div>
+                <h1 className="text-3xl font-black">Lead Finder</h1>
+                <p className="text-slate-400">Vind potentiele klanten in je regio</p>
+              </div>
+            </div>
+            <button
+              onClick={() => setShowSavedLeads(true)}
+              className="flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-xl transition"
+            >
+              <Building className="w-4 h-4" />
+              <span className="hidden sm:inline">CRM ({savedLeads.length})</span>
+            </button>
           </div>
-          <p className="text-slate-400">Vind potentiele klanten in je regio - gratis te gebruiken</p>
         </div>
 
         {/* Search */}
@@ -153,7 +235,7 @@ export default function LeadFinder() {
               <select
                 value={city}
                 onChange={(e) => setCity(e.target.value)}
-                className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl focus:ring-2 focus:ring-violet-500 outline-none"
+                className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl focus:ring-2 focus:ring-violet-500 outline-none transition"
               >
                 <option value="">Selecteer stad...</option>
                 {cities.map(c => <option key={c} value={c}>{c}</option>)}
@@ -164,17 +246,17 @@ export default function LeadFinder() {
               <select
                 value={industry}
                 onChange={(e) => setIndustry(e.target.value)}
-                className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl focus:ring-2 focus:ring-violet-500 outline-none"
+                className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl focus:ring-2 focus:ring-violet-500 outline-none transition"
               >
                 <option value="">Selecteer branche...</option>
                 {industries.map(i => <option key={i} value={i}>{i}</option>)}
               </select>
             </div>
-            <div className="flex items-end">
+            <div className="flex items-end gap-2">
               <button
                 onClick={handleSearch}
                 disabled={!city || !industry || loading}
-                className="w-full py-3 bg-gradient-to-r from-violet-600 to-purple-600 hover:opacity-90 disabled:opacity-50 rounded-xl font-semibold flex items-center justify-center gap-2 transition"
+                className="flex-1 py-3 bg-gradient-to-r from-violet-600 to-purple-600 hover:opacity-90 disabled:opacity-50 rounded-xl font-semibold flex items-center justify-center gap-2 transition"
               >
                 {loading ? (
                   <span className="animate-pulse">Zoeken...</span>
@@ -182,12 +264,40 @@ export default function LeadFinder() {
                   <><Search className="w-5 h-5" /> Vind Leads</>
                 )}
               </button>
+              {savedTemplates.length > 0 && (
+                <div className="relative">
+                  <select
+                    onChange={(e) => {
+                      const t = savedTemplates.find(t => t.id === e.target.value)
+                      if (t) {
+                        setCity(t.data.city)
+                        setIndustry(t.data.industry)
+                      }
+                      e.target.value = ''
+                    }}
+                    className="px-3 py-3 bg-slate-700 hover:bg-slate-600 rounded-xl cursor-pointer transition"
+                    title="Laad template"
+                  >
+                    <option value="">📁</option>
+                    {savedTemplates.map(t => (
+                      <option key={t.id} value={t.id}>{t.name}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
             </div>
           </div>
         </div>
 
+        {/* Loading Skeletons */}
+        {loading && (
+          <div className="space-y-3">
+            {[1, 2, 3, 4].map(i => <LeadSkeleton key={i} />)}
+          </div>
+        )}
+
         {/* Results */}
-        {searched && (
+        {searched && !loading && (
           <>
             {/* Stats */}
             <div className="grid grid-cols-4 gap-4 mb-6">
@@ -230,111 +340,179 @@ export default function LeadFinder() {
                 ))}
               </div>
               <button
-                onClick={exportCSV}
+                onClick={handleExportCSV}
                 className="flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-xl font-medium transition"
               >
-                <Download className="w-4 h-4" /> Exporteer CSV
+                <Download className="w-4 h-4" /> Exporteer
               </button>
             </div>
 
             {/* Leads List */}
-            <div className="space-y-3">
-              {filteredLeads.map(lead => (
-                <div 
-                  key={lead.id}
-                  className={`bg-slate-800 rounded-xl p-5 border transition ${
-                    lead.priority === 'hot' ? 'border-red-500/50' :
-                    lead.priority === 'warm' ? 'border-orange-500/50' :
-                    'border-slate-700'
-                  }`}
-                >
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-2">
-                        <span className={`px-2 py-1 rounded text-xs font-bold ${
-                          lead.priority === 'hot' ? 'bg-red-600 text-white' :
-                          lead.priority === 'warm' ? 'bg-orange-600 text-white' :
-                          'bg-blue-600 text-white'
-                        }`}>
-                          {lead.priority === 'hot' ? '🔥 HOT' : lead.priority === 'warm' ? 'WARM' : 'COLD'}
-                        </span>
-                        <h3 className="font-bold text-lg">{lead.name}</h3>
-                        <div className="flex items-center gap-1 text-yellow-400">
-                          <Star className="w-4 h-4 fill-current" />
-                          <span className="text-sm">{lead.rating}</span>
-                          <span className="text-slate-500 text-sm">({lead.reviewCount} reviews)</span>
-                        </div>
-                      </div>
-                      
-                      <div className="flex flex-wrap gap-4 text-sm text-slate-400 mb-3">
-                        <span className="flex items-center gap-1">
-                          <MapPin className="w-4 h-4" />
-                          {lead.address}, {lead.city}
-                        </span>
-                        {lead.phone && (
-                          <span className="flex items-center gap-1">
-                            <Phone className="w-4 h-4" />
-                            {lead.phone}
+            {filteredLeads.length > 0 ? (
+              <div className="space-y-3">
+                {filteredLeads.map(lead => (
+                  <div 
+                    key={lead.id}
+                    className={`bg-slate-800 rounded-xl p-5 border transition hover-lift ${
+                      lead.priority === 'hot' ? 'border-red-500/50' :
+                      lead.priority === 'warm' ? 'border-orange-500/50' :
+                      'border-slate-700'
+                    }`}
+                  >
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-3 mb-2">
+                          <span className={`px-2 py-1 rounded text-xs font-bold ${
+                            lead.priority === 'hot' ? 'bg-red-600 text-white' :
+                            lead.priority === 'warm' ? 'bg-orange-600 text-white' :
+                            'bg-blue-600 text-white'
+                          }`}>
+                            {lead.priority === 'hot' ? '🔥 HOT' : lead.priority === 'warm' ? 'WARM' : 'COLD'}
                           </span>
-                        )}
-                        {lead.website && (
+                          <h3 className="font-bold text-lg">{lead.name}</h3>
+                          <div className="flex items-center gap-1 text-yellow-400">
+                            <Star className="w-4 h-4 fill-current" />
+                            <span className="text-sm">{lead.rating}</span>
+                            <span className="text-slate-500 text-sm">({lead.reviewCount})</span>
+                          </div>
+                        </div>
+                        
+                        <div className="flex flex-wrap gap-4 text-sm text-slate-400 mb-3">
                           <span className="flex items-center gap-1">
-                            <Globe className="w-4 h-4" />
-                            <a href={lead.website} target="_blank" rel="noopener noreferrer" className="text-violet-400 hover:underline">
+                            <MapPin className="w-4 h-4" />
+                            {lead.address}, {lead.city}
+                          </span>
+                          {lead.phone && (
+                            <span className="flex items-center gap-1">
+                              <Phone className="w-4 h-4" />
+                              {lead.phone}
+                            </span>
+                          )}
+                          {lead.website && (
+                            <a href={lead.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-violet-400 hover:underline">
+                              <Globe className="w-4 h-4" />
                               Website
                             </a>
-                          </span>
-                        )}
+                          )}
+                        </div>
+
+                        <div className="flex flex-wrap gap-2">
+                          {lead.needs.map((need, i) => (
+                            <span key={i} className="px-2 py-1 bg-slate-700 rounded text-xs text-slate-300">
+                              {need}
+                            </span>
+                          ))}
+                        </div>
                       </div>
 
-                      <div className="flex flex-wrap gap-2">
-                        {lead.needs.map((need, i) => (
-                          <span key={i} className="px-2 py-1 bg-slate-700 rounded text-xs text-slate-300">
-                            {need}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div className="flex gap-2">
-                      {lead.phone && (
+                      <div className="flex gap-2">
                         <button
-                          onClick={() => copyLead(lead, 'phone')}
-                          className="p-2 bg-slate-700 hover:bg-slate-600 rounded-lg transition"
-                          title="Kopieer telefoonnummer"
+                          onClick={() => setShowSaveModal(lead)}
+                          className="p-2 bg-slate-700 hover:bg-green-600 rounded-lg transition"
+                          title="Opslaan in CRM"
                         >
-                          {copiedId === lead.id ? <Check className="w-5 h-5 text-green-400" /> : <Phone className="w-5 h-5" />}
+                          <Save className="w-5 h-5" />
                         </button>
-                      )}
-                      <button
-                        onClick={() => copyLead(lead, 'all')}
-                        className="p-2 bg-violet-600 hover:bg-violet-700 rounded-lg transition"
-                        title="Kopieer alle info"
-                      >
-                        {copiedId === lead.id ? <Check className="w-5 h-5" /> : <Copy className="w-5 h-5" />}
-                      </button>
+                        {lead.phone && (
+                          <button
+                            onClick={() => handleCopy(lead, 'phone')}
+                            className="p-2 bg-slate-700 hover:bg-slate-600 rounded-lg transition"
+                            title="Kopieer telefoonnummer"
+                          >
+                            {copiedId === lead.id ? <Check className="w-5 h-5 text-green-400" /> : <Phone className="w-5 h-5" />}
+                          </button>
+                        )}
+                        <button
+                          onClick={() => handleCopy(lead, 'all')}
+                          className="p-2 bg-violet-600 hover:bg-violet-700 rounded-lg transition"
+                          title="Kopieer alle info"
+                        >
+                          {copiedId === lead.id ? <Check className="w-5 h-5" /> : <Copy className="w-5 h-5" />}
+                        </button>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
-            </div>
-
-            {/* CTA */}
-            <div className="mt-8 bg-gradient-to-r from-violet-600 to-purple-600 rounded-2xl p-6 text-center">
-              <h3 className="text-xl font-bold mb-2">Wil je dat wij deze leads voor je contacteren?</h3>
-              <p className="text-white/80 mb-4">Wij sturen een gepersonaliseerde email naar alle hot leads</p>
-              <a href="/#contact" className="inline-block bg-white text-violet-600 px-6 py-3 rounded-xl font-semibold hover:bg-slate-100 transition">
-                Neem contact op →
-              </a>
-            </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-12 text-slate-500">
+                <p>Geen leads in deze categorie</p>
+              </div>
+            )}
           </>
         )}
 
         {/* Empty State */}
         {!searched && !loading && (
-          <div className="text-center py-16 text-slate-500">
-            <Search className="w-16 h-16 mx-auto mb-4 opacity-50" />
-            <p>Voer een stad en branche in om leads te vinden</p>
+          <EmptyState />
+        )}
+
+        {/* Save Lead Modal */}
+        {showSaveModal && (
+          <div className="fixed inset-0 bg-slate-900/90 backdrop-blur z-50 flex items-center justify-center p-4 animate-fade-in">
+            <div className="bg-slate-800 rounded-2xl p-6 w-full max-w-md border border-slate-700">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-xl font-bold">Lead Opslaan</h3>
+                <button onClick={() => setShowSaveModal(null)} className="p-2 hover:bg-slate-700 rounded-lg transition">
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+              <div className="bg-slate-900 rounded-xl p-4 mb-4">
+                <div className="font-bold mb-2">{showSaveModal.name}</div>
+                <div className="text-sm text-slate-400">{showSaveModal.address}, {showSaveModal.city}</div>
+                {showSaveModal.phone && <div className="text-sm text-slate-400">{showSaveModal.phone}</div>}
+              </div>
+              <button
+                onClick={() => handleSaveLead(showSaveModal)}
+                className="w-full py-3 bg-green-600 hover:bg-green-700 rounded-xl font-semibold flex items-center justify-center gap-2 transition"
+              >
+                <Save className="w-5 h-5" /> Opslaan in CRM
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Saved Leads Panel */}
+        {showSavedLeads && (
+          <div className="fixed inset-0 bg-slate-900/95 backdrop-blur-xl z-50 flex animate-fade-in">
+            <div className="flex-1" onClick={() => setShowSavedLeads(false)} />
+            <div className="w-full max-w-lg bg-slate-800 border-l border-slate-700 overflow-y-auto">
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-6">
+                  <h3 className="text-xl font-bold">CRM - Opgeslagen Leads ({savedLeads.length})</h3>
+                  <button onClick={() => setShowSavedLeads(false)} className="p-2 hover:bg-slate-700 rounded-lg transition">
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+                {savedLeads.length > 0 ? (
+                  <div className="space-y-3">
+                    {savedLeads.map(lead => (
+                      <div key={lead.id} className="bg-slate-900 rounded-xl p-4">
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="font-bold">{lead.name}</div>
+                          <span className={`px-2 py-1 rounded text-xs ${
+                            lead.status === 'new' ? 'bg-green-600' :
+                            lead.status === 'contacted' ? 'bg-blue-600' :
+                            lead.status === 'qualified' ? 'bg-violet-600' :
+                            'bg-slate-600'
+                          }`}>
+                            {lead.status}
+                          </span>
+                        </div>
+                        <div className="text-sm text-slate-400">{lead.city}</div>
+                        {lead.phone && <div className="text-sm text-slate-400">{lead.phone}</div>}
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-12 text-slate-500">
+                    <User className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                    <p>Nog geen leads opgeslagen</p>
+                    <p className="text-sm mt-2">Sla leads op vanuit de zoekresultaten</p>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         )}
       </div>
