@@ -106,6 +106,12 @@ f36d102 v10: Add Local Keyword Finder tool
 - Fixed: email-sequences, proposal-generator, email-campaign-builder, seo-scanner, lead-conversion-calculator
 - Build verified: all 26 routes compile successfully
 
+## Polish Session 2026-05-06 (v12.2)
+- Lead Finder: Use ListSkeleton from polish components, consolidated inline skeleton
+- Lead Conversion Calculator: Add business profile pre-fill, tool input persistence, cross-tool Email Campaign link
+- Email Sequences: Add profile pre-fill support, tool input persistence
+- Build verified: all 26 routes compile successfully
+
 ---
 
-Last Updated: 2026-05-05 23:45
+Last Updated: 2026-05-06 00:41
