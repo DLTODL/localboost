@@ -9,10 +9,12 @@ interface Lead {
   name: string;
   email: string;
   phone: string;
-  company: string;
+  company?: string;
   service: string;
-  message: string;
+  message?: string;
   status: string;
+  notes?: string;
+  follow_up_date?: string;
   created_at: string;
   updated_at: string;
 }
