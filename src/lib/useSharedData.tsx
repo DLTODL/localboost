@@ -317,42 +317,8 @@ export function useOnboarding() {
 // ==================
 // TOAST SYSTEM
 // ==================
-interface ToastData {
-  message: string
-  type: 'success' | 'error' | 'info'
-}
-
-declare global {
-  interface Window {
-    showToast?: (message: string, type?: string) => void
-  }
-}
-
-let toastCallback: ((message: string, type: string) => void) | null = null
-
-export function setToastCallback(callback: (message: string, type: string) => void) {
-  toastCallback = callback
-}
-
-export function showToast(message: string, type: 'success' | 'error' | 'info' = 'success') {
-  if (toastCallback) {
-    toastCallback(message, type)
-  }
-  if (typeof window !== 'undefined' && window.showToast) {
-    window.showToast(message, type)
-  }
-}
-
-export async function copyWithToast(text: string, successMessage: string = 'Gekopieerd!') {
-  try {
-    await navigator.clipboard.writeText(text)
-    showToast(successMessage, 'success')
-    return true
-  } catch {
-    showToast('Kon niet kopiëren', 'error')
-    return false
-  }
-}
+// Re-export from toast.tsx for backwards compatibility
+export { showToast, copyWithToast, useToasts } from './toast'
 
 // ==================
 // CLEAR ALL DATA
