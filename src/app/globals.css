@@ -10,11 +10,6 @@ body {
   font-family: system-ui, -apple-system, sans-serif;
 }
 
-.service-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 40px rgba(37, 99, 235, 0.15);
-}
-
 /* ==================
    ANIMATIONS
    ================== */
@@ -61,6 +56,17 @@ body {
   100% { transform: scale(1); opacity: 1; }
 }
 
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes gradient-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
 .animate-slide-in {
   animation: slideIn 0.3s ease-out forwards;
 }
@@ -81,9 +87,32 @@ body {
   animation: bounce-in 0.3s ease-out forwards;
 }
 
-/* Skeleton loading */
+.animate-spin-slow {
+  animation: spin-slow 2s linear infinite;
+}
+
+.animate-gradient {
+  background-size: 200% 200%;
+  animation: gradient-shift 3s ease infinite;
+}
+
+/* ==================
+   SKELETON LOADING
+   ================== */
 .skeleton {
   background: linear-gradient(90deg, #1e293b 25%, #334155 50%, #1e293b 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+.skeleton-light {
+  background: linear-gradient(90deg, #334155 25%, #475569 50%, #334155 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+.skeleton-dark {
+  background: linear-gradient(90deg, #0f172a 25%, #1e293b 50%, #0f172a 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
 }
@@ -110,6 +139,12 @@ body {
   background: #64748b;
 }
 
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #475569 #1e293b;
+}
+
 /* ==================
    UTILITIES
    ================== */
@@ -121,9 +156,17 @@ body {
   transform: translateY(-2px);
 }
 
+.hover-scale:hover {
+  transform: scale(1.02);
+}
+
 .focus-ring:focus {
   outline: none;
   box-shadow: 0 0 0 2px #1e293b, 0 0 0 4px #8b5cf6;
+}
+
+.text-balance {
+  text-wrap: balance;
 }
 
 /* ==================
@@ -131,6 +174,12 @@ body {
    ================== */
 .glass {
   background: rgba(30, 41, 59, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.glass-light {
+  background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
 }
@@ -146,6 +195,10 @@ body {
   @apply bg-slate-700 hover:bg-slate-600 text-white font-medium rounded-xl transition;
 }
 
+.btn-ghost {
+  @apply bg-transparent hover:bg-white/10 text-slate-300 rounded-xl transition;
+}
+
 /* ==================
    CARD HOVER
    ================== */
@@ -158,6 +211,21 @@ body {
 }
 
 /* ==================
+   INPUT STATES
+   ================== */
+input:focus,
+select:focus,
+textarea:focus {
+  @apply outline-none ring-2 ring-violet-500/50 border-violet-500;
+}
+
+input:disabled,
+select:disabled,
+textarea:disabled {
+  @apply opacity-50 cursor-not-allowed;
+}
+
+/* ==================
    TOAST ANIMATION
    ================== */
 .toast-enter {
@@ -166,4 +234,119 @@ body {
 
 .toast-exit {
   animation: fadeIn 0.2s ease-out reverse;
+}
+
+/* ==================
+   TOOL SPECIFIC
+   ================== */
+.tool-icon {
+  @apply w-12 h-12 rounded-xl flex items-center justify-center text-2xl;
+}
+
+/* ==================
+   PROGRESS BARS
+   ================== */
+.progress-bar {
+  @apply h-2 bg-slate-700 rounded-full overflow-hidden;
+}
+
+.progress-bar-fill {
+  @apply h-full rounded-full transition-all duration-500 ease-out;
+}
+
+/* ==================
+   BADGE STYLES
+   ================== */
+.badge {
+  @apply inline-flex items-center px-2 py-1 rounded-full text-xs font-medium;
+}
+
+.badge-success {
+  @apply bg-green-500/20 text-green-300 border border-green-500/30;
+}
+
+.badge-warning {
+  @apply bg-amber-500/20 text-amber-300 border border-amber-500/30;
+}
+
+.badge-error {
+  @apply bg-red-500/20 text-red-300 border border-red-500/30;
+}
+
+.badge-info {
+  @apply bg-blue-500/20 text-blue-300 border border-blue-500/30;
+}
+
+/* ==================
+   EMPTY STATE
+   ================== */
+.empty-state {
+  @apply text-center py-16 px-6;
+}
+
+.empty-state-icon {
+  @apply w-20 h-20 mx-auto mb-4 text-slate-600;
+}
+
+.empty-state-title {
+  @apply text-xl font-bold text-slate-400 mb-2;
+}
+
+.empty-state-description {
+  @apply text-slate-500 text-sm max-w-sm mx-auto;
+}
+
+/* ==================
+   LOADING SPINNER
+   ================== */
+.spinner {
+  @apply w-8 h-8 border-4 border-slate-700 border-t-violet-500 rounded-full animate-spin;
+}
+
+.spinner-sm {
+  @apply w-5 h-5 border-2 border-slate-700 border-t-violet-500 rounded-full animate-spin;
+}
+
+.spinner-lg {
+  @apply w-12 h-12 border-4 border-slate-700 border-t-violet-500 rounded-full animate-spin;
+}
+
+/* ==================
+   STAGGER ANIMATIONS
+   ================== */
+.stagger-item {
+  opacity: 0;
+  animation: slideUp 0.4s ease-out forwards;
+}
+
+.stagger-item:nth-child(1) { animation-delay: 0ms; }
+.stagger-item:nth-child(2) { animation-delay: 50ms; }
+.stagger-item:nth-child(3) { animation-delay: 100ms; }
+.stagger-item:nth-child(4) { animation-delay: 150ms; }
+.stagger-item:nth-child(5) { animation-delay: 200ms; }
+.stagger-item:nth-child(6) { animation-delay: 250ms; }
+.stagger-item:nth-child(7) { animation-delay: 300ms; }
+.stagger-item:nth-child(8) { animation-delay: 350ms; }
+
+/* ==================
+   GRADIENT TEXT
+   ================== */
+.gradient-text {
+  @apply bg-gradient-to-r from-violet-400 to-purple-400 bg-clip-text text-transparent;
+}
+
+/* ==================
+   NOISE TEXTURE
+   ================== */
+.noise {
+  position: relative;
+}
+
+.noise::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  opacity: 0.03;
+  pointer-events: none;
 }
