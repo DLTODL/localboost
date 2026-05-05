@@ -2,6 +2,8 @@
 
 import { useState } from 'react'
 import { Target, TrendingUp, DollarSign, Users, MapPin, Star, Clock, AlertCircle, Check, Loader2 } from 'lucide-react'
+import { copyWithToast } from '@/lib/useSharedData'
+import TemplateSwitcher from '@/components/polish/TemplateSwitcher'
 
 interface LeadData {
   industry: string
@@ -113,11 +115,23 @@ export default function MarketingStrategyBuilder() {
       <div className="max-w-6xl mx-auto p-6">
         {/* Header */}
         <div className="mb-8">
-          <div className="flex items-center gap-3 mb-2">
-            <span className="text-4xl">🎯</span>
-            <h1 className="text-3xl font-black">Marketing Strategie Builder</h1>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3 mb-2">
+              <span className="text-4xl">🎯</span>
+              <div>
+                <h1 className="text-3xl font-black">Marketing Strategie Builder</h1>
+                <p className="text-slate-400">Krijg een persoonlijk marketingplan op maat voor jouw bedrijf</p>
+              </div>
+            </div>
+            <TemplateSwitcher
+              toolId="marketing-strategy-builder"
+              onApply={(data) => {
+                if (data.industry) setLeadData(prev => ({ ...prev, industry: data.industry }))
+                if (data.location) setLeadData(prev => ({ ...prev, location: data.location }))
+              }}
+              currentData={{ industry: leadData.industry, location: leadData.location }}
+            />
           </div>
-          <p className="text-slate-400">Krijg een persoonlijk marketingplan op maat voor jouw bedrijf</p>
         </div>
 
         <div className="grid lg:grid-cols-2 gap-8">

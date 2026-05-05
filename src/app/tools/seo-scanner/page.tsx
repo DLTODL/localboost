@@ -6,6 +6,7 @@ import {
   Clock, Image, Smartphone, ExternalLink, RefreshCw, Zap
 } from 'lucide-react'
 import { copyWithToast } from '@/lib/useSharedData'
+import TemplateSwitcher from '@/components/polish/TemplateSwitcher'
 
 interface ScanResult {
   url: string
@@ -109,18 +110,27 @@ export default function SEOScanner() {
 
   return (
     <div className="min-h-screen bg-slate-900 text-white">
-      {/* Header */}
-      <div className="bg-gradient-to-b from-slate-800/50 to-slate-900 border-b border-slate-800">
-        <div className="max-w-5xl mx-auto px-6 py-8">
-          <h1 className="text-3xl font-bold mb-2 flex items-center gap-3">
-            <span className="text-3xl">🔍</span>
-            SEO Scanner
-          </h1>
-          <p className="text-slate-400">Analyseer een website en krijg direct concrete verbeterpunten</p>
-        </div>
-      </div>
-
       <div className="max-w-5xl mx-auto px-6 py-8">
+        {/* Header */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <span className="text-4xl">🔍</span>
+              <div>
+                <h1 className="text-3xl font-black">SEO Scanner</h1>
+                <p className="text-slate-400">Analyseer een website en krijg direct concrete verbeterpunten</p>
+              </div>
+            </div>
+            <TemplateSwitcher
+              toolId="seo-scanner"
+              onApply={(data) => {
+                if (data.url) setUrl(data.url)
+              }}
+              currentData={{ url }}
+            />
+          </div>
+        </div>
+
         {/* URL Input */}
         <div className="bg-slate-800/50 rounded-2xl p-6 border border-slate-700/50 mb-8">
           <div className="flex gap-3">

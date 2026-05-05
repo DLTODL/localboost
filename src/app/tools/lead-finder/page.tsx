@@ -385,9 +385,11 @@ export default function LeadFinder() {
 
                       <div className="flex gap-2">
                         <button
-                          onClick={() => setShowSaveModal(lead)}
+                          onClick={() => {
+                            handleSaveLead(lead)
+                          }}
                           className="p-2 bg-slate-700 hover:bg-green-600 rounded-lg transition"
-                          title="Opslaan in CRM"
+                          title="Opslaan in CRM + Open in Review Generator"
                         >
                           <Save className="w-5 h-5" />
                         </button>
@@ -404,11 +406,20 @@ export default function LeadFinder() {
                               rating: lead.rating,
                               reviewCount: lead.reviewCount
                             })
-                            copyWithToast('Geopend in Review Generator', 'success')
+                            // Auto-save to CRM as well when opening Review Generator
+                            saveLeadFromFinder({
+                              name: lead.name,
+                              phone: lead.phone,
+                              website: lead.website,
+                              address: lead.address,
+                              city: lead.city,
+                              needs: lead.needs
+                            })
+                            copyWithToast('Lead opgeslagen & geopend in Review Generator', 'success')
                             window.location.href = '/tools/review-generator'
                           }}
-                          className="p-2 bg-slate-700 hover:bg-yellow-600 rounded-lg transition"
-                          title="Open in Review Generator"
+                          className="p-2 bg-yellow-600 hover:bg-yellow-700 rounded-lg transition"
+                          title="Open in Review Generator (slaat ook op in CRM)"
                         >
                           <Star className="w-5 h-5" />
                         </button>
