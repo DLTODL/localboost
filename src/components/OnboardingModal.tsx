@@ -31,6 +31,7 @@ export default function OnboardingModal({ onComplete }: OnboardingProps) {
     website: '',
     googleReviewLink: ''
   })
+  const [showSkip, setShowSkip] = useState(false)
 
   const handleChange = (field: string, value: string) => {
     setData(prev => ({ ...prev, [field]: value }))
@@ -233,6 +234,12 @@ export default function OnboardingModal({ onComplete }: OnboardingProps) {
               Terug
             </button>
           )}
+          <button
+            onClick={handleComplete}
+            className="px-6 py-3 text-slate-400 hover:text-white hover:bg-slate-700 rounded-xl font-medium transition"
+          >
+            Overslaan
+          </button>
           <button
             onClick={() => {
               if (step < steps.length - 1) {

@@ -357,6 +357,38 @@ function FreeTools() {
       href: '/tools/proposal-generator',
       color: 'from-purple-600 to-violet-600',
       popular: false
+    },
+    {
+      name: 'Email Campaign Builder',
+      desc: 'Bouw automatische email sequences die verkopen',
+      icon: '📧',
+      href: '/tools/email-campaign-builder',
+      color: 'from-teal-600 to-cyan-600',
+      popular: false
+    },
+    {
+      name: 'Marketing Strategie',
+      desc: 'Krijg een persoonlijk marketingplan op maat',
+      icon: '🎯',
+      href: '/tools/marketing-strategy-builder',
+      color: 'from-indigo-600 to-blue-600',
+      popular: false
+    },
+    {
+      name: 'Email Sequences',
+      desc: 'Kant-en-klare email templates voor elke fase',
+      icon: '✉️',
+      href: '/tools/email-sequences',
+      color: 'from-fuchsia-600 to-pink-600',
+      popular: false
+    },
+    {
+      name: 'Task Manager',
+      desc: 'Houd je marketing projecten georganiseerd',
+      icon: '✅',
+      href: '/tools/task-manager',
+      color: 'from-slate-600 to-gray-600',
+      popular: false
     }
   ]
 
