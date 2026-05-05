@@ -14,7 +14,7 @@
 - [x] Proposal Generator → input persistence
 
 ### Phase 2: Cross-Tool Integration
-- [ ] Lead Finder → Review Generator (click lead → open Review Generator with business info)
+- [x] Lead Finder → Review Generator (click lead → open Review Generator with business info)
 - [x] Lead Finder → save to localStorage CRM
 - [x] Review Generator → pre-fill from saved business profile
 - [x] Social Post Generator → pre-fill from saved business profile
@@ -24,15 +24,15 @@
 - [x] Loading states with skeletons
 - [x] Smooth page transitions (slide-up, fade-in animations)
 - [x] Better empty states
-- [ ] Error handling
+- [x] Error handling
 - [x] Mobile refinements
 - [x] Custom scrollbar
 - [x] Micro-interactions on buttons/cards (hover-lift)
 
 ### Phase 4: Template System
 - [x] Save templates per tool (useTemplates hook)
-- [ ] Quick-switch between saved templates (in tools UI)
-- [ ] Import/export templates
+- [x] Quick-switch between saved templates (in tools UI)
+- [x] Import/export templates
 
 ### Phase 5: New Tools
 - [ ] Local Keyword Finder
