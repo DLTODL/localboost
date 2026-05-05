@@ -43,6 +43,7 @@ const STORAGE_KEYS = {
   onboardingComplete: 'localboost_onboarding_done',
   favoriteTools: 'localboost_favorite_tools',
   toolInputs: 'localboost_tool_inputs',
+  selectedBusiness: 'localboost_selected_business',
 }
 
 // ==================
@@ -75,6 +76,51 @@ export function useBusinessProfile() {
   }, [])
 
   return { profile, saveProfile, clearProfile, loading }
+}
+
+// ==================
+// SELECTED BUSINESS (Cross-tool)
+// ==================
+export interface SelectedBusiness {
+  name: string
+  phone: string
+  email: string
+  website: string
+  address: string
+  city: string
+  industry: string
+  rating?: number
+  reviewCount?: number
+}
+
+export function useSelectedBusiness() {
+  const [business, setBusiness] = useState<SelectedBusiness | null>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const stored = localStorage.getItem(STORAGE_KEYS.selectedBusiness)
+    if (stored) {
+      try {
+        setBusiness(JSON.parse(stored))
+      } catch (e) {
+        console.error('Failed to parse selected business:', e)
+      }
+    }
+    setLoading(false)
+  }, [])
+
+
+  const selectBusiness = useCallback((data: SelectedBusiness) => {
+    setBusiness(data)
+    localStorage.setItem(STORAGE_KEYS.selectedBusiness, JSON.stringify(data))
+  }, [])
+
+  const clearSelectedBusiness = useCallback(() => {
+    setBusiness(null)
+    localStorage.removeItem(STORAGE_KEYS.selectedBusiness)
+  }, [])
+
+  return { business, selectBusiness, clearSelectedBusiness, loading }
 }
 
 // ==================
@@ -305,5 +351,18 @@ export async function copyWithToast(text: string, successMessage: string = 'Geko
   } catch {
     showToast('Kon niet kopiëren', 'error')
     return false
+  }
+}
+
+// ==================
+// CLEAR ALL DATA
+// ==================
+export function clearAllData() {
+  Object.values(STORAGE_KEYS).forEach(key => {
+    localStorage.removeItem(key)
+  })
+  // Dispatch event to reset toast state
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('localboost_clear_data'))
   }
 }

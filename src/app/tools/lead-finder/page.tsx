@@ -1,8 +1,9 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Search, MapPin, Phone, Mail, Globe, Copy, Check, Download, Star, Save, Trash2, Building, User, ChevronDown, X } from 'lucide-react'
-import { useBusinessProfile, useLeads, useToolInputs, useTemplates, copyWithToast } from '@/lib/useSharedData'
+import { Search, MapPin, Phone, Mail, Globe, Copy, Check, Download, Star, Save, Trash2, Building, User, ChevronDown, X, ExternalLink } from 'lucide-react'
+import { useBusinessProfile, useLeads, useToolInputs, useTemplates, useSelectedBusiness, copyWithToast } from '@/lib/useSharedData'
+import TemplateSwitcher from '@/components/polish/TemplateSwitcher'
 
 interface Lead {
   id: number
@@ -114,6 +115,7 @@ export default function LeadFinder() {
   const { leads: savedLeads, saveLeadFromFinder } = useLeads()
   const { inputs, saveInputs } = useToolInputs('lead-finder')
   const { templates, saveTemplate, getTemplatesForTool } = useTemplates()
+  const { selectBusiness } = useSelectedBusiness()
   
   const [city, setCity] = useState('')
   const [industry, setIndustry] = useState('')
@@ -412,6 +414,27 @@ export default function LeadFinder() {
                           title="Opslaan in CRM"
                         >
                           <Save className="w-5 h-5" />
+                        </button>
+                        <button
+                          onClick={() => {
+                            selectBusiness({
+                              name: lead.name,
+                              phone: lead.phone,
+                              email: '',
+                              website: lead.website,
+                              address: lead.address,
+                              city: lead.city,
+                              industry: lead.needs[0] || '',
+                              rating: lead.rating,
+                              reviewCount: lead.reviewCount
+                            })
+                            copyWithToast('Geopend in Review Generator', 'success')
+                            window.location.href = '/tools/review-generator'
+                          }}
+                          className="p-2 bg-slate-700 hover:bg-yellow-600 rounded-lg transition"
+                          title="Open in Review Generator"
+                        >
+                          <Star className="w-5 h-5" />
                         </button>
                         {lead.phone && (
                           <button

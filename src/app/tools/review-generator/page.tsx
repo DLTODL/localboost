@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import { Star, Copy, Check, MessageSquare, Sparkles, Building, ChevronRight, RotateCcw, ExternalLink } from 'lucide-react'
-import { useBusinessProfile, useToolInputs, copyWithToast } from '@/lib/useSharedData'
+import { useBusinessProfile, useToolInputs, useSelectedBusiness, copyWithToast } from '@/lib/useSharedData'
+import TemplateSwitcher from '@/components/polish/TemplateSwitcher'
 
 const businessTypes = [
   { id: 'restaurant', label: 'Restaurant/Café', emoji: '🍽️' },
@@ -61,6 +62,7 @@ const generateMessages = (businessName: string, businessType: string, customerNa
 export default function ReviewGenerator() {
   const { profile } = useBusinessProfile()
   const { inputs, saveInputs } = useToolInputs('review-generator')
+  const { business: selectedBusiness } = useSelectedBusiness()
   
   const [step, setStep] = useState(1)
   const [businessName, setBusinessName] = useState('')
@@ -72,13 +74,17 @@ export default function ReviewGenerator() {
   const [activeTab, setActiveTab] = useState<'sms' | 'whatsapp' | 'email'>('whatsapp')
   const [loading, setLoading] = useState(false)
 
-  // Pre-fill from profile
+  // Pre-fill from profile or selected business
   useEffect(() => {
+    if (selectedBusiness) {
+      if (selectedBusiness.name && !inputs.businessName) setBusinessName(selectedBusiness.name)
+      if (selectedBusiness.phone && !inputs.customerPhone) setReviewLink(selectedBusiness.phone)
+    }
     if (profile) {
-      if (profile.name && !inputs.businessName) setBusinessName(profile.name)
+      if (profile.name && !inputs.businessName && !selectedBusiness) setBusinessName(profile.name)
       if (profile.googleReviewLink && !inputs.reviewLink) setReviewLink(profile.googleReviewLink)
     }
-  }, [profile, inputs.businessName, inputs.reviewLink])
+  }, [profile, selectedBusiness, inputs.businessName, inputs.reviewLink])
 
   // Save inputs on change
   useEffect(() => {
@@ -119,11 +125,24 @@ export default function ReviewGenerator() {
       <div className="max-w-3xl mx-auto p-6">
         {/* Header */}
         <div className="mb-8">
-          <div className="flex items-center gap-3 mb-2">
-            <span className="text-4xl">⭐</span>
-            <h1 className="text-3xl font-black">Review Generator</h1>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3 mb-2">
+              <span className="text-4xl">⭐</span>
+              <div>
+                <h1 className="text-3xl font-black">Review Generator</h1>
+                <p className="text-slate-400">Genereer gepersonaliseerde review-verzoeken</p>
+              </div>
+            </div>
+            <TemplateSwitcher 
+              toolId="review-generator"
+              onApply={(data) => {
+                if (data.businessName) setBusinessName(data.businessName)
+                if (data.businessType) setBusinessType(data.businessType)
+                if (data.reviewLink) setReviewLink(data.reviewLink)
+              }}
+              currentData={{ businessName, businessType, reviewLink }}
+            />
           </div>
-          <p className="text-slate-400">Genereer gepersonaliseerde review-verzoeken</p>
         </div>
 
         {/* Progress */}

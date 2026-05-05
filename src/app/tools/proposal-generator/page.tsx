@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import { FileText, Download, User, Building, CheckCircle, ChevronRight, ChevronLeft, RotateCcw } from 'lucide-react'
-import { useBusinessProfile, useToolInputs, copyWithToast } from '@/lib/useSharedData'
+import { useBusinessProfile, useToolInputs, useSelectedBusiness, copyWithToast } from '@/lib/useSharedData'
+import TemplateSwitcher from '@/components/polish/TemplateSwitcher'
 
 interface ProposalData {
   clientName: string

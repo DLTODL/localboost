@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import { Sparkles, Copy, Check, RefreshCw, Instagram, Facebook, Linkedin, Calendar, X } from 'lucide-react'
-import { useBusinessProfile, useToolInputs, copyWithToast } from '@/lib/useSharedData'
+import { useBusinessProfile, useToolInputs, useSelectedBusiness, copyWithToast } from '@/lib/useSharedData'
+import TemplateSwitcher from '@/components/polish/TemplateSwitcher'
 
 const postTypes = [
   { id: 'promo', label: 'Aanbieding', emoji: '🎁', desc: 'Promotie of korting' },

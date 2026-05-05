@@ -51,6 +51,11 @@ function notifyListeners() {
   toastListeners.forEach(listener => listener([...globalToasts]))
 }
 
+export function clearToastState() {
+  globalToasts = []
+  notifyListeners()
+}
+
 export function showToast(message: string, type: 'success' | 'error' | 'info' = 'success') {
   const toast: ToastData = { id: Date.now(), message, type }
   globalToasts = [...globalToasts, toast]
