@@ -1,8 +1,14 @@
 'use client'
 
 import { useState } from 'react'
+import { 
+  Search, Globe, Shield, AlertTriangle, CheckCircle, 
+  Clock, Image, Smartphone, ExternalLink, RefreshCw, Zap
+} from 'lucide-react'
 
 interface ScanResult {
+  url: string
+  statusCode?: number
   score: number
   issues: { severity: 'high' | 'medium' | 'low', message: string, recommendation: string }[]
   score_breakdown: {
@@ -13,147 +19,303 @@ interface ScanResult {
     speed: number
     mobile: number
   }
+  summary?: {
+    title: string
+    metaDesc: string
+    h1Count: number
+    imageCount: number
+    hasSSL: boolean
+    hasSchema: boolean
+  }
+  error?: string
 }
 
 export default function SEOScanner() {
   const [url, setUrl] = useState('')
   const [loading, setLoading] = useState(false)
   const [results, setResults] = useState<ScanResult | null>(null)
+  const [scanHistory, setScanHistory] = useState<ScanResult[]>([])
 
   const scanWebsite = async () => {
     if (!url) return
     setLoading(true)
+    setResults(null)
     
-    // Simulate API call - in production this would call our backend
-    await new Promise(resolve => setTimeout(resolve, 2000))
-    
-    // Mock results for demo
-    setResults({
-      score: 67,
-      score_breakdown: {
-        title: 80,
-        meta: 60,
-        headings: 70,
-        images: 50,
-        speed: 65,
-        mobile: 75
-      },
-      issues: [
-        {
+    try {
+      const res = await fetch('/api/seo-scanner', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url })
+      })
+      const data = await res.json()
+      setResults(data)
+      setScanHistory(prev => [data, ...prev.slice(0, 4)])
+    } catch (error) {
+      setResults({
+        url,
+        score: 0,
+        error: 'Scan failed',
+        issues: [{
           severity: 'high',
-          message: 'Meta description ontbreekt',
-          recommendation: 'Voeg een meta description van 150-160 tekens toe'
-        },
-        {
-          severity: 'high',
-          message: 'Geen SSL certificaat gedetecteerd',
-          recommendation: 'Installeer een SSL certificaat voor veilige verbinding'
-        },
-        {
-          severity: 'medium',
-          message: 'Afbeeldingen missen alt-tekst',
-          recommendation: 'Voeg alt-tekst toe aan alle afbeeldingen'
-        },
-        {
-          severity: 'medium',
-          message: 'Pagina laadt langzaam',
-          recommendation: 'Comprimeer afbeeldingen en gebruik browser caching'
-        },
-        {
-          severity: 'low',
-          message: 'Geen structured data gevonden',
-          recommendation: 'Voeg Schema.org markup toe voor zoekmachines'
+          message: 'Verbindingsfout',
+          recommendation: 'Probeer het later opnieuw'
+        }],
+        score_breakdown: {
+          title: 0, meta: 0, headings: 0, images: 0, speed: 0, mobile: 0
         }
-      ]
-    })
+      })
+    }
+    
     setLoading(false)
   }
 
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') scanWebsite()
+  }
+
   const getScoreColor = (score: number) => {
-    if (score >= 80) return 'text-green-500'
-    if (score >= 60) return 'text-yellow-500'
-    return 'text-red-500'
+    if (score >= 80) return 'text-emerald-400'
+    if (score >= 60) return 'text-amber-400'
+    return 'text-red-400'
+  }
+
+  const getScoreGradient = (score: number) => {
+    if (score >= 80) return 'from-emerald-500/20 to-emerald-600/10'
+    if (score >= 60) return 'from-amber-500/20 to-amber-600/10'
+    return 'from-red-500/20 to-red-600/10'
   }
 
   const getSeverityColor = (severity: string) => {
-    if (severity === 'high') return 'bg-red-100 text-red-700 border-red-200'
-    if (severity === 'medium') return 'bg-yellow-100 text-yellow-700 border-yellow-200'
-    return 'bg-blue-100 text-blue-700 border-blue-200'
+    if (severity === 'high') return 'bg-red-500/10 border-red-500/30 text-red-300'
+    if (severity === 'medium') return 'bg-amber-500/10 border-amber-500/30 text-amber-300'
+    return 'bg-blue-500/10 border-blue-500/30 text-blue-300'
   }
 
-  return (
-    <div className="min-h-screen bg-slate-900 text-white p-8">
-      <div className="max-w-4xl mx-auto">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">🔍 SEO Scanner</h1>
-          <p className="text-slate-400">Analyseer een website en krijg direct verbeterpunten</p>
-        </div>
+  const getSeverityIcon = (severity: string) => {
+    if (severity === 'high') return <AlertTriangle className="w-4 h-4" />
+    if (severity === 'medium') return <Clock className="w-4 h-4" />
+    return <Zap className="w-4 h-4" />
+  }
 
+  const breakdownItems = results ? [
+    { key: 'title', icon: Globe, label: 'Title Tag', value: results.score_breakdown.title },
+    { key: 'meta', icon: Search, label: 'Meta Description', value: results.score_breakdown.meta },
+    { key: 'headings', icon: AlertTriangle, label: 'Heading Structuur', value: results.score_breakdown.headings },
+    { key: 'images', icon: Image, label: 'Afbeeldingen', value: results.score_breakdown.images },
+    { key: 'speed', icon: Shield, label: 'SSL & Speed', value: results.score_breakdown.speed },
+    { key: 'mobile', icon: Smartphone, label: 'Mobiel', value: results.score_breakdown.mobile },
+  ] : []
+
+  return (
+    <div className="min-h-screen bg-slate-900 text-white">
+      {/* Header */}
+      <div className="bg-gradient-to-b from-slate-800/50 to-slate-900 border-b border-slate-800">
+        <div className="max-w-5xl mx-auto px-6 py-8">
+          <h1 className="text-3xl font-bold mb-2 flex items-center gap-3">
+            <span className="text-3xl">🔍</span>
+            SEO Scanner
+          </h1>
+          <p className="text-slate-400">Analyseer een website en krijg direct concrete verbeterpunten</p>
+        </div>
+      </div>
+
+      <div className="max-w-5xl mx-auto px-6 py-8">
         {/* URL Input */}
-        <div className="bg-slate-800 rounded-2xl p-6 border border-slate-700 mb-8">
-          <div className="flex gap-4">
-            <input
-              type="url"
-              value={url}
-              onChange={(e) => setUrl(e.target.value)}
-              placeholder="https://voorbeeld.nl"
-              className="flex-1 px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl focus:ring-2 focus:ring-violet-500 outline-none"
-            />
+        <div className="bg-slate-800/50 rounded-2xl p-6 border border-slate-700/50 mb-8">
+          <div className="flex gap-3">
+            <div className="flex-1 relative">
+              <Globe className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
+              <input
+                type="url"
+                value={url}
+                onChange={(e) => setUrl(e.target.value)}
+                onKeyPress={handleKeyPress}
+                placeholder="https://voorbeeld.nl of voorbeeld.nl"
+                className="w-full pl-12 pr-4 py-4 bg-slate-900/50 border border-slate-700 rounded-xl focus:ring-2 focus:ring-violet-500/50 outline-none transition text-white placeholder:text-slate-600"
+              />
+            </div>
             <button
               onClick={scanWebsite}
               disabled={loading || !url}
-              className="px-6 py-3 bg-violet-600 rounded-xl font-semibold hover:bg-violet-700 transition disabled:opacity-50"
+              className="px-8 py-4 bg-gradient-to-r from-violet-600 to-purple-600 rounded-xl font-semibold hover:opacity-90 transition disabled:opacity-50 flex items-center gap-2"
             >
-              {loading ? 'Scannen...' : 'Scan nu'}
+              {loading ? (
+                <>
+                  <RefreshCw className="w-5 h-5 animate-spin" />
+                  Scannen...
+                </>
+              ) : (
+                <>
+                  <Search className="w-5 h-5" />
+                  Scan Nu
+                </>
+              )}
             </button>
           </div>
+          {results?.error && (
+            <div className="mt-4 p-4 bg-red-500/10 border border-red-500/30 rounded-xl text-red-300">
+              {results.error}
+            </div>
+          )}
         </div>
 
         {/* Results */}
-        {results && (
-          <div className="space-y-6">
+        {results && !results.error && (
+          <div className="space-y-6 animate-in fade-in duration-300">
             {/* Overall Score */}
-            <div className="bg-slate-800 rounded-2xl p-8 border border-slate-700 text-center">
-              <div className={`text-8xl font-black mb-2 ${getScoreColor(results.score)}`}>
-                {results.score}
+            <div className={`bg-gradient-to-br ${getScoreGradient(results.score)} rounded-2xl p-8 border border-slate-700 text-center relative overflow-hidden`}>
+              <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-white/5 to-transparent rounded-full -translate-y-1/2 translate-x-1/2" />
+              <div className="relative">
+                <div className={`text-8xl font-black mb-2 ${getScoreColor(results.score)}`}>
+                  {results.score}
+                </div>
+                <div className="text-slate-400 text-lg">SEO Score</div>
+                {results.statusCode && (
+                  <div className="mt-2 text-sm text-slate-500">
+                    HTTP {results.statusCode}
+                  </div>
+                )}
               </div>
-              <div className="text-slate-400">SEO Score</div>
             </div>
+
+            {/* Summary */}
+            {results.summary && (
+              <div className="bg-slate-800/50 rounded-2xl p-6 border border-slate-700/50">
+                <h3 className="font-semibold mb-4 text-slate-300">Samenvatting</h3>
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div className="bg-slate-900/50 rounded-lg p-3">
+                    <div className="text-slate-500 mb-1">Titel</div>
+                    <div className="text-white truncate">{results.summary.title}</div>
+                  </div>
+                  <div className="bg-slate-900/50 rounded-lg p-3">
+                    <div className="text-slate-500 mb-1">H1 Headings</div>
+                    <div className="text-white">{results.summary.h1Count}</div>
+                  </div>
+                  <div className="bg-slate-900/50 rounded-lg p-3">
+                    <div className="text-slate-500 mb-1">Afbeeldingen</div>
+                    <div className="text-white">{results.summary.imageCount}</div>
+                  </div>
+                  <div className="bg-slate-900/50 rounded-lg p-3">
+                    <div className="text-slate-500 mb-1">SSL</div>
+                    <div className={results.summary.hasSSL ? 'text-emerald-400' : 'text-red-400'}>
+                      {results.summary.hasSSL ? '✓ Beveiligd' : '✗ Onbeveiligd'}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Score Breakdown */}
             <div className="grid grid-cols-3 gap-4">
-              {Object.entries(results.score_breakdown).map(([key, value]) => (
-                <div key={key} className="bg-slate-800 rounded-xl p-4 border border-slate-700">
+              {breakdownItems.map(({ key, icon: Icon, label, value }) => (
+                <div key={key} className="bg-slate-800/50 rounded-xl p-4 border border-slate-700/50">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Icon className="w-4 h-4 text-slate-500" />
+                    <span className="text-sm text-slate-400">{label}</span>
+                  </div>
                   <div className={`text-2xl font-bold ${getScoreColor(value)}`}>{value}%</div>
-                  <div className="text-sm text-slate-400 capitalize">{key}</div>
+                  <div className="mt-2 h-1 bg-slate-700 rounded-full overflow-hidden">
+                    <div 
+                      className={`h-full transition-all duration-500 ${value >= 80 ? 'bg-emerald-500' : value >= 60 ? 'bg-amber-500' : 'bg-red-500'}`}
+                      style={{ width: `${value}%` }}
+                    />
+                  </div>
                 </div>
               ))}
             </div>
 
             {/* Issues */}
-            <div className="bg-slate-800 rounded-2xl p-6 border border-slate-700">
-              <h2 className="text-xl font-bold mb-4">Gevonden Problemen</h2>
-              <div className="space-y-3">
-                {results.issues.map((issue, i) => (
-                  <div key={i} className={`p-4 rounded-xl border ${getSeverityColor(issue.severity)}`}>
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="font-semibold capitalize">{issue.severity}</span>
-                      <span>—</span>
-                      <span>{issue.message}</span>
+            {results.issues.length > 0 && (
+              <div className="bg-slate-800/50 rounded-2xl p-6 border border-slate-700/50">
+                <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
+                  <AlertTriangle className="w-5 h-5 text-amber-400" />
+                  Gevonden Problemen ({results.issues.length})
+                </h2>
+                <div className="space-y-3">
+                  {results.issues.map((issue, i) => (
+                    <div 
+                      key={i} 
+                      className={`p-4 rounded-xl border ${getSeverityColor(issue.severity)}`}
+                    >
+                      <div className="flex items-start gap-3">
+                        <span className="mt-0.5">{getSeverityIcon(issue.severity)}</span>
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="font-semibold capitalize">{issue.severity}</span>
+                            <span>—</span>
+                            <span>{issue.message}</span>
+                          </div>
+                          <div className="text-sm opacity-80 flex items-start gap-2">
+                            <span>💡</span>
+                            <span>{issue.recommendation}</span>
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                    <div className="text-sm opacity-80">💡 {issue.recommendation}</div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
+
+            {/* All Good */}
+            {results.issues.length === 0 && results.score >= 80 && (
+              <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-2xl p-6 text-center">
+                <CheckCircle className="w-12 h-12 text-emerald-400 mx-auto mb-3" />
+                <h3 className="text-xl font-bold text-emerald-300 mb-2">Uitstekend!</h3>
+                <p className="text-emerald-300/80">Deze website scoort goed op alle belangrijke SEO punten.</p>
+              </div>
+            )}
 
             {/* CTA */}
-            <div className="bg-gradient-to-r from-violet-600 to-purple-600 rounded-2xl p-6 text-center">
+            <div className="bg-gradient-to-r from-violet-600/20 to-purple-600/20 rounded-2xl p-6 border border-violet-500/20 text-center">
               <h3 className="text-xl font-bold mb-2">Wil je dat wij dit oplossen?</h3>
-              <p className="text-white/80 mb-4">Wij verbeteren je SEO en zorgen dat je hoger rankt in Google</p>
-              <a href="/#contact" className="inline-block bg-white text-violet-600 px-6 py-3 rounded-xl font-semibold hover:bg-slate-100 transition">
-                Vraag gratis analyse aan
+              <p className="text-white/70 mb-4">Wij verbeteren je SEO en zorgen dat je hoger rankt in Google</p>
+              <a 
+                href="/#contact" 
+                className="inline-block bg-gradient-to-r from-violet-600 to-purple-600 text-white px-6 py-3 rounded-xl font-semibold hover:opacity-90 transition"
+              >
+                Vraag gratis analyse aan →
               </a>
+            </div>
+          </div>
+        )}
+
+        {/* Loading State */}
+        {loading && (
+          <div className="flex flex-col items-center justify-center py-20">
+            <div className="relative">
+              <div className="w-16 h-16 border-4 border-slate-700 rounded-full animate-spin border-t-violet-500" />
+            </div>
+            <div className="mt-6 text-slate-400">Website analyseren...</div>
+            <div className="mt-2 text-sm text-slate-500">Dit kan even duren afhankelijk van de website</div>
+          </div>
+        )}
+
+        {/* Empty State */}
+        {!results && !loading && (
+          <div className="text-center py-16">
+            <div className="text-6xl mb-4">🎯</div>
+            <h3 className="text-xl font-semibold mb-2 text-slate-300">Voer een URL in om te scannen</h3>
+            <p className="text-slate-500">Krijg een complete SEO-analyse met directe verbeterpunten</p>
+          </div>
+        )}
+
+        {/* Scan History */}
+        {scanHistory.length > 1 && (
+          <div className="mt-8">
+            <h3 className="text-sm font-semibold text-slate-400 mb-3">Recente scans</h3>
+            <div className="flex gap-3 overflow-x-auto pb-2">
+              {scanHistory.map((scan, i) => (
+                <button
+                  key={i}
+                  onClick={() => setResults(scan)}
+                  className="flex-shrink-0 flex items-center gap-2 px-4 py-2 bg-slate-800/50 hover:bg-slate-800 rounded-lg border border-slate-700/50 transition"
+                >
+                  <Globe className="w-4 h-4 text-slate-500" />
+                  <span className="text-sm text-white">{new URL(scan.url).hostname}</span>
+                  <span className={`text-sm font-semibold ${getScoreColor(scan.score)}`}>{scan.score}</span>
+                </button>
+              ))}
             </div>
           </div>
         )}

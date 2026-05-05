@@ -306,6 +306,81 @@ function Hero() {
   )
 }
 
+// FREE TOOLS SECTION
+function FreeTools() {
+  const tools = [
+    {
+      name: 'SEO Scanner',
+      desc: 'Analyseer elke website en krijg direct verbeterpunten',
+      icon: '🔍',
+      href: '/tools/seo-scanner',
+      color: 'from-blue-600 to-cyan-600'
+    },
+    {
+      name: 'Google Business Guide',
+      desc: 'Stap-voor-stap checklist om #1 te worden op Google Maps',
+      icon: '📍',
+      href: '/tools/google-business-guide',
+      color: 'from-green-600 to-emerald-600'
+    },
+    {
+      name: 'Proposal Generator',
+      desc: 'Genereer een professioneel voorstel in 2 minuten',
+      icon: '📄',
+      href: '/tools/proposal-generator',
+      color: 'from-purple-600 to-violet-600'
+    },
+    {
+      name: 'Email Sequences',
+      desc: 'Kopieer bewezen email templates voor klantwerving',
+      icon: '📧',
+      href: '/tools/email-sequences',
+      color: 'from-amber-600 to-orange-600'
+    }
+  ]
+
+  return (
+    <section className="py-20 bg-slate-900">
+      <div className="max-w-7xl mx-auto px-6 lg:px-12">
+        <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="text-center mb-12">
+          <motion.div variants={fadeUp} className="inline-flex items-center gap-2 px-4 py-2 bg-green-500/20 border border-green-500/30 rounded-full mb-4">
+            <span className="text-green-300 font-semibold">GRATIS - Geen account nodig</span>
+          </motion.div>
+          <motion.h2 variants={fadeUp} className="text-3xl lg:text-4xl font-black text-white mb-4">
+            Gratis Tools Die Echt Werken
+          </motion.h2>
+          <motion.p variants={fadeUp} className="text-lg text-white/60 max-w-xl mx-auto">
+            Gebruik onze tools gratis - geen aanmelding, geen creditcard. Gewoon meteen gebruiken.
+          </motion.p>
+        </motion.div>
+
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {tools.map((tool, i) => (
+            <motion.a
+              key={tool.name}
+              href={tool.href}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.1 }}
+              className="group relative bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-white/10 hover:border-white/20 transition-all hover:scale-[1.02]"
+            >
+              <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${tool.color} flex items-center justify-center text-2xl mb-4 shadow-lg`}>
+                {tool.icon}
+              </div>
+              <h3 className="text-xl font-bold text-white mb-2 group-hover:text-violet-300 transition">{tool.name}</h3>
+              <p className="text-white/60 text-sm mb-4">{tool.desc}</p>
+              <div className="flex items-center gap-2 text-violet-400 text-sm font-medium group-hover:gap-3 transition-all">
+                Gebruik gratis <ArrowRight className="w-4 h-4" />
+              </div>
+            </motion.a>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
 function Services() {
   const [expandedId, setExpandedId] = useState<string | null>(null)
 
