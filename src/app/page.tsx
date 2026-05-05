@@ -310,32 +310,52 @@ function Hero() {
 function FreeTools() {
   const tools = [
     {
+      name: 'Lead Finder',
+      desc: 'Vind potentiele klanten in je regio - scoor hot leads',
+      icon: '🎯',
+      href: '/tools/lead-finder',
+      color: 'from-red-600 to-orange-600',
+      popular: true
+    },
+    {
+      name: 'Review Generator',
+      desc: 'Genereer gepersonaliseerde review verzoeken in 30 seconden',
+      icon: '⭐',
+      href: '/tools/review-generator',
+      color: 'from-yellow-600 to-amber-600',
+      popular: true
+    },
+    {
+      name: 'Social Post Generator',
+      desc: 'AI social media posts voor Instagram, Facebook & LinkedIn',
+      icon: '📱',
+      href: '/tools/social-post-generator',
+      color: 'from-pink-600 to-rose-600',
+      popular: true
+    },
+    {
       name: 'SEO Scanner',
       desc: 'Analyseer elke website en krijg direct verbeterpunten',
       icon: '🔍',
       href: '/tools/seo-scanner',
-      color: 'from-blue-600 to-cyan-600'
+      color: 'from-blue-600 to-cyan-600',
+      popular: false
     },
     {
       name: 'Google Business Guide',
       desc: 'Stap-voor-stap checklist om #1 te worden op Google Maps',
       icon: '📍',
       href: '/tools/google-business-guide',
-      color: 'from-green-600 to-emerald-600'
+      color: 'from-green-600 to-emerald-600',
+      popular: false
     },
     {
       name: 'Proposal Generator',
       desc: 'Genereer een professioneel voorstel in 2 minuten',
       icon: '📄',
       href: '/tools/proposal-generator',
-      color: 'from-purple-600 to-violet-600'
-    },
-    {
-      name: 'Email Sequences',
-      desc: 'Kopieer bewezen email templates voor klantwerving',
-      icon: '📧',
-      href: '/tools/email-sequences',
-      color: 'from-amber-600 to-orange-600'
+      color: 'from-purple-600 to-violet-600',
+      popular: false
     }
   ]
 
@@ -368,6 +388,11 @@ function FreeTools() {
               <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${tool.color} flex items-center justify-center text-2xl mb-4 shadow-lg`}>
                 {tool.icon}
               </div>
+              {tool.popular && (
+                <div className="absolute -top-2 -right-2 px-2 py-0.5 bg-gradient-to-r from-red-600 to-orange-600 rounded-full text-[10px] font-bold">
+                  POPULAIR
+                </div>
+              )}
               <h3 className="text-xl font-bold text-white mb-2 group-hover:text-violet-300 transition">{tool.name}</h3>
               <p className="text-white/60 text-sm mb-4">{tool.desc}</p>
               <div className="flex items-center gap-2 text-violet-400 text-sm font-medium group-hover:gap-3 transition-all">
