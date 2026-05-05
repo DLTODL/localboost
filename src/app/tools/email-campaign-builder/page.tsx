@@ -171,12 +171,11 @@ Groet`,
     }, 2000)
   }
 
-  const copyEmail = (email: Campaign) => {
+  const copyEmail = async (email: Campaign) => {
     const fullEmail = `Onderwerp: ${email.subject}\n\n${email.body}`
-    navigator.clipboard.writeText(fullEmail)
+    await copyWithToast(fullEmail, 'Email gekopieerd!')
     setCopiedId(email.id)
     setTimeout(() => setCopiedId(null), 2000)
-    if (window.showToast) window.showToast('Email gekopieerd!')
   }
 
   // Pre-fill from business profile or selected business (cross-tool)

@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { Mail, Copy, Check, Send, Clock, Users, MessageSquare, Tag, FileText } from 'lucide-react'
+import { copyWithToast } from '@/lib/useSharedData'
 
 interface Sequence {
   id: string
@@ -162,8 +163,8 @@ export default function EmailSequences() {
     ? sequences 
     : sequences.filter(s => s.useCase.toLowerCase().includes(activeTab.toLowerCase()))
 
-  const copyToClipboard = (text: string, id: string) => {
-    navigator.clipboard.writeText(text)
+  const copyToClipboard = async (text: string, id: string) => {
+    await copyWithToast(text, 'Email gekopieerd!')
     setCopiedId(id)
     setTimeout(() => setCopiedId(null), 2000)
   }

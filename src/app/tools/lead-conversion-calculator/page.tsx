@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { TrendingUp, Users, DollarSign, Target, ArrowDown, Loader2, Check, AlertCircle } from 'lucide-react'
+import { copyWithToast } from '@/lib/useSharedData'
 
 interface FunnelData {
   monthlyLeads: number

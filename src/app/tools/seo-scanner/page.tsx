@@ -5,6 +5,7 @@ import {
   Search, Globe, Shield, AlertTriangle, CheckCircle, 
   Clock, Image, Smartphone, ExternalLink, RefreshCw, Zap
 } from 'lucide-react'
+import { copyWithToast } from '@/lib/useSharedData'
 
 interface ScanResult {
   url: string

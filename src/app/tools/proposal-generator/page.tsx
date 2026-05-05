@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { FileText, Download, User, Building, CheckCircle, ChevronRight, ChevronLeft, RotateCcw, Mail } from 'lucide-react'
-import { useBusinessProfile, useToolInputs, useSelectedBusiness, copyWithToast } from '@/lib/useSharedData'
+import { useBusinessProfile, useToolInputs, useSelectedBusiness, copyWithToast, showToast } from '@/lib/useSharedData'
 import TemplateSwitcher from '@/components/polish/TemplateSwitcher'
 
 interface ProposalData {
@@ -140,7 +140,7 @@ Handtekening: _______________________`
     a.click()
     document.body.removeChild(a)
     URL.revokeObjectURL(url)
-    await copyWithToast('Voorstel gedownload!', 'success')
+    showToast('Voorstel gedownload!', 'success')
   }
 
   const handleReset = () => {
