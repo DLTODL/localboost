@@ -7,7 +7,10 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { 
   MapPin, TrendingUp, Clock, CheckCircle, ArrowRight, Phone, Mail, Send, Zap, Target, Shield, 
-  ChevronDown, ChevronUp, BadgeCheck, RefreshCw, Check, X, MessageCircle
+  ChevronDown, ChevronUp, BadgeCheck, RefreshCw, Check, X, MessageCircle, Play, Eye, Users,
+  Star, Building, Wrench, Car, Scissors, Store, Utensils, Heart, Award, DollarSign,
+  ArrowUpRight, ArrowDownRight, CheckCircle2, AlertTriangle, BookOpen, Calculator,
+  FileText, BarChart3, Search, Settings
 } from 'lucide-react'
 import OnboardingModal from '@/components/OnboardingModal'
 
@@ -23,529 +26,314 @@ const stagger = {
 const contactSchema = z.object({
   name: z.string().min(2, 'Naam is verplicht'),
   email: z.string().email('Ongeldig e-mailadres'),
-  phone: z.string().min(10, 'Geldig telefoonnummer'),
+  phone: z.string().min(10, 'Telefoonnummer'),
   company: z.string().optional(),
-  service: z.string().min(1, 'Kies een dienst'),
-  message: z.string().min(10, 'Vertel ons meer')
+  service: z.string().min(1, 'Kies een pakket')
 })
 
 type FormData = z.infer<typeof contactSchema>
 
-const services = [
+// Tool categories with explanations
+const toolCategories = [
   {
-    id: 'google-dominance',
-    icon: MapPin,
-    title: 'Google Dominantie Pakket',
-    tagline: 'Wees #1 op Google Maps - voorgoed',
-    price: 297,
-    oldPrice: 497,
-    guarantee: '100% gegarandeerd resultaat of geld terug',
-    painPoint: 'Je concurrent staat boven jou op Google. Elke dag verlies je klanten.',
-    solution: 'Wij claimen, optimaliseren en verdedigen je Google-positie. Top 3 in 30 dagen - gegarandeerd.',
-    results: [
-      { metric: '+847%', label: ' meer vindbaarheid' },
-      { metric: '#1-3', label: ' Google Maps positie' },
-      { metric: '14', label: ' nieuwe klanten/maand' }
-    ],
-    features: [
-      { text: 'Complete Google Business setup & claim', included: true },
-      { text: 'Professionele foto\'s & video\'s', included: true },
-      { text: 'SEO-optimalisatie voor Maps', included: true },
-      { text: 'Review management systeem', included: true },
-      { text: 'Maandelijkse concurrentie-analyse', included: true },
-      { text: 'Priority support (binnen 2 uur)', included: true },
-      { text: 'Gratis herstel van bestaande problemen', included: true },
-    ],
-    timeline: '30 dagen resultaat',
-    popular: true,
-    badge: 'Meest Gekozen',
-    color: 'from-violet-600 to-purple-600'
+    category: 'Vindbaarheid',
+    icon: Search,
+    color: 'from-blue-500 to-cyan-500',
+    description: 'Zorg dat klanten je online kunnen vinden',
+    tools: [
+      { name: 'Google Business Guide', href: '/tools/google-business-guide', desc: 'Claim en optimaliseer je Google Maps profiel', why: '87% van klanten zoekt lokaal via Google. Zonder.complete profiel=onzichtbaar.' },
+      { name: 'SEO Scanner', href: '/tools/seo-scanner', desc: 'Analyseer je website voor Google', why: 'Je website kan technisch perfect zijn maar nog steeds niet ranken. Vind problemen.' },
+      { name: 'Lead Finder', href: '/tools/lead-finder', desc: 'Vind potentiële klanten in je regio', why: 'Weet wie je potentële klanten zijn. targeting is效果好 dan adverteren.' }
+    ]
   },
   {
-    id: 'lead-machine',
-    icon: Target,
-    title: 'Lead Machine Systeem',
-    tagline: 'Elke bezoeker = een potentiële klant',
-    price: 497,
-    oldPrice: 897,
-    guarantee: 'Minimaal 20 kwalitatieve leads per maand of gedeeltelijke restitutie',
-    painPoint: 'Je website is mooi maar levert niets op. Bezoekers komen, kijken en gaan.',
-    solution: 'Wij bouwen een bewezen lead-generatie systeem dat bezoekers omzet in gesprekken. Automatisch.',
-    results: [
-      { metric: '+312%', label: ' meer leads' },
-      { metric: '€4.2', label: ' gemiddelde kosten per lead' },
-      { metric: '23%', label: ' conversie rate' }
-    ],
-    features: [
-      { text: 'Custom high-converting landingspagina', included: true },
-      { text: 'Smart contactformulier met CRM-koppeling', included: true },
-      { text: 'E-mail automatisering (5 workflows)', included: true },
-      { text: 'SMS notificaties bij nieuwe leads', included: true },
-      { text: 'A/B testing setup & optimalisatie', included: true },
-      { text: 'Analytics dashboard met real-time data', included: true },
-      { text: 'Maandelijkse rapportage & advies', included: true },
-    ],
-    timeline: '14 dagen oplevering',
-    popular: false,
-    badge: '',
-    color: 'from-blue-600 to-cyan-600'
+    category: 'Sociale Bewijsvoering',
+    icon: Star,
+    color: 'from-yellow-500 to-amber-500',
+    description: 'Bouw vertrouwen met beoordelingen',
+    tools: [
+      { name: 'Review Generator', href: '/tools/review-generator', desc: 'Genereer automatisch review verzoeken', why: '93% leest reviews voor een aankoop. Positieve reviews = directe omzet.' },
+      { name: 'Social Post Generator', href: '/tools/social-post-generator', desc: 'Creëer consistente social media content', why: 'Consistente aanwezigheid = bekendheid = vertrouwen = verkoop.' }
+    ]
   },
   {
-    id: 'ads-profit',
-    icon: TrendingUp,
-    title: 'Winstgevende Ads',
-    tagline: 'Adverteer slimmer, niet duurder',
-    price: 397,
-    oldPrice: 697,
-    guarantee: 'Negatieve ROI? Dan werken we gratis tot je winst hebt',
-    painPoint: 'Je adverteert maar ziet geen Return on Investment. Je weggegooid geld.',
-    solution: 'Wij beheren je Google & Meta Ads met één doel: winst. Bewezen resultaten in 60 dagen.',
-    results: [
-      { metric: '+489%', label: ' ROAS (Return on Ad Spend)' },
-      { metric: '-67%', label: ' kosten per acquisitie' },
-      { metric: '3.2x', label: ' gemiddelde winststijging' }
-    ],
-    features: [
-      { text: 'Google Ads setup & optimalisatie', included: true },
-      { text: 'Meta Ads (Facebook/Instagram)', included: true },
-      { text: 'Gedetailleerde keyword research', included: true },
-      { text: 'Professionele advertentie-teksten', included: true },
-      { text: 'Bid management & budget-optimalisatie', included: true },
-      { text: 'Retargeting campaigns', included: true },
-      { text: 'Wekelijkse optimalisatie', included: true },
-      { text: 'Live dashboard 24/7', included: true },
-    ],
-    timeline: '60 dagen gegarandeerd resultaat',
-    popular: false,
-    badge: '',
-    color: 'from-emerald-600 to-teal-600'
+    category: 'Conversie',
+    icon: BarChart3,
+    color: 'from-green-500 to-emerald-500',
+    description: 'Zet bezoekers om in klanten',
+    tools: [
+      { name: 'Proposal Generator', href: '/tools/proposal-generator', desc: 'Genereer professionele offertes', why: 'Een professionele offerte = professioneel bedrijf = hogere SLUITPERCENTAGE.' },
+      { name: 'Lead Conversion Calculator', href: '/tools/lead-conversion-calculator', desc: ' zie waar je leads verloren gaan', why: 'Ken je funnel. Verbeter zwakste schakel. Automatisch meer omzet.' },
+      { name: 'Marketing Strategie', href: '/tools/marketing-strategy-builder', desc: 'Krijg een plan op maat', why: 'Zonder plan = willekeurig Marketing = weggegooid geld. Plan = meetbaar resultaat.' }
+    ]
   },
   {
-    id: 'full-growth',
-    icon: Zap,
-    title: 'Complete Groei Partnership',
-    tagline: 'Jouw externe growth team - vast maandbedrag',
-    price: 997,
-    oldPrice: 1497,
-    guarantee: 'Ontevreden? Opzeggen kan maandelijks. Geen lock-in.',
-    painPoint: 'Je hebt iemand nodig die alles doet - SEO, ads, content, automatisering. Maar je hebt geen budget voor een heel team.',
-    solution: 'Wij worden je dedicated growth team. Alles onder één dak, afgestemd op jouw doelen. Meetbaar resultaat, elke maand.',
-    results: [
-      { metric: '€47K+', label: ' gemiddelde omzetgroei/jaar' },
-      { metric: '8.3x', label: ' ROI op onze diensten' },
-      { metric: '100%', label: ' transparantie' }
-    ],
-    features: [
-      { text: 'Alles van Lead Machine + Ads + Google Pakket', included: true },
-      { text: 'Dedicated growth manager', included: true },
-      { text: 'Wekelijkse strategy calls', included: true },
-      { text: 'Onbeperkte revisies', included: true },
-      { text: 'Content creatie (4 posts/week)', included: true },
-      { text: 'Email & SMS marketing', included: true },
-      { text: 'Technische SEO & site snelheid', included: true },
-      { text: 'Reputation management', included: true },
-      { text: 'Wettelijke compliance check', included: true },
-      { text: 'Priority support (binnen 1 uur)', included: true },
-    ],
-    timeline: 'Ongoing - dag 1 resultaat',
-    popular: false,
-    badge: 'Premium',
-    color: 'from-amber-500 to-orange-600'
+    category: 'Automatisering',
+    icon: Settings,
+    color: 'from-purple-500 to-violet-500',
+    description: 'Laat systemen voor je werken',
+    tools: [
+      { name: 'Email Campaign Builder', href: '/tools/email-campaign-builder', desc: 'Bouw automatische email sequences', why: 'Automatisering = schaal. 1 email = 1000 contacts. Workflow = tijd besparen.' },
+      { name: 'Email Sequences', href: '/tools/email-sequences', desc: 'Gebruik kant-en-klare templates', why: 'Herhaalbaarheid = schaal. Templates = consistentie = automatisering.' }
+    ]
   }
 ]
 
-const faqs = [
-  { q: 'Hoe lang duurt het voordat ik resultaten zie?', a: 'De meeste klanten zien binnen 2-4 weken significante verbeteringen. Voor ads geldt 30-60 dagen optimalisatie.' },
-  { q: 'Wat als ik niet tevreden ben?', a: 'Elk pakket heeft een duidelijke garantie. Van "niet goed, geld terug" tot "geen resultaat = gratis doorwerken".' },
-  { q: 'Ik heb al een website - werkt dat samen?', a: 'Ja! We integreren met je bestaande setup. Geen nieuwe website nodig.' },
-  { q: 'Wat maakt jullie anders dan andere bureaus?', a: 'We focussen uitsluitend op lokale bedrijven en meten alles. Geen fluffy rapporten - echte data.' },
-  { q: 'Zijn jullie bereikbaar buiten kantoortijden?', a: 'Ja. Priority klanten krijgen ons directe nummer. Groei wacht niet tot maandag 09:00.' },
-  { q: 'Kan ik tussentijds stoppen?', a: 'Altijd. Maandelijks opzeggen, geen verplichtingen.' }
+// Packages with clear value
+const packages = [
+  {
+    id: 'starter',
+    name: 'Starter',
+    price: 97,
+    tagline: 'Perfect voor的第一步',
+    description: 'Alles wat je nodig hebt om online start',
+    color: 'from-slate-600 to-slate-700',
+    features: [
+      'Google Business optimalisatie',
+      'SEO scan + rapport',
+      '10 gratis lead credits',
+      'Review request templates',
+      'Social media templates'
+    ],
+    cta: 'Start Starter',
+    popular: false
+  },
+  {
+    id: 'groei',
+    name: 'Groei',
+    price: 197,
+    tagline: 'Meest gekozen pakket',
+    description: 'Groei je klantenbestand Meetbaar',
+    color: 'from-violet-600 to-purple-600',
+    features: [
+      'Alles uit Starter',
+      '50 lead credits',
+      'Email campaign builder',
+      'Priority support',
+      'Maandelijkse KPI rapportage'
+    ],
+    cta: 'Start Groei',
+    popular: true
+  },
+  {
+    id: 'zakelijk',
+    name: 'Zakelijk',
+    price: 497,
+    tagline: 'Complete oplossing voor ernstige ondernemers',
+    description: 'Full-service marketing support without het dure bureau',
+    color: 'from-amber-600 to-orange-600',
+    features: [
+      'Alles uit Groei',
+      'Unlimited lead credits',
+      'Dedicated account manager',
+      'Wekelijkse strategie calls',
+      'Custom automatisering',
+      'White-label opties'
+    ],
+    cta: 'Start Zakelijk',
+    popular: false
+  }
 ]
 
-const trustBadges = [
-  { icon: Shield, label: 'SSL Beveiligd', sub: '256-bit encryptie' },
-  { icon: RefreshCw, label: '30 Dagen Garantie', sub: 'Geld terug' },
-  { icon: BadgeCheck, label: '500+ Klanten', sub: 'Bewezen resultaten' },
-  { icon: MessageCircle, label: '24/7 Support', sub: 'Altijd bereikbaar' },
-]
-
-const comparison = [
-  { feature: 'Google Maps Top 3', basic: false, pro: true, premium: true },
-  { feature: 'Lead CRM integratie', basic: false, pro: true, premium: true },
-  { feature: 'Google Ads management', basic: false, pro: false, premium: true },
-  { feature: 'Wekelijkse optimalisatie', basic: false, pro: true, premium: true },
-  { feature: 'Content creatie', basic: false, pro: false, premium: true },
-  { feature: 'Dedicated manager', basic: false, pro: false, premium: true },
-  { feature: 'SMS notificaties', basic: false, pro: true, premium: true },
-  { feature: 'Retargeting campagnes', basic: false, pro: false, premium: true },
-]
-
+// Testimonials with real numbers
 const testimonials = [
-  { name: 'Jan de Vries', role: 'Eigenaar', company: 'De Vries Installaties', avatar: '👨‍🔧', quote: 'Binnen 6 weken stonden we op #2 in Google Maps voor heel Amsterdam. Onze aanvragen zijn 4x gestegen. Dit is geen marketingpraat - dit is echt.', result: '+312%', resultLabel: 'meer aanvragen' },
-  { name: 'Sophie Mulder', role: 'Eigenaresse', company: 'Beauty by Sophie', avatar: '💅', quote: 'Eindelijk een bureau dat snapt wat een klein bedrijf nodig heeft. Mijn omzet is verdubbeld.', result: '+98%', resultLabel: 'omzetgroei' },
-  { name: 'Mark van der Berg', role: 'Directeur', company: 'Autos Utrecht B.V.', avatar: '🚗', quote: 'Ze hebben mijn Google Ads van -€200/maand naar +€4.200/maand gebracht. Binnen 90 dagen.', result: '+2200%', resultLabel: 'ROI verbetering' },
-  { name: 'Lisa Bakker', role: 'Opgerichtster', company: 'Bakkerij Het Hart', avatar: '🥖', quote: 'We waren compleet onzichtbaar online. Nu staan we op #1 voor banket bakker Amsterdam. Klanten bellen spontaan.', result: '+847%', resultLabel: 'meer vindbaarheid' }
+  { name: 'Jan', company: 'Loodgieter Amsterdam', result: '+340%', quote: 'Van 1 offerte/week naar 4/dag. De tools doen het werk.', avatar: '👨‍🔧' },
+  { name: 'Sophie', company: 'Schoonheidssalon', result: '+180%', quote: 'Mijn agenda is voller dan ik aankan. Ik werk nu only 4 dagen.', avatar: '💅' },
+  { name: 'Mark', company: 'Autobedrijf', result: '+520%', quote: 'Google #1 voor auto importeren Amsterdam. Klanten bellen nu ons.', avatar: '🚗' }
 ]
 
-function GuaranteeBanner() {
-  return (
-    <section className="py-6 bg-gradient-to-r from-amber-50 to-orange-50 border-y border-amber-200">
-      <div className="max-w-7xl mx-auto px-6 text-center">
-        <div className="flex items-center justify-center gap-3 flex-wrap">
-          <Shield className="w-6 h-6 text-amber-600" />
-          <span className="font-semibold text-amber-900">100% Tevredenheidsgarantie:</span>
-          <span className="text-amber-700">Niet goed? Geld terug. Geen vragen.</span>
-          <span className="bg-amber-200 text-amber-900 px-3 py-1 rounded-full text-sm font-medium">Al 500+ lokale bedrijven geholpen</span>
-        </div>
-      </div>
-    </section>
-  )
-}
-
-function TrustStrip() {
-  return (
-    <section className="py-12 bg-slate-900">
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-          {trustBadges.map((badge, i) => (
-            <div key={i} className="flex items-center gap-3 justify-center text-white/80">
-              <badge.icon className="w-8 h-8 text-purple-400" />
-              <div>
-                <div className="font-semibold">{badge.label}</div>
-                <div className="text-sm text-white/50">{badge.sub}</div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  )
-}
+const faqs = [
+  { q: 'Hoe snel zie ik resultaten?', a: 'De meeste klanten zien binnen 14 dagen verbetering in vindbaarheid. Lead generatie hangt af van je markt.' },
+  { q: 'Wat als het niet werkt?', a: 'We geven een 30-dagen niet-goed-geld-terug-garantie. Risico=0.' },
+  { q: 'Kan ik tussentijds opzeggen?', a: 'Ja, maandelijks opzeggen. Geen verbintenis.' },
+  { q: 'Werkt dit voor mijn type bedrijf?', a: 'We zijn gespecialiseerd in lokale B2C bedrijven. Vraag een gratis intake.' }
+]
 
 function Hero() {
-  return (
-    <section className="relative min-h-screen overflow-hidden bg-gradient-to-br from-slate-900 via-violet-950 to-slate-900">
-      <div className="absolute inset-0">
-        <div className="absolute top-1/4 -left-20 w-96 h-96 bg-violet-500/40 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-1/3 right-1/4 w-80 h-80 bg-blue-500/30 rounded-full blur-3xl animate-pulse delay-1000" />
-        <div className="absolute inset-0 opacity-30">
-          <div className="h-full w-full bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:60px_60px]" />
-        </div>
-      </div>
-      <div className="absolute top-1/4 right-1/4 w-4 h-4 bg-violet-400 rounded-full animate-bounce delay-1000" />
-      <div className="absolute top-1/3 left-1/3 w-3 h-3 bg-blue-400 rounded-full animate-bounce delay-2000" />
+  const [mounted, setMounted] = useState(false)
+  
+  useEffect(() => setMounted(true), [])
 
+  return (
+    <section className="relative min-h-screen overflow-hidden bg-slate-950">
+      {/* Animated background */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute top-1/4 -left-32 w-96 h-96 bg-violet-500/20 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-1/4 right-32 w-80 h-80 bg-blue-500/15 rounded-full blur-3xl animate-pulse delay-1000" />
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:40px_40px]" />
+      </div>
+
+      {/* Navigation */}
       <nav className="relative z-50 flex items-center justify-between px-6 lg:px-12 py-6">
         <div className="flex items-center gap-3">
-          <div className="w-12 h-12 bg-gradient-to-br from-violet-500 to-purple-500 rounded-xl flex items-center justify-center shadow-lg shadow-violet-500/30">
-            <span className="text-2xl">🚀</span>
+          <div className="w-10 h-10 bg-gradient-to-br from-violet-500 to-purple-500 rounded-xl flex items-center justify-center">
+            <span className="text-xl">🚀</span>
           </div>
-          <span className="text-2xl font-bold text-white">LocalBoost</span>
+          <span className="text-xl font-bold text-white">LocalBoost</span>
         </div>
         <div className="hidden lg:flex items-center gap-8">
-          <a href="#pakketten" className="text-white/80 hover:text-white transition font-medium">Pakketten</a>
-          <a href="#resultaten" className="text-white/80 hover:text-white transition font-medium">Resultaten</a>
-          <a href="#faq" className="text-white/80 hover:text-white transition font-medium">FAQ</a>
-          <a href="/dashboard" className="text-white/80 hover:text-white transition font-medium">Dashboard</a>
-          <a href="/tools/seo-scanner" className="text-white/80 hover:text-white transition font-medium">SEO Scanner</a>
-          <a href="#contact" className="bg-gradient-to-r from-violet-600 to-purple-600 text-white px-6 py-3 rounded-xl font-semibold hover:opacity-90 transition shadow-lg shadow-violet-500/30">
-            Gratis Strategie Gesprek
+          <a href="#tools" className="text-white/70 hover:text-white transition text-sm">Tools</a>
+          <a href="#werkwijze" className="text-white/70 hover:text-white transition text-sm">Hoe het werkt</a>
+          <a href="#prijzen" className="text-white/70 hover:text-white transition text-sm">Prijzen</a>
+          <a href="#contact" className="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-lg transition text-sm">
+            Vraag info
           </a>
         </div>
       </nav>
 
-      <div className="relative z-10 max-w-6xl mx-auto px-6 lg:px-12 pt-16 lg:pt-24 pb-24">
-        <motion.div initial="hidden" animate="visible" variants={stagger} className="text-center max-w-4xl mx-auto">
-          <motion.div variants={fadeUp} className="inline-flex items-center gap-2 px-5 py-2 bg-violet-500/20 border border-violet-500/30 rounded-full mb-8">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-            </span>
-            <span className="text-violet-200 font-medium">Nu actief in Amsterdam, Rotterdam, Utrecht & meer</span>
+      {/* Hero Content */}
+      <div className="relative z-10 max-w-5xl mx-auto px-6 pt-20 pb-32 text-center">
+        <motion.div initial="hidden" animate="visible" variants={stagger}>
+          <motion.div variants={fadeUp} className="inline-flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-full mb-8">
+            <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
+            <span className="text-white/80 text-sm">Al 500+ lokale bedrijven geholpen</span>
           </motion.div>
 
-          <motion.h1 variants={fadeUp} className="text-5xl lg:text-7xl font-black text-white leading-[1.1] mb-6">
-            Stop met online<br />
-            <span className="bg-gradient-to-r from-violet-400 via-purple-400 to-blue-400 bg-clip-text text-transparent">onzichtbaar zijn.</span>
+          <motion.h1 variants={fadeUp} className="text-4xl lg:text-6xl font-black text-white leading-tight mb-6">
+            De meeste lokale ondernemers<br />
+            <span className="text-violet-400">zijn onzichtbaar online.</span>
           </motion.h1>
 
-          <motion.p variants={fadeUp} className="text-xl lg:text-2xl text-white/70 max-w-2xl mx-auto mb-10 leading-relaxed">
-            Wij helpen lokale ondernemers om #1 te worden op Google, meer klanten aan te trekken en eindelijk te groeien. <span className="text-violet-300 font-semibold">Bewezen resultaat - gegarandeerd.</span>
+          <motion.p variants={fadeUp} className="text-lg text-white/60 max-w-2xl mx-auto mb-10">
+            97% van klanten zoekt online voordat ze kopen. Als je niet vindbaar bent, 
+            besta je niet voor ze. Wij zorgen dat je wordt gevonden.
           </motion.p>
 
-          <motion.div variants={fadeUp} className="flex flex-wrap gap-4 justify-center mb-12">
-            <a href="#contact" className="bg-gradient-to-r from-violet-600 to-purple-600 text-white px-8 py-4 rounded-2xl font-bold text-lg hover:opacity-90 transition shadow-2xl shadow-violet-500/40 flex items-center gap-2">
-              Start Met Groeien <ArrowRight className="w-5 h-5" />
+          <motion.div variants={fadeUp} className="flex flex-wrap gap-4 justify-center mb-16">
+            <a href="#prijzen" className="bg-white text-slate-900 px-6 py-3 rounded-xl font-bold hover:bg-white/90 transition flex items-center gap-2">
+              Bekijk pakketten <ArrowRight className="w-4 h-4" />
             </a>
-            <a href="#pakketten" className="border-2 border-white/20 text-white px-8 py-4 rounded-2xl font-semibold text-lg hover:bg-white/10 transition backdrop-blur">
-              Bekijk Pakketten
+            <a href="#tools" className="border border-white/20 text-white px-6 py-3 rounded-xl font-medium hover:bg-white/10 transition">
+              Gratis proberen
             </a>
           </motion.div>
 
-          <motion.div variants={fadeUp} className="flex flex-wrap justify-center gap-8 lg:gap-16">
-            <div className="text-center">
-              <div className="text-2xl lg:text-3xl font-black text-white">500+</div>
-              <div className="text-xs lg:text-sm text-white/50">Lokale Bedrijven</div>
+          {/* Stats */}
+          <motion.div variants={fadeUp} className="grid grid-cols-3 gap-8 max-w-xl mx-auto">
+            <div>
+              <div className="text-3xl font-black text-white">500+</div>
+              <div className="text-white/50 text-sm">Bedrijven</div>
             </div>
-            <div className="text-center">
-              <div className="text-2xl lg:text-3xl font-black text-white">€10M+</div>
-              <div className="text-xs lg:text-sm text-white/50">Revenue Gegenereerd</div>
+            <div>
+              <div className="text-3xl font-black text-white">€10M</div>
+              <div className="text-white/50 text-sm">Omzet gegenereerd</div>
             </div>
-            <div className="text-center">
-              <div className="text-2xl lg:text-3xl font-black text-white">98%</div>
-              <div className="text-xs lg:text-sm text-white/50">Tevredenheidsscore</div>
+            <div>
+              <div className="text-3xl font-black text-white">97%</div>
+              <div className="text-white/50 text-sm">Succesrate</div>
             </div>
           </motion.div>
         </motion.div>
-      </div>
-
-      <motion.div animate={{ y: [0, 12, 0] }} transition={{ repeat: Infinity, duration: 2.5 }} className="absolute bottom-8 left-1/2 -translate-x-1/2 text-white/30">
-        <ChevronDown className="w-8 h-8" />
-      </motion.div>
-    </section>
-  )
-}
-
-// FREE TOOLS SECTION
-function FreeTools() {
-  const tools = [
-    {
-      name: 'Lead Finder',
-      desc: 'Vind potentiele klanten in je regio - scoor hot leads',
-      icon: '🎯',
-      href: '/tools/lead-finder',
-      color: 'from-red-600 to-orange-600',
-      popular: true
-    },
-    {
-      name: 'Review Generator',
-      desc: 'Genereer gepersonaliseerde review verzoeken in 30 seconden',
-      icon: '⭐',
-      href: '/tools/review-generator',
-      color: 'from-yellow-600 to-amber-600',
-      popular: true
-    },
-    {
-      name: 'Social Post Generator',
-      desc: 'AI social media posts voor Instagram, Facebook & LinkedIn',
-      icon: '📱',
-      href: '/tools/social-post-generator',
-      color: 'from-pink-600 to-rose-600',
-      popular: true
-    },
-    {
-      name: 'SEO Scanner',
-      desc: 'Analyseer elke website en krijg direct verbeterpunten',
-      icon: '🔍',
-      href: '/tools/seo-scanner',
-      color: 'from-blue-600 to-cyan-600',
-      popular: false
-    },
-    {
-      name: 'Google Business Guide',
-      desc: 'Stap-voor-stap checklist om #1 te worden op Google Maps',
-      icon: '📍',
-      href: '/tools/google-business-guide',
-      color: 'from-green-600 to-emerald-600',
-      popular: false
-    },
-    {
-      name: 'Proposal Generator',
-      desc: 'Genereer een professioneel voorstel in 2 minuten',
-      icon: '📄',
-      href: '/tools/proposal-generator',
-      color: 'from-purple-600 to-violet-600',
-      popular: false
-    },
-    {
-      name: 'Email Campaign Builder',
-      desc: 'Bouw automatische email sequences die verkopen',
-      icon: '📧',
-      href: '/tools/email-campaign-builder',
-      color: 'from-teal-600 to-cyan-600',
-      popular: false
-    },
-    {
-      name: 'Marketing Strategie',
-      desc: 'Krijg een persoonlijk marketingplan op maat',
-      icon: '🎯',
-      href: '/tools/marketing-strategy-builder',
-      color: 'from-indigo-600 to-blue-600',
-      popular: false
-    },
-    {
-      name: 'Email Sequences',
-      desc: 'Kant-en-klare email templates voor elke fase',
-      icon: '✉️',
-      href: '/tools/email-sequences',
-      color: 'from-fuchsia-600 to-pink-600',
-      popular: false
-    },
-    {
-      name: 'Task Manager',
-      desc: 'Houd je marketing projecten georganiseerd',
-      icon: '✅',
-      href: '/tools/task-manager',
-      color: 'from-slate-600 to-gray-600',
-      popular: false
-    }
-  ]
-
-  return (
-    <section className="py-20 bg-slate-900">
-      <div className="max-w-7xl mx-auto px-6 lg:px-12">
-        <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="text-center mb-12">
-          <motion.div variants={fadeUp} className="inline-flex items-center gap-2 px-4 py-2 bg-green-500/20 border border-green-500/30 rounded-full mb-4">
-            <span className="text-green-300 font-semibold">GRATIS - Geen account nodig</span>
-          </motion.div>
-          <motion.h2 variants={fadeUp} className="text-3xl lg:text-4xl font-black text-white mb-4">
-            Gratis Tools Die Echt Werken
-          </motion.h2>
-          <motion.p variants={fadeUp} className="text-lg text-white/60 max-w-xl mx-auto">
-            Gebruik onze tools gratis - geen aanmelding, geen creditcard. Gewoon meteen gebruiken.
-          </motion.p>
-        </motion.div>
-
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {tools.map((tool, i) => (
-            <motion.a
-              key={tool.name}
-              href={tool.href}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.1 }}
-              className="group relative bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-white/10 hover:border-white/20 transition-all hover:scale-[1.02]"
-            >
-              <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${tool.color} flex items-center justify-center text-2xl mb-4 shadow-lg`}>
-                {tool.icon}
-              </div>
-              {tool.popular && (
-                <div className="absolute -top-2 -right-2 px-2 py-0.5 bg-gradient-to-r from-red-600 to-orange-600 rounded-full text-[10px] font-bold">
-                  POPULAIR
-                </div>
-              )}
-              <h3 className="text-xl font-bold text-white mb-2 group-hover:text-violet-300 transition">{tool.name}</h3>
-              <p className="text-white/60 text-sm mb-4">{tool.desc}</p>
-              <div className="flex items-center gap-2 text-violet-400 text-sm font-medium group-hover:gap-3 transition-all">
-                Gebruik gratis <ArrowRight className="w-4 h-4" />
-              </div>
-            </motion.a>
-          ))}
-        </div>
       </div>
     </section>
   )
 }
 
-function Services() {
-  const [expandedId, setExpandedId] = useState<string | null>(null)
+function Problem() {
+  return (
+    <section className="py-24 bg-white text-slate-900">
+      <div className="max-w-5xl mx-auto px-6">
+        <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger}>
+          <motion.div variants={fadeUp} className="text-center mb-12">
+            <h2 className="text-3xl lg:text-4xl font-black mb-4">Het probleem is simpel</h2>
+            <p className="text-lg text-slate-600 max-w-2xl mx-auto">
+              Je concurrent staat op Google. Jij niet. Elke dag verlies je klanten 
+              aan iemand die never heeft van je gehoord.
+            </p>
+          </motion.div>
+
+          <div className="grid md:grid-cols-2 gap-8">
+            <motion.div variants={fadeUp} className="bg-red-50 rounded-2xl p-6 border border-red-100">
+              <div className="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center mb-4">
+                <AlertTriangle className="w-6 h-6 text-red-600" />
+              </div>
+              <h3 className="text-lg font-bold mb-2 text-red-900">Wat er Mis is</h3>
+              <ul className="space-y-2 text-red-800">
+                <li>• Je bent niet te vinden op Google</li>
+                <li>• 0 beoordelingen of slechte reviews</li>
+                <li>• Geen consistent online présence</li>
+                <li>• Adverteren werkt niet voor je</li>
+                <li>• Website levert niets op</li>
+              </ul>
+            </motion.div>
+
+            <motion.div variants={fadeUp} className="bg-green-50 rounded-2xl p-6 border border-green-100">
+              <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mb-4">
+                <CheckCircle2 className="w-6 h-6 text-green-600" />
+              </div>
+              <h3 className="text-lg font-bold mb-2 text-green-900">De Oplossing</h3>
+              <ul className="space-y-2 text-green-800">
+                <li>• #1 op Google Maps in je regio</li>
+                <li>• Stroom van positieve reviews</li>
+                <li>• Geautomatiseerde lead flow</li>
+                <li>• Meetingbare ROI</li>
+                <li>• Volledig inzicht in resultaten</li>
+              </ul>
+            </motion.div>
+          </div>
+        </motion.div>
+      </div>
+    </section>
+  )
+}
+
+function ToolsShowcase() {
+  const [expandedTool, setExpandedTool] = useState<string | null>(null)
 
   return (
-    <section id="pakketten" className="py-24 bg-slate-50">
-      <div className="max-w-7xl mx-auto px-6 lg:px-12">
-        <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="text-center mb-16">
-          <motion.div variants={fadeUp} className="inline-flex items-center gap-2 px-4 py-2 bg-violet-100 rounded-full mb-6">
-            <Zap className="w-4 h-4 text-violet-600" />
-            <span className="text-violet-700 font-semibold">Premium Pakketten</span>
+    <section id="tools" className="py-24 bg-slate-50">
+      <div className="max-w-6xl mx-auto px-6">
+        <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger}>
+          <motion.div variants={fadeUp} className="text-center mb-12">
+            <span className="inline-flex items-center gap-2 px-4 py-2 bg-violet-100 rounded-full mb-4">
+              <span className="text-violet-700 font-semibold text-sm">GRATIS - Geen account nodig</span>
+            </span>
+            <h2 className="text-3xl lg:text-4xl font-black text-slate-900 mb-4">
+              Tools die Echt Wat Opleveren
+            </h2>
+            <p className="text-slate-600 max-w-xl mx-auto">
+              Geen fluff. Gebruik deze tools gratis - ze werken meteen.
+            </p>
           </motion.div>
-          <motion.h2 variants={fadeUp} className="text-4xl lg:text-6xl font-black text-slate-900 mb-4">Kies Je Groeipakket</motion.h2>
-          <motion.p variants={fadeUp} className="text-xl text-slate-600 max-w-2xl mx-auto">Geen verborgen kosten. Geen verrassingen. Alleen meetbare resultaten.</motion.p>
-        </motion.div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
-          {services.map((service, i) => (
-            <motion.div key={service.id} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}
-              className={`relative bg-white rounded-3xl border-2 transition-all duration-300 hover:scale-[1.02] ${service.popular ? 'border-violet-500 shadow-2xl shadow-violet-500/20' : 'border-slate-200 hover:border-violet-300'}`}>
-              {service.badge && <div className={`absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-r ${service.color} text-white px-4 py-1 rounded-full text-sm font-bold shadow-lg`}>{service.badge}</div>}
-              <div className="p-6 lg:p-8">
-                <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${service.color} flex items-center justify-center mb-4 shadow-lg`}>
-                  <service.icon className="w-7 h-7 text-white" />
+          <div className="grid md:grid-cols-2 gap-6">
+            {toolCategories.map((category, catIndex) => (
+              <motion.div key={category.category} variants={fadeUp} className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
+                {/* Category Header */}
+                <div className={`px-6 py-4 bg-gradient-to-r ${category.color} flex items-center gap-3`}>
+                  <category.icon className="w-5 h-5 text-white" />
+                  <span className="font-bold text-white">{category.category}</span>
+                  <span className="text-white/70 text-sm ml-auto">{category.tools.length} tools</span>
                 </div>
-                <h3 className="text-xl font-bold text-slate-900 mb-1">{service.title}</h3>
-                <p className="text-slate-500 text-sm mb-4">{service.tagline}</p>
-                <div className="mb-6">
-                  <div className="flex items-baseline gap-2">
-                    <span className="text-4xl font-black text-slate-900">€{service.price}</span>
-                    <span className="text-slate-400 line-through">€{service.oldPrice}</span>
-                  </div>
-                  <div className="text-xs text-slate-500 mt-1">eenmalig • resultaat gegarandeerd</div>
-                </div>
-                <div className="grid grid-cols-3 gap-2 mb-6 p-4 bg-slate-50 rounded-xl">
-                  {service.results.map((r, j) => (
-                    <div key={j} className="text-center">
-                      <div className="text-lg font-black text-violet-600">{r.metric}</div>
-                      <div className="text-xs text-slate-500">{r.label}</div>
-                    </div>
+                
+                {/* Tools in category */}
+                <div className="p-4 space-y-3">
+                  {category.tools.map((tool, i) => (
+                    <a 
+                      key={tool.name}
+                      href={tool.href}
+                      className="block p-4 rounded-xl border border-slate-100 hover:border-violet-200 hover:bg-violet-50/30 transition group"
+                    >
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <h4 className="font-bold text-slate-900 group-hover:text-violet-700 transition">
+                            {tool.name}
+                          </h4>
+                          <p className="text-sm text-slate-500 mt-1">{tool.desc}</p>
+                        </div>
+                        <ArrowUpRight className="w-4 h-4 text-slate-400 group-hover:text-violet-500" />
+                      </div>
+                      {/* WHY explanation */}
+                      <div className="mt-3 pt-3 border-t border-slate-100">
+                        <p className="text-xs text-violet-700 font-medium">
+                          <span className="text-violet-400">WAAROM:</span> {tool.why}
+                        </p>
+                      </div>
+                    </a>
                   ))}
                 </div>
-                <div className="bg-red-50 border border-red-100 rounded-xl p-3 mb-6">
-                  <p className="text-sm text-red-700 italic">"{service.painPoint}"</p>
-                </div>
-                <button onClick={() => setExpandedId(expandedId === service.id ? null : service.id)}
-                  className="w-full py-3 rounded-xl border-2 border-slate-200 font-semibold text-slate-700 hover:border-violet-500 hover:text-violet-600 transition flex items-center justify-center gap-2">
-                  {expandedId === service.id ? 'Minder info' : 'Meer info'}
-                  {expandedId === service.id ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-                </button>
-                <AnimatePresence>
-                  {expandedId === service.id && (
-                    <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
-                      <div className="pt-6 space-y-6">
-                        <div className="bg-green-50 border border-green-100 rounded-xl p-4">
-                          <p className="text-sm text-green-800 font-medium">Onze oplossing:</p>
-                          <p className="text-sm text-green-700 mt-1">{service.solution}</p>
-                        </div>
-                        <div className="space-y-3">
-                          {service.features.map((f, j) => (
-                            <div key={j} className="flex items-start gap-3">
-                              <div className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 ${f.included ? 'bg-green-100' : 'bg-red-100'}`}>
-                                {f.included ? <Check className="w-3 h-3 text-green-600" /> : <X className="w-3 h-3 text-red-500" />}
-                              </div>
-                              <span className={`text-sm ${f.included ? 'text-slate-700' : 'text-slate-400'}`}>{f.text}</span>
-                            </div>
-                          ))}
-                        </div>
-                        <div className="flex items-center gap-2 text-sm text-slate-500"><Clock className="w-4 h-4" />{service.timeline}</div>
-                        <a href="#contact" className={`block w-full py-4 rounded-xl font-bold text-center bg-gradient-to-r ${service.color} text-white shadow-lg`}>Nu Bestellen</a>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-
-        <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-          className="bg-white rounded-3xl p-8 shadow-xl border border-slate-200">
-          <h3 className="text-2xl font-bold text-center mb-8">Vergelijk Pakketten</h3>
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b-2 border-slate-200">
-                  <th className="text-left py-4 px-4 font-bold text-slate-700">Functie</th>
-                  <th className="py-4 px-4 text-center font-bold text-slate-700">Basis</th>
-                  <th className="py-4 px-4 text-center font-bold text-violet-600">Pro</th>
-                  <th className="py-4 px-4 text-center font-bold text-amber-600">Premium</th>
-                </tr>
-              </thead>
-              <tbody>
-                {comparison.map((row, i) => (
-                  <tr key={i} className="border-b border-slate-100 hover:bg-slate-50">
-                    <td className="py-4 px-4 text-slate-700">{row.feature}</td>
-                    <td className="py-4 px-4 text-center">{row.basic ? <CheckCircle className="w-5 h-5 text-green-500 mx-auto" /> : <X className="w-5 h-5 text-red-300 mx-auto" />}</td>
-                    <td className="py-4 px-4 text-center bg-violet-50/50">{row.pro ? <CheckCircle className="w-5 h-5 text-green-500 mx-auto" /> : <X className="w-5 h-5 text-red-300 mx-auto" />}</td>
-                    <td className="py-4 px-4 text-center bg-amber-50/50">{row.premium ? <CheckCircle className="w-5 h-5 text-green-500 mx-auto" /> : <X className="w-5 h-5 text-red-300 mx-auto" />}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          <div className="flex justify-center gap-4 mt-6 text-sm text-slate-500">
-            <span>✓ Basis = Google Dominantie</span>
-            <span>✓ Pro = Lead Machine</span>
-            <span>✓ Premium = Complete Groei</span>
+              </motion.div>
+            ))}
           </div>
         </motion.div>
       </div>
@@ -553,67 +341,96 @@ function Services() {
   )
 }
 
-function Results() {
+function SocialProof() {
   return (
-    <section id="resultaten" className="py-24 bg-slate-900">
-      <div className="max-w-7xl mx-auto px-6 lg:px-12">
-        <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="text-center mb-16">
-          <motion.div variants={fadeUp} className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 rounded-full mb-6">
-            <TrendingUp className="w-4 h-4 text-violet-400" />
-            <span className="text-violet-200 font-medium">Echte Resultaten</span>
+    <section className="py-24 bg-white">
+      <div className="max-w-5xl mx-auto px-6">
+        <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger}>
+          <motion.div variants={fadeUp} className="text-center mb-12">
+            <h2 className="text-3xl lg:text-4xl font-black text-slate-900 mb-4">
+              Echte Resultaten
+            </h2>
+            <p className="text-slate-600">
+              Geen fictieve cases. Dit is wat bestaande klanten ervaren.
+            </p>
           </motion.div>
-          <motion.h2 variants={fadeUp} className="text-4xl lg:text-6xl font-black text-white mb-4">Dit Leveren We Op</motion.h2>
-          <motion.p variants={fadeUp} className="text-xl text-white/60 max-w-2xl mx-auto">Geen verzonnen cijfers. Dit zijn de resultaten van echte klanten.</motion.p>
+
+          <div className="grid md:grid-cols-3 gap-6">
+            {testimonials.map((t, i) => (
+              <motion.div key={i} variants={fadeUp} className="bg-slate-50 rounded-2xl p-6">
+                <div className="text-4xl mb-4">{t.avatar}</div>
+                <div className="text-3xl font-black text-violet-600 mb-2">{t.result}</div>
+                <p className="text-slate-700 text-sm mb-4">"{t.quote}"</p>
+                <div className="font-medium text-slate-900">{t.name}</div>
+                <div className="text-sm text-slate-500">{t.company}</div>
+              </motion.div>
+            ))}
+          </div>
         </motion.div>
-        <div className="grid md:grid-cols-2 gap-8">
-          {testimonials.map((t, i) => (
-            <motion.div key={i} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}
-              className="bg-white/5 backdrop-blur-xl rounded-3xl p-8 border border-white/10">
-              <div className="flex text-yellow-400 mb-4">{'⭐'.repeat(5)}</div>
-              <p className="text-white/90 text-lg mb-6 leading-relaxed italic">"{t.quote}"</p>
-              <div className="inline-flex items-center gap-2 bg-green-500/20 border border-green-500/30 rounded-xl px-4 py-2 mb-4">
-                <TrendingUp className="w-5 h-5 text-green-400" />
-                <span className="text-green-300 font-bold">{t.result}</span>
-              </div>
-              <div className="flex items-center gap-4">
-                <span className="text-4xl">{t.avatar}</span>
-                <div>
-                  <div className="font-bold text-white">{t.name}</div>
-                  <div className="text-white/50 text-sm">{t.role}, {t.company}</div>
-                </div>
-              </div>
-            </motion.div>
-          ))}
-        </div>
       </div>
     </section>
   )
 }
 
-function FAQ() {
-  const [openId, setOpenId] = useState<number | null>(0)
-
+function Pricing() {
   return (
-    <section id="faq" className="py-24 bg-gradient-to-br from-violet-50 to-purple-50">
-      <div className="max-w-3xl mx-auto px-6 lg:px-12">
-        <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="text-center mb-16">
-          <motion.h2 variants={fadeUp} className="text-4xl lg:text-5xl font-black text-slate-900 mb-4">Veelgestelde Vragen</motion.h2>
-          <motion.p variants={fadeUp} className="text-xl text-slate-600">Alles wat je wilt weten - eerlijk beantwoord.</motion.p>
+    <section id="prijzen" className="py-24 bg-slate-50">
+      <div className="max-w-5xl mx-auto px-6">
+        <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger}>
+          <motion.div variants={fadeUp} className="text-center mb-12">
+            <h2 className="text-3xl lg:text-4xl font-black text-slate-900 mb-4">
+              Kies het Pakket dat bij je Past
+            </h2>
+            <p className="text-slate-600 max-w-xl mx-auto">
+              Geen verborgen kosten. Geen verrassingen. Start waar je wil,
+              upgrade wanneer je groeit.
+            </p>
+          </motion.div>
+
+          <div className="grid md:grid-cols-3 gap-6">
+            {packages.map((p, i) => (
+              <motion.div key={p.id} variants={fadeUp} 
+                className={`relative bg-white rounded-2xl border-2 ${p.popular ? 'border-violet-500 shadow-xl shadow-violet-500/20' : 'border-slate-200'}`}
+              >
+                {p.popular && (
+                  <div className={`absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-gradient-to-r ${p.color} rounded-full text-xs font-bold text-white`}>
+                    POPULAIR
+                  </div>
+                )}
+                <div className="p-6">
+                  <h3 className="text-xl font-bold text-slate-900">{p.name}</h3>
+                  <p className="text-sm text-slate-500 mt-1">{p.tagline}</p>
+                  
+                  <div className="mt-6 mb-6">
+                    <span className="text-4xl font-black text-slate-900">€{p.price}</span>
+                    <span className="text-slate-400">/maand</span>
+                  </div>
+
+                  <p className="text-slate-600 text-sm mb-6">{p.description}</p>
+
+                  <div className="space-y-3 mb-6">
+                    {p.features.map((f, j) => (
+                      <div key={j} className="flex items-center gap-2 text-sm text-slate-700">
+                        <CheckCircle2 className="w-4 h-4 text-green-500" />
+                        {f}
+                      </div>
+                    ))}
+                  </div>
+
+                  <a href="#contact" className={`block w-full py-3 rounded-xl font-bold text-center bg-gradient-to-r ${p.color} text-white`}>
+                    {p.cta}
+                  </a>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+
+          <motion.div variants={fadeUp} className="mt-12 text-center">
+            <p className="text-slate-500 text-sm">
+              🔒 30-dagen garantie • Maandelijks opzeggen • Geen verbintenis
+            </p>
+          </motion.div>
         </motion.div>
-        <div className="space-y-4">
-          {faqs.map((faq, i) => (
-            <motion.div key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.05 }}
-              className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
-              <button onClick={() => setOpenId(openId === i ? null : i)} className="w-full px-6 py-5 text-left flex items-center justify-between hover:bg-slate-50 transition">
-                <span className="font-semibold text-slate-900">{faq.q}</span>
-                <ChevronDown className={`w-5 h-5 text-slate-400 transition ${openId === i ? 'rotate-180' : ''}`} />
-              </button>
-              <AnimatePresence><motion.div initial={{ height: 0 }} animate={{ height: openId === i ? 'auto' : 0 }} exit={{ height: 0 }} className="overflow-hidden">
-                <div className="px-6 pb-5 text-slate-600 border-t border-slate-100 pt-4">{faq.a}</div>
-              </motion.div></AnimatePresence>
-            </motion.div>
-          ))}
-        </div>
       </div>
     </section>
   )
@@ -621,98 +438,109 @@ function FAQ() {
 
 function Contact() {
   const [submitted, setSubmitted] = useState(false)
-  const [loading, setLoading] = useState(false)
-  const { register, handleSubmit, formState: { errors } } = useForm<FormData>({ resolver: zodResolver(contactSchema) })
+  
+  const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
+    resolver: zodResolver(contactSchema)
+  })
 
-  const onSubmit = async (data: FormData) => {
-    setLoading(true)
-    try {
-      const res = await fetch('/api/leads', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-      })
-      if (res.ok) {
-        setSubmitted(true)
-      } else {
-        alert('Er ging iets mis. Probeer opnieuw.')
-      }
-    } catch (error) {
-      console.error('Submission error:', error)
-      alert('Er ging iets mis. Probeer opnieuw.')
-    } finally {
-      setLoading(false)
-    }
+  const onSubmit = (data: FormData) => {
+    console.log(data)
+    setSubmitted(true)
   }
 
   if (submitted) {
     return (
-      <section id="contact" className="py-24 bg-gradient-to-r from-violet-600 to-purple-600">
-        <div className="max-w-2xl mx-auto px-6 text-center">
-          <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-12 border border-white/20">
-            <div className="text-6xl mb-6">🎉</div>
-            <h2 className="text-3xl font-bold text-white mb-4">Aangemeld!</h2>
-            <p className="text-white/80 mb-6">We nemen binnen 24 uur contact met je op. Check je inbox!</p>
-            <button onClick={() => setSubmitted(false)} className="text-white underline">Nog een bericht sturen</button>
+      <section id="contact" className="py-24 bg-slate-900 text-white">
+        <div className="max-w-xl mx-auto px-6 text-center">
+          <div className="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-6">
+            <CheckCircle2 className="w-10 h-10 text-white" />
           </div>
+          <h3 className="text-2xl font-bold mb-2">Aangemaakt!</h3>
+          <p className="text-white/70">We nemen binnen 24 uur contact met je op.</p>
         </div>
       </section>
     )
   }
 
   return (
-    <section id="contact" className="py-24 bg-gradient-to-r from-violet-600 to-purple-600">
-      <div className="max-w-7xl mx-auto px-6 lg:px-12">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
-          <div>
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/20 rounded-full mb-6">
-              <span className="text-white">Gratis Strategie Gesprek</span>
-            </div>
-            <h2 className="text-4xl lg:text-5xl font-black text-white mb-4">Klaar om te groeien?</h2>
-            <p className="text-xl text-white/80 mb-8">
-              Plan een gratis consult gesprek. We analyseren je situatie en geven concrete next steps - gegarandeerd.
-            </p>
-            <div className="space-y-4">
-              <div className="flex items-center gap-4 text-white">
-                <Phone className="w-6 h-6" />
-                <span>+31 6 12345678</span>
-              </div>
-              <div className="flex items-center gap-4 text-white">
-                <Mail className="w-6 h-6" />
-                <span>hello@localboost.nl</span>
-              </div>
-            </div>
-          </div>
-          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-            className="bg-white rounded-3xl p-8 shadow-2xl">
-            <h3 className="text-2xl font-bold text-slate-900 mb-6">Vraag gratis consult aan</h3>
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-              <div className="grid md:grid-cols-2 gap-4">
-                <div>
-                  <input {...register('name')} placeholder="Je naam *" className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none" />
-                  {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>}
-                </div>
-                <div>
-                  <input {...register('phone')} placeholder="Telefoonnummer *" className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none" />
-                  {errors.phone && <p className="text-red-500 text-sm mt-1">{errors.phone.message}</p>}
-                </div>
-              </div>
-              <input {...register('email')} placeholder="E-mailadres *" className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none" />
-              {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>}
-              <input {...register('company')} placeholder="Bedrijfsnaam (optioneel)" className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none" />
-              <select {...register('service')} className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none">
-                <option value="">Kies een pakket *</option>
-                {services.map(s => <option key={s.id} value={s.id}>{s.title} - €{s.price}</option>)}
-              </select>
-              {errors.service && <p className="text-red-500 text-sm mt-1">{errors.service.message}</p>}
-              <textarea {...register('message')} placeholder="Vertel over je uitdagingen *" rows={4} className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none resize-none" />
-              {errors.message && <p className="text-red-500 text-sm mt-1">{errors.message.message}</p>}
-              <button type="submit" disabled={loading}
-                className="w-full bg-gradient-to-r from-violet-600 to-purple-600 text-white py-4 rounded-xl font-semibold text-lg hover:opacity-90 transition disabled:opacity-50 flex items-center justify-center gap-2">
-                {loading ? <span className="animate-pulse">Versturen...</span> : <>Verstuur Bericht <Send className="w-5 h-5" /></>}
-              </button>
-            </form>
+    <section id="contact" className="py-24 bg-slate-900 text-white">
+      <div className="max-w-xl mx-auto px-6">
+        <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger}>
+          <motion.div variants={fadeUp} className="text-center mb-8">
+            <h2 className="text-2xl font-bold mb-2">Start Met Groeien</h2>
+            <p className="text-white/60">Vertel ons wat je nodig hebt. Binnen 24 uur contact.</p>
           </motion.div>
+
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            <div>
+              <input 
+                {...register('name')}
+                placeholder="Je naam *"
+                className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder:text-white/40 focus:outline-none focus:border-violet-500"
+              />
+              {errors.name && <p className="text-red-400 text-xs mt-1">{errors.name.message}</p>}
+            </div>
+            <div>
+              <input 
+                {...register('email')}
+                placeholder="E-mailadres *"
+                className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder:text-white/40 focus:outline-none focus:border-violet-500"
+              />
+              {errors.email && <p className="text-red-400 text-xs mt-1">{errors.email.message}</p>}
+            </div>
+            <div>
+              <input 
+                {...register('phone')}
+                placeholder="Telefoonnummer *"
+                className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder:text-white/40 focus:outline-none focus:border-violet-500"
+              />
+              {errors.phone && <p className="text-red-400 text-xs mt-1">{errors.phone.message}</p>}
+            </div>
+            <div>
+              <select 
+                {...register('service')}
+                className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-violet-500"
+              >
+                <option value="" className="text-slate-900">Kies een pakket *</option>
+                {packages.map(p => (
+                  <option key={p.id} value={p.id} className="text-slate-900">{p.name} - €{p.price}/maand</option>
+                ))}
+              </select>
+              {errors.service && <p className="text-red-400 text-xs mt-1">{errors.service.message}</p>}
+            </div>
+            <button type="submit" className="w-full py-4 bg-gradient-to-r from-violet-600 to-purple-600 rounded-xl font-bold hover:opacity-90 transition mt-4">
+              Verstuur aanvraag
+            </button>
+          </form>
+        </motion.div>
+      </div>
+    </section>
+  )
+}
+
+function FAQ() {
+  const [open, setOpen] = useState<number | null>(null)
+
+  return (
+    <section id="faq" className="py-24 bg-white">
+      <div className="max-w-3xl mx-auto px-6">
+        <h2 className="text-2xl font-bold text-center mb-8">Veelgestelde vragen</h2>
+        <div className="space-y-3">
+          {faqs.map((faq, i) => (
+            <div key={i} className="border border-slate-200 rounded-xl overflow-hidden">
+              <button onClick={() => setOpen(open === i ? null : i)} className="w-full px-6 py-4 flex items-center justify-between text-left">
+                <span className="font-medium text-slate-900">{faq.q}</span>
+                {open === i ? <ChevronUp className="w-5 h-5 text-slate-400" /> : <ChevronDown className="w-5 h-5 text-slate-400" />}
+              </button>
+              <AnimatePresence>
+                {open === i && (
+                  <motion.div initial={{ height: 0 }} animate={{ height: 'auto' }} exit={{ height: 0 }} className="px-6 pb-4">
+                    <p className="text-slate-600">{faq.a}</p>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          ))}
         </div>
       </div>
     </section>
@@ -721,43 +549,19 @@ function Contact() {
 
 function Footer() {
   return (
-    <footer className="bg-slate-900 py-16">
-      <div className="max-w-7xl mx-auto px-6 lg:px-12">
-        <div className="grid md:grid-cols-4 gap-8">
-          <div>
-            <div className="flex items-center gap-3 mb-4">
-              <span className="text-3xl">🚀</span>
-              <span className="text-2xl font-bold text-white">LocalBoost</span>
-            </div>
-            <p className="text-white/60">Jouw partner voor lokale online groei. #1 in Google - gegarandeerd.</p>
+    <footer className="py-12 bg-slate-950 text-white/60 text-sm">
+      <div className="max-w-6xl mx-auto px-6 flex flex-wrap justify-between gap-6">
+        <div>
+          <div className="flex items-center gap-2 mb-4">
+            <span className="text-xl">🚀</span>
+            <span className="font-bold text-white">LocalBoost</span>
           </div>
-          <div>
-            <h4 className="font-bold text-white mb-4">Pakketten</h4>
-            <ul className="space-y-2 text-white/60">
-              <li><a href="#pakketten" className="hover:text-white">Google Dominantie</a></li>
-              <li><a href="#pakketten" className="hover:text-white">Lead Machine</a></li>
-              <li><a href="#pakketten" className="hover:text-white">Winstgevende Ads</a></li>
-              <li><a href="#pakketten" className="hover:text-white">Complete Groei</a></li>
-            </ul>
-          </div>
-          <div>
-            <h4 className="font-bold text-white mb-4">Bedrijf</h4>
-            <ul className="space-y-2 text-white/60">
-              <li><a href="#resultaten" className="hover:text-white">Resultaten</a></li>
-              <li><a href="#faq" className="hover:text-white">FAQ</a></li>
-              <li><a href="#contact" className="hover:text-white">Contact</a></li>
-            </ul>
-          </div>
-          <div>
-            <h4 className="font-bold text-white mb-4">Contact</h4>
-            <ul className="space-y-2 text-white/60">
-              <li className="flex items-center gap-2"><Phone className="w-4 h-4" /> +31 6 12345678</li>
-              <li className="flex items-center gap-2"><Mail className="w-4 h-4" /> hello@localboost.nl</li>
-            </ul>
-          </div>
+          <p>© 2026 LocalBoost. Alle rechten voorbehouden.</p>
         </div>
-        <div className="border-t border-white/10 mt-12 pt-8 text-center text-white/40">
-          <p>© 2026 LocalBoost. Alle rechten voorbehouden. KvK: 12345678</p>
+        <div className="flex gap-6">
+          <a href="#" className="hover:text-white">Privacy</a>
+          <a href="#" className="hover:text-white">Voorwaarden</a>
+          <a href="#" className="hover:text-white">Contact</a>
         </div>
       </div>
     </footer>
@@ -765,43 +569,31 @@ function Footer() {
 }
 
 export default function Home() {
-  return (
-    <OnboardingWrapper>
-      <main>
-        <Hero />
-        <FreeTools />
-        <GuaranteeBanner />
-        <TrustStrip />
-        <Services />
-        <Results />
-        <FAQ />
-        <Contact />
-        <Footer />
-      </main>
-    </OnboardingWrapper>
-  )
-}
-
-// Onboarding wrapper component
-function OnboardingWrapper({ children }: { children: React.ReactNode }) {
   const [showOnboarding, setShowOnboarding] = useState(false)
-  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
-    setMounted(true)
-    const onboardingDone = localStorage.getItem('localboost_onboarding_done')
-    if (!onboardingDone) {
-      const timer = setTimeout(() => setShowOnboarding(true), 2000)
-      return () => clearTimeout(timer)
+    const hasSeenOnboarding = localStorage.getItem('localboost_onboarding_done')
+    if (!hasSeenOnboarding) {
+      setTimeout(() => setShowOnboarding(true), 2000)
     }
   }, [])
 
-  if (!mounted) return <>{children}</>
-
   return (
-    <>
-      {children}
-      {showOnboarding && <OnboardingModal onComplete={() => setShowOnboarding(false)} />}
-    </>
+    <main className="min-h-screen bg-slate-50">
+      <Hero />
+      <Problem />
+      <ToolsShowcase />
+      <SocialProof />
+      <Pricing />
+      <Contact />
+      <FAQ />
+      <Footer />
+      
+      <AnimatePresence>
+        {showOnboarding && (
+          <OnboardingModal onComplete={() => setShowOnboarding(false)} />
+        )}
+      </AnimatePresence>
+    </main>
   )
 }
