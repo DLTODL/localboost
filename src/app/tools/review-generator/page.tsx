@@ -1,8 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Star, Copy, Check, MessageSquare, Sparkles, Building, ChevronRight, RotateCcw, ExternalLink } from 'lucide-react'
-import { useBusinessProfile, useToolInputs, useSelectedBusiness, copyWithToast } from '@/lib/useSharedData'
+import { Star, Copy, Check, MessageSquare, Sparkles, Building, ChevronRight, RotateCcw, ExternalLink, Loader2, Save } from 'lucide-react'
+import { useBusinessProfile, useToolInputs, useSelectedBusiness, copyWithToast, showToast } from '@/lib/useSharedData'
 import TemplateSwitcher from '@/components/polish/TemplateSwitcher'
 
 const businessTypes = [
@@ -72,13 +72,26 @@ export default function ReviewGenerator() {
   const [messages, setMessages] = useState<GeneratedMessage[]>([])
   const [copiedId, setCopiedId] = useState<string | null>(null)
   const [activeTab, setActiveTab] = useState<'sms' | 'whatsapp' | 'email'>('whatsapp')
-  const [loading, setLoading] = useState(false)
+  const [generating, setGenerating] = useState(false)
+  const [loadingSaved, setLoadingSaved] = useState(false)
+  const [savedLeads, setSavedLeads] = useState<any[]>([])
+  const [showLeadPicker, setShowLeadPicker] = useState(false)
+
+  // Load saved leads for quick fill
+  useEffect(() => {
+    const stored = localStorage.getItem('localboost_leads')
+    if (stored) {
+      try {
+        setSavedLeads(JSON.parse(stored))
+      } catch {}
+    }
+  }, [])
 
   // Pre-fill from profile or selected business
   useEffect(() => {
     if (selectedBusiness) {
       if (selectedBusiness.name && !inputs.businessName) setBusinessName(selectedBusiness.name)
-      if (selectedBusiness.phone && !inputs.customerPhone) setReviewLink(selectedBusiness.phone)
+      if (selectedBusiness.phone && !inputs.reviewLink) setReviewLink(selectedBusiness.phone)
     }
     if (profile) {
       if (profile.name && !inputs.businessName && !selectedBusiness) setBusinessName(profile.name)
@@ -89,20 +102,28 @@ export default function ReviewGenerator() {
   // Save inputs on change
   useEffect(() => {
     if (businessName || customerName) {
-      saveInputs({ businessName, customerName, reviewLink })
+      saveInputs({ businessName, customerName, reviewLink, businessType })
     }
-  }, [businessName, customerName, reviewLink, saveInputs])
+  }, [businessName, customerName, reviewLink, businessType, saveInputs])
 
   const handleGenerate = () => {
     if (!businessName || !customerName) return
-    setLoading(true)
+    setGenerating(true)
     
     setTimeout(() => {
       const generated = generateMessages(businessName, businessType, customerName, reviewLink)
       setMessages(generated)
       setStep(3)
-      setLoading(false)
+      setGenerating(false)
     }, 800)
+  }
+
+  const handleLoadSavedLead = (lead: any) => {
+    setBusinessName(lead.company || lead.name)
+    setCustomerName(lead.name)
+    if (lead.phone) setReviewLink(lead.phone)
+    setShowLeadPicker(false)
+    showToast('Lead geladen uit CRM', 'success')
   }
 
   const handleCopy = async (type: string, text: string) => {
@@ -227,6 +248,32 @@ export default function ReviewGenerator() {
               Klantgegevens
             </h2>
             
+            <div className="mb-4">
+              <label className="block text-sm text-slate-400 mb-2">Laad uit CRM (optioneel)</label>
+              <button
+                type="button"
+                onClick={() => setShowLeadPicker(!showLeadPicker)}
+                className="w-full px-4 py-2 bg-slate-700 hover:bg-slate-600 rounded-xl text-sm flex items-center justify-center gap-2 transition"
+              >
+                <Star className="w-4 h-4" />
+                {showLeadPicker ? 'Verberg leads' : `Laad saved lead (${savedLeads.length})`}
+              </button>
+              {showLeadPicker && savedLeads.length > 0 && (
+                <div className="mt-2 max-h-32 overflow-y-auto bg-slate-900 rounded-xl divide-y divide-slate-700">
+                  {savedLeads.slice(0, 5).map(lead => (
+                    <button
+                      key={lead.id}
+                      onClick={() => handleLoadSavedLead(lead)}
+                      className="w-full p-2 text-left hover:bg-slate-800 transition"
+                    >
+                      <div className="text-sm font-medium">{lead.name}</div>
+                      <div className="text-xs text-slate-500">{lead.city} • {lead.company || 'Geen bedrijf'}</div>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+            
             <div>
               <label className="block text-sm text-slate-400 mb-2">Naam klant *</label>
               <input
@@ -250,11 +297,11 @@ export default function ReviewGenerator() {
               </button>
               <button
                 onClick={handleGenerate}
-                disabled={!customerName || loading}
+                disabled={!customerName || generating}
                 className="flex-1 py-4 bg-gradient-to-r from-violet-600 to-purple-600 hover:opacity-90 disabled:opacity-50 rounded-xl font-semibold flex items-center justify-center gap-2 transition"
               >
-                {loading ? (
-                  <><Sparkles className="w-5 h-5 animate-pulse" /> Genereren...</>
+                {generating ? (
+                  <><Loader2 className="w-5 h-5 animate-spin" /> Genereren...</>
                 ) : (
                   <><Sparkles className="w-5 h-5" /> Genereer Berichten</>
                 )}

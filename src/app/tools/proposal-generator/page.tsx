@@ -1,9 +1,10 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { FileText, Download, User, Building, CheckCircle, ChevronRight, ChevronLeft, RotateCcw, Mail } from 'lucide-react'
-import { useBusinessProfile, useToolInputs, useSelectedBusiness, copyWithToast, showToast } from '@/lib/useSharedData'
+import { FileText, Download, User, Building, CheckCircle, ChevronRight, ChevronLeft, RotateCcw, Mail, Save, Database } from 'lucide-react'
+import { useBusinessProfile, useToolInputs, useSelectedBusiness, showToast } from '@/lib/useSharedData'
 import TemplateSwitcher from '@/components/polish/TemplateSwitcher'
+import { emailTemplates } from '@/lib/email-templates'
 
 interface ProposalData {
   clientName: string
@@ -24,6 +25,7 @@ const services = [
 export default function ProposalGenerator() {
   const { profile } = useBusinessProfile()
   const { inputs, saveInputs } = useToolInputs('proposal-generator')
+  const { business: selectedBusiness } = useSelectedBusiness()
   
   const [step, setStep] = useState(1)
   const [data, setData] = useState<ProposalData>({
@@ -35,6 +37,8 @@ export default function ProposalGenerator() {
     customizations: ''
   })
   const [generated, setGenerated] = useState(false)
+  const [linkedEmailTemplate, setLinkedEmailTemplate] = useState<string | null>(null)
+  const [showEmailPicker, setShowEmailPicker] = useState(false)
 
   const selectedService = services.find(s => s.id === data.service)
 
@@ -58,6 +62,37 @@ export default function ProposalGenerator() {
 
   const generateProposal = () => {
     setGenerated(true)
+  }
+
+  const getLinkedEmailSequence = () => {
+    if (!linkedEmailTemplate) return null
+    return emailTemplates.find(seq => seq.id === linkedEmailTemplate)
+  }
+
+  const handleSaveToCRM = () => {
+    if (!data.clientName && !data.clientCompany) {
+      showToast('Vul eerst klantgegevens in', 'error')
+      return
+    }
+    // Save lead to localStorage
+    const leadsKey = 'localboost_leads'
+    const existing = localStorage.getItem(leadsKey)
+    const leads = existing ? JSON.parse(existing) : []
+    const newLead = {
+      id: Date.now(),
+      name: data.clientName,
+      company: data.clientCompany,
+      email: data.clientEmail,
+      phone: data.clientPhone,
+      city: '',
+      notes: data.service ? `Geïnteresseerd in: ${selectedService?.name}` : '',
+      status: 'new',
+      createdAt: new Date().toISOString(),
+      lastContacted: null
+    }
+    leads.unshift(newLead)
+    localStorage.setItem(leadsKey, JSON.stringify(leads))
+    showToast('Lead opgeslagen in CRM!', 'success')
   }
 
   const getProposalText = () => {
@@ -320,13 +355,68 @@ Handtekening: _______________________`
                 />
               </div>
 
+              {/* Cross-tool: Email Template picker */}
+              <div className="bg-slate-900 rounded-xl p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-sm font-medium text-slate-300">Email follow-up template</span>
+                  <button
+                    onClick={() => setShowEmailPicker(!showEmailPicker)}
+                    className="text-xs text-violet-400 hover:text-violet-300"
+                  >
+                    {showEmailPicker ? 'Verberg' : 'Kies template'}
+                  </button>
+                </div>
+                {showEmailPicker ? (
+                  <div className="space-y-2 max-h-48 overflow-y-auto">
+                    {emailTemplates.slice(0, 4).map(seq => (
+                      <button
+                        key={seq.id}
+                        onClick={() => {
+                          setLinkedEmailTemplate(seq.id)
+                          setShowEmailPicker(false)
+                          showToast(`${seq.title} gekoppeld`, 'success')
+                        }}
+                        className={`w-full text-left p-2 rounded-lg text-xs transition ${
+                          linkedEmailTemplate === seq.id 
+                            ? 'bg-violet-600/30 border border-violet-500' 
+                            : 'bg-slate-800 hover:bg-slate-700'
+                        }`}
+                      >
+                        <div className="font-medium text-slate-200">{seq.title}</div>
+                        <div className="text-slate-500">{seq.delay} • {seq.useCase}</div>
+                      </button>
+                    ))}
+                    <a href="/tools/email-sequences" className="block text-center py-2 text-xs text-violet-400 hover:text-violet-300">
+                      Bekijk alle templates →
+                    </a>
+                  </div>
+                ) : emailTemplates ? (
+                  <div className="text-xs text-slate-400">
+                    ✓ {getLinkedEmailSequence()?.title} - {getLinkedEmailSequence()?.delay}
+                  </div>
+                ) : (
+                  <div className="text-xs text-slate-500">
+                    Nog geen template gekoppeld. <button onClick={() => setShowEmailPicker(true)} className="text-violet-400">Kies er een</button>
+                  </div>
+                )}
+              </div>
+
+              {/* Save to CRM */}
+              <button
+                onClick={handleSaveToCRM}
+                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-slate-700 hover:bg-slate-600 rounded-xl text-sm transition"
+              >
+                <Save className="w-4 h-4" />
+                Sla op als lead in CRM
+              </button>
+
               {/* Cross-tool: Email Campaign */}
               <a
                 href="/tools/email-campaign-builder"
-                className="flex items-center justify-center gap-2 px-4 py-3 bg-slate-700 hover:bg-slate-600 rounded-xl text-sm transition"
+                className="flex items-center justify-center gap-2 px-4 py-3 bg-violet-600/20 hover:bg-violet-600/30 text-violet-300 rounded-xl text-sm transition"
               >
                 <Mail className="w-4 h-4" />
-                Bijbehorende Email Campaign Bouwen →
+                Bouw Email Campaign voor deze klant →
               </a>
             </div>
 
