@@ -491,9 +491,23 @@ function Contact() {
 
   const onSubmit = async (data: FormData) => {
     setLoading(true)
-    await new Promise(resolve => setTimeout(resolve, 1500))
-    setSubmitted(true)
-    setLoading(false)
+    try {
+      const res = await fetch('/api/leads', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      })
+      if (res.ok) {
+        setSubmitted(true)
+      } else {
+        alert('Er ging iets mis. Probeer opnieuw.')
+      }
+    } catch (error) {
+      console.error('Submission error:', error)
+      alert('Er ging iets mis. Probeer opnieuw.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   if (submitted) {
