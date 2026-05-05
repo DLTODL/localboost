@@ -7,15 +7,16 @@
 - [x] Lead API route (POST/GET)
 - [x] Contact form → API integration
 - [x] Basic dashboard page
-- [ ] Lead notification system (email/Telegram)
-- [ ] Lead status management in dashboard
+- [x] Lead status management in dashboard
+- [x] Lead notification system (Telegram API ready, needs env vars)
 
 ### Phase 2: Delivery Tools
-- [ ] Google Business Profile optimization guide/SOP
-- [ ] SEO Scanner tool (real implementation)
+- [x] Google Business Profile optimization guide/SOP ✅ NEW
+- [x] Proposal Generator ✅ NEW
+- [x] Client Portal (clients see their progress) ✅ NEW
+- [ ] SEO Scanner tool (real implementation) - partial
 - [ ] Lead form builder (drag-drop)
-- [ ] Proposal generator (PDF)
-- [ ] Client portal (where clients see their results)
+- [ ] PDF proposal export
 
 ### Phase 3: Marketing & Research
 - [ ] Real competitor analysis (deeper)
@@ -36,11 +37,11 @@
 ## Backlog (Future Sprints)
 
 ### High Priority
-- [ ] Telegram bot for lead notifications
 - [ ] Email automation (welcome emails, follow-ups)
 - [ ] Airtable integration for CRM
 - [ ] Google Sheets sync for leads
 - [ ] Custom domain setup (localboost.nl)
+- [ ] Telegram bot for lead notifications - needs config
 
 ### Medium Priority
 - [ ] Blog section (SEO content)
@@ -67,14 +68,26 @@
 3. ✅ Created SEO scanner tool
 4. ✅ Updated contact form to submit to API
 5. ✅ Market research & competitor analysis
-6. ⏳ Setting up cron jobs for continuous work
-7. ⏳ Creating memory file for session continuity
+6. ✅ Google Business Profile Setup Guide (19-task checklist)
+7. ✅ Proposal Generator (professional PDF-ready proposals)
+8. ✅ Client Portal (clients track progress/milestones)
+9. ✅ Enhanced Lead API (GET/PATCH/DELETE individual, filter)
+10. ✅ Database schema enhanced (notes, follow_up_date fields)
+
+### Completed This Session:
+- `/tools/proposal-generator` - Generate proposals for leads with pricing, deliverables, timelines
+- `/tools/google-business-guide` - 19-task step-by-step guide with progress tracking
+- `/portal` - Client-facing portal to track service progress
+- `/api/leads/[id]` - CRUD for individual leads
+- `/api/leads/filter` - Filter leads by status/date
+- Enhanced db.ts with notes/follow_up_date fields
 
 ### Blockers:
 - No real email sending infrastructure (need SendGrid/Resend)
 - No actual Google API access (need to set up)
 - No payment processing (need Stripe)
 - Need real testimonials/case studies
+- Telegram bot needs TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID env vars
 
 ---
 
@@ -99,8 +112,27 @@
 - Set up cron jobs for continuous work
 - Improve CSS/design quality
 
-### Report 2 (22:00 - 4hr)
-[To be filled by cron job]
+### Report 2 (22:00 - 4hr) ✅
+**Accomplished:**
+- Proposal Generator: Generate professional proposals for leads with service details, pricing, timelines, deliverables
+- Google Business Profile Setup Guide: 19-task step-by-step checklist with category filtering and progress tracking
+- Client Portal: Allow clients to track their service progress and milestones
+- Enhanced Lead API: GET/PATCH/DELETE individual leads, filter endpoint with stats
+- Enhanced database schema: Added notes and follow_up_date fields to Lead interface
+- Build passes with all new routes
+
+**Stats:**
+- 5 new files created
+- 1 file modified (db.ts)
+- Build: Compiles successfully
+- Routes added: /api/leads/[id], /api/leads/filter, /portal, /tools/proposal-generator, /tools/google-business-guide
+
+**Next Steps:**
+- Email automation system (Resend/SendGrid)
+- PDF export for proposals
+- Lead form builder
+- CSS improvements (non-bootstrap look)
+- Set up cron for continuous work
 
 ---
 
@@ -134,18 +166,31 @@ localboost/
 │   ├── app/
 │   │   ├── page.tsx (landing page)
 │   │   ├── dashboard/page.tsx (lead management)
+│   │   ├── portal/page.tsx (client portal) ✅ NEW
 │   │   ├── tools/
-│   │   │   └── seo-scanner/page.tsx
+│   │   │   ├── seo-scanner/page.tsx
+│   │   │   ├── proposal-generator/page.tsx ✅ NEW
+│   │   │   └── google-business-guide/page.tsx ✅ NEW
 │   │   └── api/
-│   │       └── leads/route.ts
+│   │       ├── leads/route.ts
+│   │       ├── leads/[id]/route.ts ✅ NEW
+│   │       ├── leads/filter/route.ts ✅ NEW
+│   │       └── notify/route.ts
 │   ├── lib/
-│   │   └── db.ts (SQLite setup)
+│   │   └── db.ts (SQLite setup) ✅ MODIFIED
 │   └── research/
 │       └── competitor-research.md
 ├── data/
-│   └── localboost.db (SQLite database)
+│   └── localboost.db
 └── TASK_BACKLOG.md (this file)
 ```
+
+## Available Tools
+- `/dashboard` - Admin lead management
+- `/portal` - Client-facing progress portal
+- `/tools/seo-scanner` - Website SEO analysis
+- `/tools/proposal-generator` - Generate proposals for leads
+- `/tools/google-business-guide` - Google Business Profile setup checklist
 
 ## Notes for Next Session
 
@@ -156,8 +201,9 @@ When you resume:
 4. Continue with "In Progress" section
 5. Report progress to Sam every 4 hours
 6. Keep building delivery tools
+7. Focus on email automation next
 
 ---
 
-Last Updated: 2026-05-05 18:00 GMT+2
-Next Report Due: 2026-05-05 22:00 GMT+2
+Last Updated: 2026-05-05 22:00 GMT+2
+Next Report Due: 2026-05-06 02:00 GMT+2 (if server still running)

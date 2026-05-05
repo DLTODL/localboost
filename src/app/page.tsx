@@ -246,6 +246,8 @@ function Hero() {
           <a href="#pakketten" className="text-white/80 hover:text-white transition font-medium">Pakketten</a>
           <a href="#resultaten" className="text-white/80 hover:text-white transition font-medium">Resultaten</a>
           <a href="#faq" className="text-white/80 hover:text-white transition font-medium">FAQ</a>
+          <a href="/dashboard" className="text-white/80 hover:text-white transition font-medium">Dashboard</a>
+          <a href="/tools/seo-scanner" className="text-white/80 hover:text-white transition font-medium">SEO Scanner</a>
           <a href="#contact" className="bg-gradient-to-r from-violet-600 to-purple-600 text-white px-6 py-3 rounded-xl font-semibold hover:opacity-90 transition shadow-lg shadow-violet-500/30">
             Gratis Strategie Gesprek
           </a>
@@ -282,16 +284,16 @@ function Hero() {
 
           <motion.div variants={fadeUp} className="flex flex-wrap justify-center gap-8 lg:gap-16">
             <div className="text-center">
-              <div className="text-4xl lg:text-5xl font-black text-white">500+</div>
-              <div className="text-white/50">Lokale Bedrijven</div>
+              <div className="text-2xl lg:text-3xl font-black text-white">500+</div>
+              <div className="text-xs lg:text-sm text-white/50">Lokale Bedrijven</div>
             </div>
             <div className="text-center">
-              <div className="text-4xl lg:text-5xl font-black text-white">€10M+</div>
-              <div className="text-white/50">Revenue Gegenereerd</div>
+              <div className="text-2xl lg:text-3xl font-black text-white">€10M+</div>
+              <div className="text-xs lg:text-sm text-white/50">Revenue Gegenereerd</div>
             </div>
             <div className="text-center">
-              <div className="text-4xl lg:text-5xl font-black text-white">98%</div>
-              <div className="text-white/50">Tevredenheidsscore</div>
+              <div className="text-2xl lg:text-3xl font-black text-white">98%</div>
+              <div className="text-xs lg:text-sm text-white/50">Tevredenheidsscore</div>
             </div>
           </motion.div>
         </motion.div>
