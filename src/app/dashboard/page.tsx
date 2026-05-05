@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { Settings } from 'lucide-react'
 
 interface Lead {
   id: number
@@ -95,8 +96,14 @@ export default function Dashboard() {
               <h1 className="text-2xl font-bold flex items-center gap-2">📊 Dashboard</h1>
               <p className="text-slate-400 text-sm mt-1">Beheer je leads en track resultaten</p>
             </div>
-            <div className="text-sm text-slate-500">
-              Laatst bijgewerkt: {new Date().toLocaleString('nl-NL')}
+            <div className="flex items-center gap-3">
+              <Link href="/settings" className="px-3 py-2 bg-slate-700 hover:bg-slate-600 rounded-lg text-sm transition flex items-center gap-2">
+                <Settings className="w-4 h-4" />
+                Instellingen
+              </Link>
+              <div className="text-sm text-slate-500">
+                Laatst bijgewerkt: {new Date().toLocaleString('nl-NL')}
+              </div>
             </div>
           </div>
         </div>
