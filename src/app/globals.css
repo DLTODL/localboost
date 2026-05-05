@@ -55,10 +55,15 @@ body {
   100% { background-position: 200% 0; }
 }
 
+@keyframes bounce-in {
+  0% { transform: scale(0.9); opacity: 0; }
+  50% { transform: scale(1.02); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
 .animate-slide-in {
   animation: slideIn 0.3s ease-out forwards;
 }
-
 
 .animate-fade-in {
   animation: fadeIn 0.4s ease-out forwards;
@@ -68,9 +73,12 @@ body {
   animation: slideUp 0.4s ease-out forwards;
 }
 
-
 .animate-pulse-soft {
   animation: pulse-soft 2s ease-in-out infinite;
+}
+
+.animate-bounce-in {
+  animation: bounce-in 0.3s ease-out forwards;
 }
 
 /* Skeleton loading */
@@ -116,4 +124,46 @@ body {
 .focus-ring:focus {
   outline: none;
   box-shadow: 0 0 0 2px #1e293b, 0 0 0 4px #8b5cf6;
+}
+
+/* ==================
+   GLASS EFFECT
+   ================== */
+.glass {
+  background: rgba(30, 41, 59, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* ==================
+   BUTTON STATES
+   ================== */
+.btn-primary {
+  @apply bg-gradient-to-r from-violet-600 to-purple-600 hover:opacity-90 text-white font-semibold rounded-xl transition;
+}
+
+.btn-secondary {
+  @apply bg-slate-700 hover:bg-slate-600 text-white font-medium rounded-xl transition;
+}
+
+/* ==================
+   CARD HOVER
+   ================== */
+.card-hover {
+  @apply transition-all duration-200;
+}
+
+.card-hover:hover {
+  @apply -translate-y-1 shadow-xl shadow-violet-500/10;
+}
+
+/* ==================
+   TOAST ANIMATION
+   ================== */
+.toast-enter {
+  animation: slideIn 0.3s ease-out;
+}
+
+.toast-exit {
+  animation: fadeIn 0.2s ease-out reverse;
 }
