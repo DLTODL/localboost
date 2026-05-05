@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { Search, MapPin, Phone, Mail, Globe, Copy, Check, Download, Star, Save, Trash2, Building, User, ChevronDown, X, ExternalLink } from 'lucide-react'
 import { useBusinessProfile, useLeads, useToolInputs, useTemplates, useSelectedBusiness, copyWithToast } from '@/lib/useSharedData'
 import TemplateSwitcher from '@/components/polish/TemplateSwitcher'
+import { CardSkeleton, ListSkeleton } from '@/components/polish/Skeleton'
 
 interface Lead {
   id: number
@@ -73,33 +74,6 @@ const generateLeads = (city: string, industry: string): Lead[] => {
   })
 }
 
-function LeadSkeleton() {
-  return (
-    <div className="bg-slate-800 rounded-xl p-5 border border-slate-700 animate-pulse">
-      <div className="flex items-start justify-between gap-4">
-        <div className="flex-1">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="h-6 w-16 bg-slate-700 rounded"></div>
-            <div className="h-6 w-40 bg-slate-700 rounded"></div>
-          </div>
-          <div className="flex flex-wrap gap-4 mb-3">
-            <div className="h-4 w-32 bg-slate-700 rounded"></div>
-            <div className="h-4 w-24 bg-slate-700 rounded"></div>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            <div className="h-6 w-24 bg-slate-700 rounded"></div>
-            <div className="h-6 w-32 bg-slate-700 rounded"></div>
-          </div>
-        </div>
-        <div className="flex gap-2">
-          <div className="h-10 w-10 bg-slate-700 rounded-lg"></div>
-          <div className="h-10 w-10 bg-slate-700 rounded-lg"></div>
-        </div>
-      </div>
-    </div>
-  )
-}
-
 function EmptyState() {
   return (
     <div className="text-center py-16 animate-fade-in">
@@ -108,6 +82,10 @@ function EmptyState() {
       <p className="text-slate-500">Voer een stad en branche in om te beginnen</p>
     </div>
   )
+}
+
+function LeadListSkeleton() {
+  return <ListSkeleton items={4} />
 }
 
 export default function LeadFinder() {
@@ -293,9 +271,7 @@ export default function LeadFinder() {
 
         {/* Loading Skeletons */}
         {loading && (
-          <div className="space-y-3">
-            {[1, 2, 3, 4].map(i => <LeadSkeleton key={i} />)}
-          </div>
+          <LeadListSkeleton />
         )}
 
         {/* Results */}

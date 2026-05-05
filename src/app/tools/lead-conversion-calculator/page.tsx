@@ -1,8 +1,9 @@
 'use client'
 
-import { useState } from 'react'
-import { TrendingUp, Users, DollarSign, Target, ArrowDown, Loader2, Check, AlertCircle } from 'lucide-react'
-import { copyWithToast } from '@/lib/useSharedData'
+import { useState, useEffect } from 'react'
+import { TrendingUp, Users, DollarSign, Target, ArrowDown, Loader2, Check, AlertCircle, Mail, Send } from 'lucide-react'
+import { copyWithToast, useBusinessProfile, useToolInputs } from '@/lib/useSharedData'
+import { FormSkeleton } from '@/components/polish/Skeleton'
 
 interface FunnelData {
   monthlyLeads: number
@@ -30,6 +31,9 @@ interface ROIOutput {
 }
 
 export default function LeadConversionCalculator() {
+  const { profile } = useBusinessProfile()
+  const { inputs, saveInputs } = useToolInputs('lead-conversion-calculator')
+
   const [formData, setFormData] = useState<FunnelData>({
     monthlyLeads: 50,
     websiteVisitors: 1000,
@@ -135,6 +139,29 @@ export default function LeadConversionCalculator() {
     }, 1500)
   }
 
+  // Pre-fill from profile
+  useEffect(() => {
+    if (profile) {
+      if (profile.type && !inputs.industry) {
+        const industryMatch = industries.find(i => i.toLowerCase() === profile.type?.toLowerCase())
+        if (industryMatch) {
+          setFormData(prev => ({ ...prev, industry: industryMatch }))
+        }
+      }
+    }
+  }, [profile, inputs.industry])
+
+  // Save inputs on change
+  useEffect(() => {
+    saveInputs(formData)
+  }, [formData, saveInputs])
+
+  // Cross-tool: Link to Email Campaign Builder
+  const handleCreateCampaign = () => {
+    // Save current form data for the campaign builder to pick up
+    localStorage.setItem('localboost_leadcalc_data', JSON.stringify(formData))
+  }
+
   return (
     <div className="min-h-screen bg-slate-900 text-white">
       <div className="max-w-6xl mx-auto p-6">
@@ -237,6 +264,16 @@ export default function LeadConversionCalculator() {
                 </>
               )}
             </button>
+
+            {/* Cross-tool CTA */}
+            <a
+              href="/tools/email-campaign-builder"
+              onClick={handleCreateCampaign}
+              className="w-full py-4 bg-slate-700 hover:bg-slate-600 rounded-xl font-bold text-lg flex items-center justify-center gap-2 transition"
+            >
+              <Mail className="w-5 h-5" />
+              Bouw Email Campaign voor Jouw Leads
+            </a>
           </div>
 
           {/* Right: Results */}

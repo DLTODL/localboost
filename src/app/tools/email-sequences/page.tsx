@@ -1,8 +1,9 @@
 'use client'
 
-import { useState } from 'react'
-import { Mail, Copy, Check, Send, Clock, Users, MessageSquare, Tag, FileText } from 'lucide-react'
-import { copyWithToast } from '@/lib/useSharedData'
+import { useState, useEffect } from 'react'
+import { Mail, Copy, Check, Send, Clock, Users, MessageSquare, Tag, FileText, Sparkles } from 'lucide-react'
+import { copyWithToast, useBusinessProfile, useToolInputs } from '@/lib/useSharedData'
+import TemplateSwitcher from '@/components/polish/TemplateSwitcher'
 
 interface Sequence {
   id: string
@@ -155,9 +156,25 @@ Groetjes,
 ]
 
 export default function EmailSequences() {
+  const { profile } = useBusinessProfile()
+  const { inputs, saveInputs } = useToolInputs('email-sequences')
+  
   const [activeTab, setActiveTab] = useState('all')
   const [copiedId, setCopiedId] = useState<string | null>(null)
   const [showContent, setShowContent] = useState<string | null>(null)
+  const [filter, setFilter] = useState('')
+
+  // Pre-fill from profile
+  useEffect(() => {
+    if (profile && profile.name && !inputs.businessName) {
+      // Profile is available for cross-tool use
+    }
+  }, [profile, inputs.businessName])
+
+  // Save inputs on change
+  useEffect(() => {
+    saveInputs({ filter })
+  }, [filter, saveInputs])
 
   const filteredSequences = activeTab === 'all' 
     ? sequences 
