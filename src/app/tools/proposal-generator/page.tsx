@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { FileText, Download, User, Building, CheckCircle, ChevronRight, ChevronLeft, RotateCcw, Mail, Save, Database } from 'lucide-react'
-import { useBusinessProfile, useToolInputs, useSelectedBusiness, showToast } from '@/lib/useSharedData'
+import { useBusinessProfile, useToolInputs, useSelectedBusiness, useTemplates, showToast } from '@/lib/useSharedData'
 import TemplateSwitcher from '@/components/polish/TemplateSwitcher'
 import { emailTemplates } from '@/lib/email-templates'
 
@@ -26,6 +26,9 @@ export default function ProposalGenerator() {
   const { profile } = useBusinessProfile()
   const { inputs, saveInputs } = useToolInputs('proposal-generator')
   const { business: selectedBusiness } = useSelectedBusiness()
+  const { saveTemplate, getTemplatesForTool } = useTemplates()
+
+  const savedTemplates = getTemplatesForTool('proposal-generator')
   
   const [step, setStep] = useState(1)
   const [data, setData] = useState<ProposalData>({
@@ -205,13 +208,24 @@ Handtekening: _______________________`
               </div>
             </div>
             {/* Cross-tool: Email Sequence */}
-            <a
-              href="/tools/email-campaign-builder"
-              className="flex items-center gap-2 px-4 py-2 bg-slate-700 hover:bg-slate-600 rounded-xl text-sm transition"
-            >
-              <Mail className="w-4 h-4" />
-              Email Sequence →
-            </a>
+            <div className="flex items-center gap-2">
+              <TemplateSwitcher
+                toolId="proposal-generator"
+                onApply={(data) => {
+                  if (data.clientName) handleInputChange('clientName', data.clientName)
+                  if (data.clientCompany) handleInputChange('clientCompany', data.clientCompany)
+                  if (data.service) handleInputChange('service', data.service)
+                }}
+                currentData={{ clientName: data.clientName, clientCompany: data.clientCompany, service: data.service }}
+              />
+              <a
+                href="/tools/email-campaign-builder"
+                className="flex items-center gap-2 px-4 py-2 bg-slate-700 hover:bg-slate-600 rounded-xl text-sm transition"
+              >
+                <Mail className="w-4 h-4" />
+                Email Sequence →
+              </a>
+            </div>
           </div>
         </div>
 
