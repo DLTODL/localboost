@@ -321,6 +321,39 @@ export function useOnboarding() {
 export { showToast, copyWithToast, useToasts } from './toast'
 
 // ==================
+// CROSS-TOOL NOTIFICATIONS
+// ==================
+export type CrossToolEvent = {
+  type: 'lead_saved' | 'business_selected' | 'template_applied'
+  toolId: string
+  data: Record<string, any>
+  timestamp: string
+}
+
+const crossToolListeners: Set<(event: CrossToolEvent) => void> = new Set()
+
+export function subscribeToCrossToolEvents(callback: (event: CrossToolEvent) => void) {
+  crossToolListeners.add(callback)
+  return () => crossToolListeners.delete(callback)
+}
+
+function emitCrossToolEvent(event: CrossToolEvent) {
+  crossToolListeners.forEach(cb => cb(event))
+}
+
+export function notifyLeadSaved(toolId: string, leadData: Record<string, any>) {
+  emitCrossToolEvent({ type: 'lead_saved', toolId, data: leadData, timestamp: new Date().toISOString() })
+}
+
+export function notifyBusinessSelected(toolId: string, businessData: Record<string, any>) {
+  emitCrossToolEvent({ type: 'business_selected', toolId, data: businessData, timestamp: new Date().toISOString() })
+}
+
+export function notifyTemplateApplied(toolId: string, templateData: Record<string, any>) {
+  emitCrossToolEvent({ type: 'template_applied', toolId, data: templateData, timestamp: new Date().toISOString() })
+}
+
+// ==================
 // CLEAR ALL DATA
 // ==================
 export function clearAllData() {
