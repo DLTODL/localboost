@@ -1,6 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Link from 'next/link'
+
 import { Sparkles, Copy, Check, RefreshCw, Instagram, Facebook, Linkedin, Calendar, X, ExternalLink, Send } from 'lucide-react'
 import { useBusinessProfile, useToolInputs, useSelectedBusiness, copyWithToast } from '@/lib/useSharedData'
 import TemplateSwitcher from '@/components/polish/TemplateSwitcher'
@@ -320,13 +322,13 @@ export default function SocialPostGenerator() {
                   <h3 className="font-bold mb-1">📧 Bijpassende Email Sequence</h3>
                   <p className="text-sm text-slate-400">Genereer een email campaign gebaseerd op dit bedrijf</p>
                 </div>
-                <a
+                <Link
                   href="/tools/email-campaign-builder"
                   className="px-4 py-2 bg-violet-600 hover:bg-violet-700 rounded-xl font-medium flex items-center gap-2 transition"
                 >
                   <Send className="w-4 h-4" />
                   Maak Sequence
-                </a>
+                </Link>
               </div>
             </div>
           </>
