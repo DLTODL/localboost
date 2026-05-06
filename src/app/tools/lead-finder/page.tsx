@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { Search, MapPin, Phone, Mail, Globe, Copy, Check, Download, Star, Save, Trash2, Building, User, ChevronDown, X, ExternalLink } from 'lucide-react'
 import { useBusinessProfile, useLeads, useToolInputs, useTemplates, useSelectedBusiness, copyWithToast } from '@/lib/useSharedData'
 import TemplateSwitcher from '@/components/polish/TemplateSwitcher'
-import { CardSkeleton, ListSkeleton } from '@/components/polish/Skeleton'
+import { CardSkeleton, ListSkeleton, FormSkeleton } from '@/components/polish/Skeleton'
 import ProfileBar from '@/components/polish/ProfileBar'
 
 interface Lead {
@@ -106,6 +106,13 @@ export default function LeadFinder() {
   const [filterPriority, setFilterPriority] = useState<'all' | 'hot' | 'warm' | 'cold'>('all')
   const [showSaveModal, setShowSaveModal] = useState<Lead | null>(null)
   const [showSavedLeads, setShowSavedLeads] = useState(false)
+  const [isInitialLoad, setIsInitialLoad] = useState(true)
+
+  // Skeleton loading simulation for smoother UX
+  useEffect(() => {
+    const timer = setTimeout(() => setIsInitialLoad(false), 800)
+    return () => clearTimeout(timer)
+  }, [])
 
   const savedTemplates = getTemplatesForTool('lead-finder')
 
@@ -286,6 +293,11 @@ export default function LeadFinder() {
             </div>
           </div>
         </div>
+
+        {/* Initial Form Skeleton - shown while loading profile/inputs */}
+        {isInitialLoad && (
+          <FormSkeleton fields={3} />
+        )}
 
         {/* Loading Skeletons */}
         {loading && (
