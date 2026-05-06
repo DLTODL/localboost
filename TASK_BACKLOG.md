@@ -2,6 +2,16 @@
 
 ## Sprint: Polish & Integration (Current)
 
+## Polish Session 2026-05-06 (v13.9) - Senior Dev Polish
+- **Accessibility & Keyboard**:
+  - OnboardingModal: Escape key to close, focus trap, auto-focus first input on step 1
+  - Removed unused showSkip state from OnboardingModal
+- **Bug Fix**: Providers.tsx fixed onboarding trigger for 'Bewerk Profiel' flow (showOnboarding flag checked before onboardingDone)
+- **UX Polish**: Dashboard console.error → toast notifications; useSharedData and task-manager console.error → silent localStorage reset on corrupted data
+- **Dead Code Removal**: Removed unused `src/components/polish/Toast.tsx`, `src/lib/useKeyboardShortcuts.ts`, and unused DataManagement import in Settings
+- **Build verified**: All 29 routes compile successfully ✅
+- **Status: LocalBoost v13.9 is production-ready**
+
 ### Phase 1: Tool Integration ✅ DONE
 - [x] Onboarding modal (4-step wizard)
 - [x] Toast notification system (global)
