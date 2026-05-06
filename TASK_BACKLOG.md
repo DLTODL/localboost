@@ -2,6 +2,12 @@
 
 ## Sprint: Polish & Integration (Current)
 
+## Polish Session 2026-05-06 (v13.21) - Dead Code Cleanup ✅
+- **Removed**: Unused `notifyLeadSaved` import from lead-finder/page.tsx (was imported but never called)
+- **Build verified**: All 29 routes compile successfully ✅
+- **Git**: Committed + pushed to origin/master ✅
+- **Status**: LocalBoost v13.21 is production-ready
+
 ## Polish Session 2026-05-06 (v13.20) - SPA Navigation Final Fix ✅
 - **Fixed**: Welcome back banner in Providers.tsx used `<a>` tag for internal route `/tools/lead-finder` → replaced with Next.js `<Link>`
 - **Fixed**: Landing page ToolsShowcase section used `<a>` tags for tool links (`/tools/...`) → replaced with Next.js `<Link>` for proper SPA navigation
