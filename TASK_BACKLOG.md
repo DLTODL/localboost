@@ -238,6 +238,7 @@ ebf2bd0 v12.6: Proposal Generator gets full TemplateSwitcher
 
 **Git Log**
 ```
+b3457f4 v13.8: SPA navigation - replace <a href> with Link components
 5c1a556 v13.7: Tools Hub SPA nav, onboarding trigger fix, Dashboard polish
 4bb3026 v13.6: ProfileBar on all tools, build verified
 ```
