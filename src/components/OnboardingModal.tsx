@@ -270,7 +270,9 @@ export default function OnboardingModal({ onComplete }: OnboardingProps) {
                 <div className="space-y-1 text-sm">
                   <div>🏢 {data.name || '-'}</div>
                   <div>📍 {data.city || '-'}</div>
-                  <div>📱 {data.phone || '-'}</div>
+                  {data.phone && <div>📱 {data.phone}</div>}
+                  {data.email && <div>📧 {data.email}</div>}
+                  {data.website && <div>🌐 {data.website}</div>}
                 </div>
               </div>
             </div>

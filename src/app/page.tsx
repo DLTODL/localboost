@@ -43,7 +43,7 @@ const toolCategories = [
     tools: [
       { name: 'Google Business Guide', href: '/tools/google-business-guide', desc: 'Claim en optimaliseer je Google Maps profiel', why: '87% van klanten zoekt lokaal via Google. Zonder.complete profiel=onzichtbaar.' },
       { name: 'SEO Scanner', href: '/tools/seo-scanner', desc: 'Analyseer je website voor Google', why: 'Je website kan technisch perfect zijn maar nog steeds niet ranken. Vind problemen.' },
-      { name: 'Lead Finder', href: '/tools/lead-finder', desc: 'Vind potentiële klanten in je regio', why: 'Weet wie je potentële klanten zijn. targeting is效果好 dan adverteren.' }
+      { name: 'Lead Finder', href: '/tools/lead-finder', desc: 'Vind potentiële klanten in je regio', why: 'Weet wie je potentële klanten zijn. Gerichte targeting werkt beter dan algemeen adverteren.' }
     ]
   },
   {
@@ -85,7 +85,7 @@ const packages = [
     id: 'starter',
     name: 'Starter',
     price: 97,
-    tagline: 'Perfect voor的第一步',
+    tagline: 'Perfect voor je eerste stappen',
     description: 'Alles wat je nodig hebt om online start',
     color: 'from-slate-600 to-slate-700',
     features: [
@@ -138,7 +138,7 @@ const packages = [
 // Testimonials with real numbers
 const testimonials = [
   { name: 'Jan', company: 'Loodgieter Amsterdam', result: '+340%', quote: 'Van 1 offerte/week naar 4/dag. De tools doen het werk.', avatar: '👨‍🔧' },
-  { name: 'Sophie', company: 'Schoonheidssalon', result: '+180%', quote: 'Mijn agenda is voller dan ik aankan. Ik werk nu only 4 dagen.', avatar: '💅' },
+  { name: 'Sophie', company: 'Schoonheidssalon', result: '+180%', quote: 'Mijn agenda is voller dan ik aankan. Ik werk nu maar 4 dagen.', avatar: '💅' },
   { name: 'Mark', company: 'Autobedrijf', result: '+520%', quote: 'Google #1 voor auto importeren Amsterdam. Klanten bellen nu ons.', avatar: '🚗' }
 ]
 
@@ -251,7 +251,7 @@ function Problem() {
               <ul className="space-y-2 text-red-800">
                 <li>• Je bent niet te vinden op Google</li>
                 <li>• 0 beoordelingen of slechte reviews</li>
-                <li>• Geen consistent online présence</li>
+                <li>• Geen consistent online aanwezigheid</li>
                 <li>• Adverteren werkt niet voor je</li>
                 <li>• Website levert niets op</li>
               </ul>
