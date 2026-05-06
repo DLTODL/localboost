@@ -12,6 +12,7 @@ import {
   ArrowUpRight, ArrowDownRight, CheckCircle2, AlertTriangle, BookOpen, Calculator,
   FileText, BarChart3, Search, Settings
 } from 'lucide-react'
+import Link from 'next/link'
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
@@ -308,7 +309,7 @@ function ToolsShowcase() {
                 {/* Tools in category */}
                 <div className="p-4 space-y-3">
                   {category.tools.map((tool, i) => (
-                    <a 
+                    <Link 
                       key={tool.name}
                       href={tool.href}
                       className="block p-4 rounded-xl border border-slate-100 hover:border-violet-200 hover:bg-violet-50/30 transition group"
@@ -328,7 +329,7 @@ function ToolsShowcase() {
                           <span className="text-violet-400">WAAROM:</span> {tool.why}
                         </p>
                       </div>
-                    </a>
+                    </Link>
                   ))}
                 </div>
               </motion.div>

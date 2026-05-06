@@ -2,6 +2,15 @@
 
 ## Sprint: Polish & Integration (Current)
 
+## Polish Session 2026-05-06 (v13.20) - SPA Navigation Final Fix ✅
+- **Fixed**: Welcome back banner in Providers.tsx used `<a>` tag for internal route `/tools/lead-finder` → replaced with Next.js `<Link>`
+- **Fixed**: Landing page ToolsShowcase section used `<a>` tags for tool links (`/tools/...`) → replaced with Next.js `<Link>` for proper SPA navigation
+- **Removed**: Unused `useCallback` import in Providers.tsx (cleanup)
+- **Added**: `Link` import from `next/link` in Providers.tsx and landing page
+- **Build verified**: All 29 routes compile successfully ✅
+- **TypeScript verified**: No errors ✅
+- **Status: LocalBoost v13.20 is production-ready**
+
 ## Polish Session 2026-05-06 (v13.19) - Verification Complete ✅
 - **TypeScript check**: `tsc --noEmit` passes with no errors ✅
 - **Build verified**: All 29 routes compile successfully (5/6/2026 3:01 PM) ✅

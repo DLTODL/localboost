@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect } from 'react'
+import Link from 'next/link'
 import OnboardingModal from './OnboardingModal'
 import { ToastContainer } from '@/lib/toast'
 import { useOnboarding } from '@/lib/useSharedData'
@@ -54,7 +55,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
           <div className="max-w-6xl mx-auto flex items-center justify-between">
             <div className="flex items-center gap-2 text-sm">
               <span>👋</span>
-              <span>Welkom terug! Je profiel is geladen. <a href="/tools/lead-finder" className="underline font-medium">Start met leads zoeken →</a></span>
+              <span>Welkom terug! Je profiel is geladen. <Link href="/tools/lead-finder" className="underline font-medium">Start met leads zoeken →</Link></span>
             </div>
             <button 
               onClick={dismissBanner}
