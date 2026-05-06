@@ -1,12 +1,13 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { FileText, Download, User, Building, CheckCircle, ChevronRight, ChevronLeft, RotateCcw, Mail, Save, Database } from 'lucide-react'
+import { FileText, Download, User, Building, CheckCircle, ChevronRight, ChevronLeft, RotateCcw, Mail, Save, Database, Loader2 } from 'lucide-react'
 import Link from 'next/link'
 import { useBusinessProfile, useToolInputs, useSelectedBusiness, useTemplates, showToast } from '@/lib/useSharedData'
 import TemplateSwitcher from '@/components/polish/TemplateSwitcher'
 import ProfileBar from '@/components/polish/ProfileBar'
 import { emailTemplates } from '@/lib/email-templates'
+import { Skeleton } from '@/components/polish/Skeleton'
 
 interface ProposalData {
   clientName: string
@@ -44,6 +45,13 @@ export default function ProposalGenerator() {
   const [generated, setGenerated] = useState(false)
   const [linkedEmailTemplate, setLinkedEmailTemplate] = useState<string | null>(null)
   const [showEmailPicker, setShowEmailPicker] = useState(false)
+  const [isInitialLoad, setIsInitialLoad] = useState(true)
+
+  // Skeleton loading simulation
+  useEffect(() => {
+    const timer = setTimeout(() => setIsInitialLoad(false), 600)
+    return () => clearTimeout(timer)
+  }, [])
 
   const selectedService = services.find(s => s.id === data.service)
 
@@ -241,7 +249,37 @@ Handtekening: _______________________`
         </div>
 
         {/* Step 1: Client Info */}
-        {step === 1 && (
+        {isInitialLoad ? (
+          <div className="space-y-4 animate-pulse">
+            <div className="bg-slate-800 rounded-2xl p-6 border border-slate-700">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-10 h-10 bg-slate-700 rounded-xl"></div>
+                <div className="h-6 w-40 bg-slate-700 rounded"></div>
+              </div>
+              <div className="space-y-4">
+                <div>
+                  <div className="h-4 w-20 bg-slate-700 rounded mb-2"></div>
+                  <div className="h-12 bg-slate-700 rounded-xl"></div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <div className="h-4 w-16 bg-slate-700 rounded mb-2"></div>
+                    <div className="h-12 bg-slate-700 rounded-xl"></div>
+                  </div>
+                  <div>
+                    <div className="h-4 w-20 bg-slate-700 rounded mb-2"></div>
+                    <div className="h-12 bg-slate-700 rounded-xl"></div>
+                  </div>
+                </div>
+                <div>
+                  <div className="h-4 w-24 bg-slate-700 rounded mb-2"></div>
+                  <div className="h-12 bg-slate-700 rounded-xl"></div>
+                </div>
+              </div>
+              <div className="h-12 bg-slate-700 rounded-xl mt-6 w-full opacity-50"></div>
+            </div>
+          </div>
+        ) : step === 1 && (
           <div className="bg-slate-800 rounded-2xl p-6 border border-slate-700 animate-slide-up">
             <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
               <User className="w-5 h-5 text-violet-400" />
@@ -302,7 +340,7 @@ Handtekening: _______________________`
         )}
 
         {/* Step 2: Service Selection */}
-        {step === 2 && (
+        {!isInitialLoad && step === 2 && (
           <div className="bg-slate-800 rounded-2xl p-6 border border-slate-700 animate-slide-up">
             <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
               <Building className="w-5 h-5 text-violet-400" />
@@ -345,7 +383,7 @@ Handtekening: _______________________`
         )}
 
         {/* Step 3: Preview & Generate */}
-        {step === 3 && (
+        {!isInitialLoad && step === 3 && (
           <div className="space-y-4 animate-slide-up">
             <div className="bg-slate-800 rounded-2xl p-6 border border-slate-700">
               <h2 className="text-xl font-bold mb-4 flex items-center gap-2">

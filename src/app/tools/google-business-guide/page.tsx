@@ -1,10 +1,11 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { CheckCircle, Circle, ExternalLink, Lightbulb, ChevronDown, ChevronUp, Star } from 'lucide-react'
+import { CheckCircle, Circle, ExternalLink, Lightbulb, ChevronDown, ChevronUp, Star, Loader2 } from 'lucide-react'
 import { useBusinessProfile, useTemplates, useToolInputs } from '@/lib/useSharedData'
 import TemplateSwitcher from '@/components/polish/TemplateSwitcher'
 import ProfileBar from '@/components/polish/ProfileBar'
+import { Skeleton } from '@/components/polish/Skeleton'
 
 interface Task { id: number; title: string; category: string; completed: boolean }
 
@@ -65,6 +66,13 @@ export default function GoogleBusinessGuide() {
   const [taskList, setTaskList] = useState<Task[]>(tasks.map(t => ({ ...t })))
   const [expandedCategory, setExpandedCategory] = useState<string | null>('setup')
   const [showOnlyIncomplete, setShowOnlyIncomplete] = useState(false)
+  const [isInitialLoad, setIsInitialLoad] = useState(true)
+
+  // Skeleton loading simulation
+  useEffect(() => {
+    const timer = setTimeout(() => setIsInitialLoad(false), 600)
+    return () => clearTimeout(timer)
+  }, [])
 
   // Pre-fill showOnlyIncomplete from saved inputs
   useEffect(() => {
@@ -117,15 +125,25 @@ export default function GoogleBusinessGuide() {
 
       <div className="max-w-5xl mx-auto px-6 py-6">
         {/* Progress */}
-        <div className="bg-slate-800/50 rounded-2xl p-6 border border-slate-700/50 mb-6">
-          <div className="flex items-center justify-between mb-3">
-            <div><span className="text-3xl font-bold">{totalPercent}%</span><span className="text-slate-400 ml-2">compleet</span></div>
-            <div className="text-slate-400">{totalDone} van {taskList.length} taken</div>
+        {isInitialLoad ? (
+          <div className="bg-slate-800/50 rounded-2xl p-6 border border-slate-700/50 mb-6 space-y-3">
+            <div className="flex justify-between">
+              <Skeleton width={80} height={40} />
+              <Skeleton width={100} height={16} />
+            </div>
+            <Skeleton height={12} />
           </div>
-          <div className="h-3 bg-slate-700 rounded-full overflow-hidden">
-            <div className="h-full bg-gradient-to-r from-violet-500 to-purple-500 transition-all duration-500" style={{ width: `${totalPercent}%` }} />
+        ) : (
+          <div className="bg-slate-800/50 rounded-2xl p-6 border border-slate-700/50 mb-6">
+            <div className="flex items-center justify-between mb-3">
+              <div><span className="text-3xl font-bold">{totalPercent}%</span><span className="text-slate-400 ml-2">compleet</span></div>
+              <div className="text-slate-400">{totalDone} van {taskList.length} taken</div>
+            </div>
+            <div className="h-3 bg-slate-700 rounded-full overflow-hidden">
+              <div className="h-full bg-gradient-to-r from-violet-500 to-purple-500 transition-all duration-500" style={{ width: `${totalPercent}%` }} />
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Quick Links */}
         <div className="grid grid-cols-3 gap-3 mb-6">

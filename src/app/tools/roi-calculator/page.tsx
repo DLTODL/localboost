@@ -1,10 +1,11 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { TrendingUp, TrendingDown, Euro, Users, Target, Calculator, RefreshCw, Save, Copy, Check, BarChart3, PieChart, ArrowRight, Info } from 'lucide-react'
+import { TrendingUp, TrendingDown, Euro, Users, Target, Calculator, RefreshCw, Save, Copy, Check, BarChart3, PieChart, ArrowRight, Info, Loader2 } from 'lucide-react'
 import { useBusinessProfile, useToolInputs, useTemplates, copyWithToast } from '@/lib/useSharedData'
 import TemplateSwitcher from '@/components/polish/TemplateSwitcher'
 import ProfileBar from '@/components/polish/ProfileBar'
+import { Skeleton } from '@/components/polish/Skeleton'
 
 interface ROIInputs {
   monthlySpend: number
@@ -179,6 +180,13 @@ export default function ROICalculator() {
 
   const [results, setResults] = useState<ROIResults | null>(null)
   const [showBenchmark, setShowBenchmark] = useState(false)
+  const [isInitialLoad, setIsInitialLoad] = useState(true)
+
+  // Skeleton loading simulation
+  useEffect(() => {
+    const timer = setTimeout(() => setIsInitialLoad(false), 600)
+    return () => clearTimeout(timer)
+  }, [])
 
   // Pre-fill from profile
   useEffect(() => {
@@ -277,8 +285,26 @@ Payback: ${results.paybackMonths.toFixed(1)} maanden`
 
         {!results ? (
           <>
-            {/* Input Form */}
-            <div className="bg-slate-800 rounded-2xl p-6 mb-6 border border-slate-700">
+            {/* Input Form - Skeleton Loading */}
+            {isInitialLoad ? (
+              <div className="bg-slate-800 rounded-2xl p-6 mb-6 border border-slate-700 space-y-4">
+                <div className="flex items-center justify-between">
+                  <Skeleton width={160} height={20} />
+                  <Skeleton width={140} height={36} />
+                </div>
+                <Skeleton height={40} />
+                <div className="grid md:grid-cols-2 gap-4">
+                  {[1, 2, 3, 4, 5, 6].map(i => (
+                    <div key={i} className="space-y-1.5">
+                      <Skeleton width={100} height={14} />
+                      <Skeleton height={42} />
+                    </div>
+                  ))}
+                </div>
+                <Skeleton height={48} />
+              </div>
+            ) : (
+              <div className="bg-slate-800 rounded-2xl p-6 mb-6 border border-slate-700">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg font-bold flex items-center gap-2">
                   <Calculator className="w-5 h-5 text-violet-400" />
@@ -359,6 +385,7 @@ Payback: ${results.paybackMonths.toFixed(1)} maanden`
                 />
               </div>
             </div>
+            )}
 
             {/* Calculate Button */}
             <button

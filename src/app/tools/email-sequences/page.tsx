@@ -1,11 +1,12 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Mail, Copy, Check, Send, Clock, Users, MessageSquare, Tag, FileText, Sparkles } from 'lucide-react'
+import { Mail, Copy, Check, Send, Clock, Users, MessageSquare, Tag, FileText, Sparkles, Loader2 } from 'lucide-react'
 import Link from 'next/link'
 import { copyWithToast, useBusinessProfile, useToolInputs, useTemplates } from '@/lib/useSharedData'
 import TemplateSwitcher from '@/components/polish/TemplateSwitcher'
 import ProfileBar from '@/components/polish/ProfileBar'
+import { Skeleton } from '@/components/polish/Skeleton'
 
 interface Sequence {
   id: string
@@ -192,15 +193,15 @@ export default function EmailSequences() {
         <div key={i} className="bg-slate-800 rounded-2xl border border-slate-700 overflow-hidden">
           <div className="p-6">
             <div className="flex items-start justify-between gap-4">
-              <div className="flex-1">
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="h-6 w-32 bg-slate-700 rounded animate-pulse"></div>
-                  <div className="h-5 w-20 bg-slate-700 rounded animate-pulse"></div>
+              <div className="flex-1 space-y-2">
+                <div className="flex items-center gap-2">
+                  <Skeleton width={64} height={24} />
+                  <Skeleton width={80} height={24} />
                 </div>
-                <div className="h-5 w-full bg-slate-700 rounded animate-pulse mb-2"></div>
-                <div className="h-4 w-48 bg-slate-700 rounded animate-pulse"></div>
+                <Skeleton width="100%" height={20} />
+                <Skeleton width="60%" height={16} />
               </div>
-              <div className="h-10 w-24 bg-slate-700 rounded-xl animate-pulse"></div>
+              <Skeleton width={96} height={40} />
             </div>
           </div>
         </div>
