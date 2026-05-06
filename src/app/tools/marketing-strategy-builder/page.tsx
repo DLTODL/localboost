@@ -1,8 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Target, TrendingUp, DollarSign, Users, MapPin, Star, Clock, AlertCircle, Check, Loader2 } from 'lucide-react'
-import { copyWithToast, useTemplates } from '@/lib/useSharedData'
+import { copyWithToast, useBusinessProfile, useToolInputs, useTemplates } from '@/lib/useSharedData'
 import TemplateSwitcher from '@/components/polish/TemplateSwitcher'
 
 interface LeadData {
@@ -61,18 +61,39 @@ const strategiesByIndustry: Record<string, StrategyOutput[]> = {
 }
 
 export default function MarketingStrategyBuilder() {
+  const { profile } = useBusinessProfile()
+  const { inputs, saveInputs } = useToolInputs('marketing-strategy-builder')
   const { saveTemplate, getTemplatesForTool } = useTemplates()
   const savedTemplates = getTemplatesForTool('marketing-strategy-builder')
   const [leadData, setLeadData] = useState<LeadData>({
-    industry: '',
-    location: '',
-    monthlyBudget: '',
-    currentChannels: [],
-    painPoint: ''
+    industry: inputs.industry || '',
+    location: inputs.location || '',
+    monthlyBudget: inputs.monthlyBudget || '',
+    currentChannels: inputs.currentChannels || [],
+    painPoint: inputs.painPoint || ''
   })
   const [strategy, setStrategy] = useState<StrategyOutput[]>([])
   const [generating, setGenerating] = useState(false)
   const [selectedIndustry, setSelectedIndustry] = useState('')
+
+  // Pre-fill from profile
+  useEffect(() => {
+    if (profile?.city && !inputs.location) {
+      setLeadData(prev => ({ ...prev, location: profile.city }))
+    }
+    if (profile?.type && !inputs.industry) {
+      const matched = industries.find(i => i.toLowerCase().includes(profile.type.toLowerCase()))
+      if (matched) {
+        setLeadData(prev => ({ ...prev, industry: matched }))
+        setSelectedIndustry(matched.toLowerCase())
+      }
+    }
+  }, [profile, inputs.location, inputs.industry])
+
+  // Persist inputs when leadData changes
+  useEffect(() => {
+    saveInputs(leadData)
+  }, [leadData, saveInputs])
 
   const handleChannelToggle = (channel: string) => {
     setLeadData(prev => ({

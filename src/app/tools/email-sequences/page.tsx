@@ -166,13 +166,6 @@ export default function EmailSequences() {
   const [showContent, setShowContent] = useState<string | null>(null)
   const [filter, setFilter] = useState('')
 
-  // Pre-fill from profile
-  useEffect(() => {
-    if (profile && profile.name && !inputs.businessName) {
-      // Profile is available for cross-tool use
-    }
-  }, [profile, inputs.businessName])
-
   // Save inputs on change
   useEffect(() => {
     saveInputs({ filter })

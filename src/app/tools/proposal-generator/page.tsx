@@ -48,11 +48,9 @@ export default function ProposalGenerator() {
   // Pre-fill from profile
   useEffect(() => {
     if (profile) {
-      if (profile.name && !inputs.ourCompany) {
-        // We don't auto-fill company name from profile since that's the client
-      }
+      // Don't auto-fill client info from profile (profile = sender, not client)
     }
-  }, [profile, inputs])
+  }, [profile])
 
   const handleInputChange = (field: keyof ProposalData, value: string) => {
     const newData = { ...data, [field]: value }

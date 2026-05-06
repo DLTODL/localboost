@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { CheckCircle, Circle, ExternalLink, Lightbulb, ChevronDown, ChevronUp, Star } from 'lucide-react'
-import { useTemplates } from '@/lib/useSharedData'
+import { useBusinessProfile, useTemplates } from '@/lib/useSharedData'
 import TemplateSwitcher from '@/components/polish/TemplateSwitcher'
 
 interface Task { id: number; title: string; category: string; completed: boolean }
@@ -56,6 +56,7 @@ const tasks = [
 ]
 
 export default function GoogleBusinessGuide() {
+  const { profile } = useBusinessProfile()
   const { saveTemplate, getTemplatesForTool } = useTemplates()
   const savedTemplates = getTemplatesForTool('google-business-guide')
   const [taskList, setTaskList] = useState<Task[]>(tasks.map(t => ({ ...t })))
@@ -84,7 +85,7 @@ export default function GoogleBusinessGuide() {
         <div className="max-w-5xl mx-auto px-6 py-6">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold flex items-center gap-2">🏪 Google Business Setup Guide</h1>
+              <h1 className="text-2xl font-bold flex items-center gap-2">🏪 Google Business Setup Guide{profile?.name ? ` – ${profile.name}` : ''}</h1>
               <p className="text-slate-400 text-sm mt-1">Volg deze stappen om je Google Business profiel te optimaliseren</p>
             </div>
             <TemplateSwitcher

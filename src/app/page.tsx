@@ -12,7 +12,6 @@ import {
   ArrowUpRight, ArrowDownRight, CheckCircle2, AlertTriangle, BookOpen, Calculator,
   FileText, BarChart3, Search, Settings
 } from 'lucide-react'
-import OnboardingModal from '@/components/OnboardingModal'
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },

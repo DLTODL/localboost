@@ -127,7 +127,11 @@ export default function CompetitorScanner() {
     if (profile?.city && !inputs.city) {
       setCity(profile.city)
     }
-  }, [profile, inputs.city])
+    if (profile?.type && !inputs.industry) {
+      const matched = industries.find(i => i.toLowerCase().includes(profile.type.toLowerCase()))
+      if (matched) setIndustry(matched)
+    }
+  }, [profile, inputs.city, inputs.industry])
 
   const handleScan = () => {
     if (!city || !industry) return
