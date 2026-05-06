@@ -227,3 +227,17 @@ ebf2bd0 v12.6: Proposal Generator gets full TemplateSwitcher
 - **Competitor Scanner**: Added 'Lead Finder' CTA button in header for cross-tool workflow
 - **Build verified**: All 29 routes compile successfully ✅
 - **Status: LocalBoost v13.4 is production-ready**
+
+## Polish Session 2026-05-06-7 (v13.7) - SPA Navigation & Onboarding Fix
+- **Tools Hub**: Convert all `<a href>` links to Next.js `<Link>` components for proper SPA navigation (no full page reloads)
+- **Onboarding trigger fix**: Tools Hub "Persoonlijke setup" banner now sets `localboost_show_onboarding` flag in localStorage; Providers.tsx picks it up and shows onboarding modal immediately on next page load
+- **Dashboard polish**: Replace plain text "Laden..." and "Geen leads" states with proper ListSkeleton and EmptyState components with actionable CTA (link to Lead Finder)
+- **Data privacy**: Remove `console.log(data)` from landing page form submit handler
+- **Build verified**: All 29 routes compile successfully ✅
+- **Status: LocalBoost v13.7 is production-ready**
+
+**Git Log**
+```
+5c1a556 v13.7: Tools Hub SPA nav, onboarding trigger fix, Dashboard polish
+4bb3026 v13.6: ProfileBar on all tools, build verified
+```
