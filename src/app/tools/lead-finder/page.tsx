@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { Search, MapPin, Phone, Mail, Globe, Copy, Check, Download, Star, Save, Trash2, Building, User, ChevronDown, X, ExternalLink, MessageSquare } from 'lucide-react'
-import { useBusinessProfile, useLeads, useToolInputs, useTemplates, useSelectedBusiness, copyWithToast } from '@/lib/useSharedData'
+import { Search, MapPin, Phone, Mail, Globe, Copy, Check, Download, Star, Save, Trash2, Building, User, ChevronDown, X, ExternalLink, MessageSquare, FileText, Send } from 'lucide-react'
+import { useBusinessProfile, useLeads, useToolInputs, useTemplates, useSelectedBusiness, copyWithToast, showToast } from '@/lib/useSharedData'
 import TemplateSwitcher from '@/components/polish/TemplateSwitcher'
 import { CardSkeleton, ListSkeleton, FormSkeleton } from '@/components/polish/Skeleton'
 import ProfileBar from '@/components/polish/ProfileBar'
@@ -167,7 +167,7 @@ export default function LeadFinder() {
       needs: lead.needs
     })
     setShowSaveModal(null)
-    await copyWithToast('Lead opgeslagen in CRM!', 'success')
+    showToast('✓ Lead opgeslagen in CRM', 'success')
   }
 
 
@@ -193,7 +193,7 @@ export default function LeadFinder() {
       city: lead.city,
       needs: lead.needs
     })
-    copyWithToast('✓ Lead opgeslagen - Review Generator geopend', 'success')
+    showToast('✓ Lead opgeslagen → Review Generator geopend', 'success')
     router.push('/tools/review-generator')
   }
 
@@ -211,8 +211,42 @@ export default function LeadFinder() {
       reviewCount: lead.reviewCount
     }
     selectBusiness(businessData)
-    copyWithToast('✓ Bedrijf geselecteerd - Social Post Generator', 'success')
+    showToast('✓ Bedrijf geselecteerd → Social Post Generator', 'success')
     router.push('/tools/social-post-generator')
+  }
+
+  const handleOpenProposalGenerator = (lead: Lead) => {
+    const businessData = {
+      name: lead.name,
+      phone: lead.phone,
+      email: '',
+      website: lead.website,
+      address: lead.address,
+      city: lead.city,
+      industry: lead.needs[0] || '',
+      rating: lead.rating,
+      reviewCount: lead.reviewCount
+    }
+    selectBusiness(businessData)
+    showToast('✓ Bedrijf geselecteerd → Proposal Generator', 'success')
+    router.push('/tools/proposal-generator')
+  }
+
+  const handleOpenEmailCampaign = (lead: Lead) => {
+    const businessData = {
+      name: lead.name,
+      phone: lead.phone,
+      email: '',
+      website: lead.website,
+      address: lead.address,
+      city: lead.city,
+      industry: lead.needs[0] || '',
+      rating: lead.rating,
+      reviewCount: lead.reviewCount
+    }
+    selectBusiness(businessData)
+    showToast('✓ Bedrijf geselecteerd → Email Campaign Builder', 'success')
+    router.push('/tools/email-campaign-builder')
   }
 
   const filteredLeads = filterPriority === 'all' 
@@ -448,6 +482,20 @@ export default function LeadFinder() {
                           title="Open in Review Generator (slaat ook op in CRM)"
                         >
                           <Star className="w-5 h-5" />
+                        </button>
+                        <button
+                          onClick={() => handleOpenProposalGenerator(lead)}
+                          className="p-2 bg-blue-600 hover:bg-blue-700 rounded-lg transition"
+                          title="Open in Proposal Generator"
+                        >
+                          <FileText className="w-5 h-5" />
+                        </button>
+                        <button
+                          onClick={() => handleOpenEmailCampaign(lead)}
+                          className="p-2 bg-green-600 hover:bg-green-700 rounded-lg transition"
+                          title="Open in Email Campaign Builder"
+                        >
+                          <Send className="w-5 h-5" />
                         </button>
                         <button
                           onClick={() => handleOpenSocialPost(lead)}
