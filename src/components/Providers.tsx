@@ -12,10 +12,17 @@ export default function Providers({ children }: { children: React.ReactNode }) {
     setMounted(true)
     // Check if onboarding is complete
     const onboardingDone = localStorage.getItem('localboost_onboarding_done')
+    const showOnboarding = localStorage.getItem('localboost_show_onboarding')
+    
     if (!onboardingDone) {
-      // Delay showing onboarding by 1.5 seconds to let page load
-      const timer = setTimeout(() => setShowOnboarding(true), 1500)
-      return () => clearTimeout(timer)
+      // If triggered from Tools Hub banner, show immediately; otherwise delay 1.5s
+      if (showOnboarding) {
+        localStorage.removeItem('localboost_show_onboarding')
+        setShowOnboarding(true)
+      } else {
+        const timer = setTimeout(() => setShowOnboarding(true), 1500)
+        return () => clearTimeout(timer)
+      }
     }
   }, [])
 

@@ -442,8 +442,7 @@ function Contact() {
     resolver: zodResolver(contactSchema)
   })
 
-  const onSubmit = (data: FormData) => {
-    console.log(data)
+  const onSubmit = (_data: FormData) => {
     setSubmitted(true)
   }
 

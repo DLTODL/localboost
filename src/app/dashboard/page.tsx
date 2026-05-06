@@ -2,7 +2,9 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { Settings } from 'lucide-react'
+import { Settings, ArrowRight } from 'lucide-react'
+import { ListSkeleton } from '@/components/polish/Skeleton'
+import { EmptyState } from '@/components/polish/EmptyState'
 
 interface Lead {
   id: number
@@ -170,11 +172,27 @@ export default function Dashboard() {
         {/* Leads Table */}
         <div className="bg-slate-800/50 rounded-2xl border border-slate-700/50 overflow-hidden">
           {loading ? (
-            <div className="p-8 text-center text-slate-400">Laden...</div>
-          ) : filteredLeads.length === 0 ? (
-            <div className="p-8 text-center text-slate-400">
-              Geen leads gevonden in deze categorie
+            <div className="p-6">
+              <ListSkeleton items={5} />
             </div>
+          ) : filteredLeads.length === 0 ? (
+            <EmptyState
+              icon="search"
+              title="Geen leads in deze categorie"
+              description={
+                filter === 'all'
+                  ? 'Leads van de website komen hier terecht. Nog geen leads ontvangen.'
+                  : 'Probeer een andere filter of wacht tot er nieuwe leads binnenkomen.'
+              }
+              action={
+                <Link
+                  href="/tools/lead-finder"
+                  className="px-6 py-3 bg-gradient-to-r from-violet-600 to-purple-600 hover:opacity-90 rounded-xl font-medium transition inline-flex items-center gap-2"
+                >
+                  Vind leads <ArrowRight className="w-4 h-4" />
+                </Link>
+              }
+            />
           ) : (
             <table className="w-full">
               <thead className="bg-slate-900/50">

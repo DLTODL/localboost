@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { ArrowRight, Star, Search, FileText, Mail, Target, MapPin, MessageSquare, BarChart3, Zap, User } from 'lucide-react'
+import { motion } from 'framer-motion'
 
 const allTools = [
   {
@@ -113,6 +114,8 @@ const quickTools = [
   { name: 'Quote Generator', icon: '📋', href: '/tools/quote-generator', color: 'from-blue-600 to-indigo-600' },
 ]
 
+const ONBOARDING_KEY = 'localboost_show_onboarding'
+
 export default function ToolsHub() {
   const [recentTools, setRecentTools] = useState<{name: string; href: string; icon: string}[]>([])
 
@@ -165,7 +168,7 @@ export default function ToolsHub() {
             
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {section.tools.map((tool) => (
-                <a
+                <Link
                   key={tool.name}
                   href={tool.href}
                   onClick={() => handleToolClick(tool)}
@@ -192,7 +195,7 @@ export default function ToolsHub() {
                   <div className="flex items-center gap-2 text-violet-400 text-sm font-medium group-hover:gap-3 transition-all">
                     Gebruik gratis <ArrowRight className="w-4 h-4" />
                   </div>
-                </a>
+                </Link>
               ))}
             </div>
           </div>
@@ -209,12 +212,15 @@ export default function ToolsHub() {
                 <h2 className="text-2xl font-bold mb-2">Persoonlijke setup - 30 seconden</h2>
                 <p className="text-slate-400 mb-4">Voer je bedrijfsnaam in en alle tools worden voor jou gepersonaliseerd. Pre-fill, snellere workflows, betere resultaten.</p>
                 <div className="flex gap-3">
-                  <a 
-                    href="/#contact" 
+                  <button
+                    onClick={() => {
+                      localStorage.setItem(ONBOARDING_KEY, 'true')
+                      window.location.href = '/'
+                    }}
                     className="px-6 py-3 bg-gradient-to-r from-violet-600 to-purple-600 hover:opacity-90 rounded-xl font-semibold flex items-center gap-2 transition"
                   >
                     Start Setup <ArrowRight className="w-4 h-4" />
-                  </a>
+                  </button>
                 </div>
               </div>
             </div>
@@ -229,16 +235,17 @@ export default function ToolsHub() {
           </h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {quickTools.map(tool => (
-              <a
+              <Link
                 key={tool.name}
                 href={tool.href}
+                onClick={() => handleToolClick({ name: tool.name, href: tool.href, icon: tool.icon } as any)}
                 className="bg-slate-800 rounded-xl p-4 border border-slate-700 hover:border-slate-600 hover-lift transition-all group"
               >
                 <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${tool.color} flex items-center justify-center text-2xl mb-3 shadow-lg`}>
                   {tool.icon}
                 </div>
                 <div className="font-semibold group-hover:text-violet-300 transition">{tool.name}</div>
-              </a>
+              </Link>
             ))}
           </div>
         </div>
