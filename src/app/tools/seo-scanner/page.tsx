@@ -5,7 +5,7 @@ import {
   Search, Globe, Shield, AlertTriangle, CheckCircle, 
   Clock, Image, Smartphone, ExternalLink, RefreshCw, Zap
 } from 'lucide-react'
-import { copyWithToast } from '@/lib/useSharedData'
+import { copyWithToast, useTemplates } from '@/lib/useSharedData'
 import TemplateSwitcher from '@/components/polish/TemplateSwitcher'
 
 interface ScanResult {
@@ -33,6 +33,8 @@ interface ScanResult {
 }
 
 export default function SEOScanner() {
+  const { saveTemplate, getTemplatesForTool } = useTemplates()
+  const savedTemplates = getTemplatesForTool('seo-scanner')
   const [url, setUrl] = useState('')
   const [loading, setLoading] = useState(false)
   const [results, setResults] = useState<ScanResult | null>(null)

@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { Target, TrendingUp, DollarSign, Users, MapPin, Star, Clock, AlertCircle, Check, Loader2 } from 'lucide-react'
-import { copyWithToast } from '@/lib/useSharedData'
+import { copyWithToast, useTemplates } from '@/lib/useSharedData'
 import TemplateSwitcher from '@/components/polish/TemplateSwitcher'
 
 interface LeadData {
@@ -61,6 +61,8 @@ const strategiesByIndustry: Record<string, StrategyOutput[]> = {
 }
 
 export default function MarketingStrategyBuilder() {
+  const { saveTemplate, getTemplatesForTool } = useTemplates()
+  const savedTemplates = getTemplatesForTool('marketing-strategy-builder')
   const [leadData, setLeadData] = useState<LeadData>({
     industry: '',
     location: '',

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Mail, Copy, Check, Send, Clock, Users, MessageSquare, Tag, FileText, Sparkles } from 'lucide-react'
-import { copyWithToast, useBusinessProfile, useToolInputs } from '@/lib/useSharedData'
+import { copyWithToast, useBusinessProfile, useToolInputs, useTemplates } from '@/lib/useSharedData'
 import TemplateSwitcher from '@/components/polish/TemplateSwitcher'
 
 interface Sequence {
@@ -158,6 +158,8 @@ Groetjes,
 export default function EmailSequences() {
   const { profile } = useBusinessProfile()
   const { inputs, saveInputs } = useToolInputs('email-sequences')
+  const { saveTemplate, getTemplatesForTool } = useTemplates()
+  const savedTemplates = getTemplatesForTool('email-sequences')
   
   const [activeTab, setActiveTab] = useState('all')
   const [copiedId, setCopiedId] = useState<string | null>(null)
@@ -206,6 +208,15 @@ export default function EmailSequences() {
               <FileText className="w-4 h-4" />
               Bouw Campaign →
             </a>
+          </div>
+          <div className="mt-3">
+            <TemplateSwitcher
+              toolId="email-sequences"
+              onApply={(data) => {
+                // Email sequences are read-only templates, apply any saved search context
+              }}
+              currentData={{ savedCount: savedTemplates.length }}
+            />
           </div>
         </div>
 
