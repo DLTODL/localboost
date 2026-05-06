@@ -569,15 +569,6 @@ function Footer() {
 }
 
 export default function Home() {
-  const [showOnboarding, setShowOnboarding] = useState(false)
-
-  useEffect(() => {
-    const hasSeenOnboarding = localStorage.getItem('localboost_onboarding_done')
-    if (!hasSeenOnboarding) {
-      setTimeout(() => setShowOnboarding(true), 2000)
-    }
-  }, [])
-
   return (
     <main className="min-h-screen bg-slate-50">
       <Hero />
@@ -588,12 +579,6 @@ export default function Home() {
       <Contact />
       <FAQ />
       <Footer />
-      
-      <AnimatePresence>
-        {showOnboarding && (
-          <OnboardingModal onComplete={() => setShowOnboarding(false)} />
-        )}
-      </AnimatePresence>
     </main>
   )
 }
