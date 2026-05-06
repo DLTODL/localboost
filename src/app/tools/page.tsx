@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { ArrowRight, Star, Search, FileText, Mail, Target, MapPin, MessageSquare, BarChart3, Zap, User } from 'lucide-react'
 import { motion } from 'framer-motion'
 
@@ -117,6 +118,7 @@ const quickTools = [
 const ONBOARDING_KEY = 'localboost_show_onboarding'
 
 export default function ToolsHub() {
+  const router = useRouter()
   const [recentTools, setRecentTools] = useState<{name: string; href: string; icon: string}[]>([])
 
   useEffect(() => {
@@ -215,7 +217,7 @@ export default function ToolsHub() {
                   <button
                     onClick={() => {
                       localStorage.setItem(ONBOARDING_KEY, 'true')
-                      window.location.href = '/'
+                      router.push('/')
                     }}
                     className="px-6 py-3 bg-gradient-to-r from-violet-600 to-purple-600 hover:opacity-90 rounded-xl font-semibold flex items-center gap-2 transition"
                   >

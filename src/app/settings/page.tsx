@@ -2,10 +2,12 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { Settings, Trash2, Download, Upload, AlertTriangle, Check, Database, User, Bell, Shield } from 'lucide-react'
 import { useBusinessProfile, clearAllData, showToast } from '@/lib/useSharedData'
 
 export default function SettingsPage() {
+  const router = useRouter()
   const { profile, clearProfile } = useBusinessProfile()
   const [showClearProfile, setShowClearProfile] = useState(false)
   const [showClearAll, setShowClearAll] = useState(false)
@@ -20,7 +22,7 @@ export default function SettingsPage() {
     clearAllData()
     setShowClearAll(false)
     showToast('Alle data verwijderd', 'info')
-    setTimeout(() => window.location.reload(), 500)
+    setTimeout(() => router.refresh(), 500)
   }
 
   const handleExportAll = () => {
@@ -66,7 +68,7 @@ export default function SettingsPage() {
           localStorage.setItem(key, JSON.stringify(value))
         })
         showToast('Data geïmporteerd. Herlaad de pagina.', 'success')
-        setTimeout(() => window.location.reload(), 1000)
+        setTimeout(() => router.refresh(), 1000)
       } catch {
         showToast('Ongeldig backup bestand', 'error')
       }

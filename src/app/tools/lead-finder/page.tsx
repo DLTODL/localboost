@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { Search, MapPin, Phone, Mail, Globe, Copy, Check, Download, Star, Save, Trash2, Building, User, ChevronDown, X, ExternalLink } from 'lucide-react'
 import { useBusinessProfile, useLeads, useToolInputs, useTemplates, useSelectedBusiness, copyWithToast, notifyLeadSaved } from '@/lib/useSharedData'
 import TemplateSwitcher from '@/components/polish/TemplateSwitcher'
@@ -147,6 +148,8 @@ export default function LeadFinder() {
     setTimeout(() => setCopiedId(null), 2000)
   }
 
+  const router = useRouter()
+  
   const handleSaveLead = async (lead: Lead) => {
     await saveLeadFromFinder({
       name: lead.name,
@@ -158,6 +161,32 @@ export default function LeadFinder() {
     })
     setShowSaveModal(null)
     await copyWithToast('Lead opgeslagen in CRM!', 'success')
+  }
+
+
+  const handleOpenReviewGenerator = (lead: Lead) => {
+    selectBusiness({
+      name: lead.name,
+      phone: lead.phone,
+      email: '',
+      website: lead.website,
+      address: lead.address,
+      city: lead.city,
+      industry: lead.needs[0] || '',
+      rating: lead.rating,
+      reviewCount: lead.reviewCount
+    })
+    // Auto-save to CRM as well when opening Review Generator
+    saveLeadFromFinder({
+      name: lead.name,
+      phone: lead.phone,
+      website: lead.website,
+      address: lead.address,
+      city: lead.city,
+      needs: lead.needs
+    })
+    copyWithToast('✓ Lead opgeslagen - Review Generator geopend', 'success')
+    router.push('/tools/review-generator')
   }
 
   const filteredLeads = filterPriority === 'all' 
@@ -396,30 +425,7 @@ export default function LeadFinder() {
                           <Save className="w-5 h-5" />
                         </button>
                         <button
-                          onClick={() => {
-                            selectBusiness({
-                              name: lead.name,
-                              phone: lead.phone,
-                              email: '',
-                              website: lead.website,
-                              address: lead.address,
-                              city: lead.city,
-                              industry: lead.needs[0] || '',
-                              rating: lead.rating,
-                              reviewCount: lead.reviewCount
-                            })
-                            // Auto-save to CRM as well when opening Review Generator
-                            saveLeadFromFinder({
-                              name: lead.name,
-                              phone: lead.phone,
-                              website: lead.website,
-                              address: lead.address,
-                              city: lead.city,
-                              needs: lead.needs
-                            })
-                            copyWithToast('✓ Lead opgeslagen - Review Generator geopend', 'success')
-                            window.location.href = '/tools/review-generator'
-                          }}
+                          onClick={() => handleOpenReviewGenerator(lead)}
                           className="p-2 bg-yellow-600 hover:bg-yellow-700 rounded-lg transition"
                           title="Open in Review Generator (slaat ook op in CRM)"
                         >
