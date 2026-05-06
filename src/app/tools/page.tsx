@@ -1,7 +1,8 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { ArrowRight, Star, Search, FileText, Mail, Target, MapPin, MessageSquare, BarChart3 } from 'lucide-react'
+import { ArrowRight, Star, Search, FileText, Mail, Target, MapPin, MessageSquare, BarChart3, Zap, User } from 'lucide-react'
 
 const allTools = [
   {
@@ -104,7 +105,37 @@ const allTools = [
   }
 ]
 
+// Quick access tools
+const quickTools = [
+  { name: 'Lead Finder', icon: '🎯', href: '/tools/lead-finder', color: 'from-red-600 to-orange-600' },
+  { name: 'Review Generator', icon: '⭐', href: '/tools/review-generator', color: 'from-yellow-600 to-amber-600' },
+  { name: 'Email Campaign', icon: '📧', href: '/tools/email-campaign-builder', color: 'from-violet-600 to-purple-600' },
+  { name: 'Quote Generator', icon: '📋', href: '/tools/quote-generator', color: 'from-blue-600 to-indigo-600' },
+]
+
 export default function ToolsHub() {
+  const [recentTools, setRecentTools] = useState<{name: string; href: string; icon: string}[]>([])
+
+  useEffect(() => {
+    // Track recently viewed tools
+    const stored = localStorage.getItem('localboost_recent_tools')
+    if (stored) {
+      try {
+        setRecentTools(JSON.parse(stored))
+      } catch {}
+    }
+  }, [])
+
+  const handleToolClick = (tool: typeof allTools[0]['tools'][0]) => {
+    // Update recent tools
+    const recent = [tool, ...recentTools.filter(t => t.name !== tool.name)].slice(0, 4)
+    localStorage.setItem('localboost_recent_tools', JSON.stringify(recent))
+    setRecentTools(recent)
+  }
+
+  // Check if user has completed onboarding
+  const hasProfile = typeof window !== 'undefined' && localStorage.getItem('localboost_business_profile')
+
   return (
     <div className="min-h-screen bg-slate-900 text-white">
       {/* Hero */}
@@ -137,7 +168,8 @@ export default function ToolsHub() {
                 <a
                   key={tool.name}
                   href={tool.href}
-                  className="group relative bg-slate-800 rounded-2xl p-6 border border-slate-700 hover:border-slate-600 transition-all hover:scale-[1.02] hover:shadow-xl hover:shadow-violet-500/10"
+                  onClick={() => handleToolClick(tool)}
+                  className="group relative bg-slate-800 rounded-2xl p-6 border border-slate-700 hover:border-slate-600 transition-all hover:scale-[1.02] hover:shadow-xl hover:shadow-violet-500/10 hover-lift"
                 >
                   {tool.popular && (
                     <div className="absolute -top-2 -right-2 px-3 py-1 bg-gradient-to-r from-red-600 to-orange-600 rounded-full text-xs font-bold">
@@ -166,19 +198,48 @@ export default function ToolsHub() {
           </div>
         ))}
 
-        {/* Quote Generator Promo */}
-        <div className="mt-16 bg-gradient-to-r from-blue-600/20 to-indigo-600/20 rounded-2xl p-8 border border-blue-500/20">
-          <div className="flex items-center justify-between flex-wrap gap-4">
-            <div>
-              <h2 className="text-2xl font-bold mb-2">📋 Nieuw: Quote Generator</h2>
-              <p className="text-slate-400">Genereer professionele, printbare offertes voor je klanten met automatische berekeningen.</p>
+        {/* Quick Setup Banner - for users without profile */}
+        {!hasProfile && (
+          <div className="mt-16 bg-gradient-to-r from-violet-600/20 to-purple-600/20 rounded-2xl p-8 border border-violet-500/20">
+            <div className="flex items-start gap-6">
+              <div className="w-16 h-16 bg-violet-600 rounded-2xl flex items-center justify-center text-3xl flex-shrink-0">
+                🚀
+              </div>
+              <div className="flex-1">
+                <h2 className="text-2xl font-bold mb-2">Persoonlijke setup - 30 seconden</h2>
+                <p className="text-slate-400 mb-4">Voer je bedrijfsnaam in en alle tools worden voor jou gepersonaliseerd. Pre-fill, snellere workflows, betere resultaten.</p>
+                <div className="flex gap-3">
+                  <a 
+                    href="/#contact" 
+                    className="px-6 py-3 bg-gradient-to-r from-violet-600 to-purple-600 hover:opacity-90 rounded-xl font-semibold flex items-center gap-2 transition"
+                  >
+                    Start Setup <ArrowRight className="w-4 h-4" />
+                  </a>
+                </div>
+              </div>
             </div>
-            <a 
-              href="/tools/quote-generator" 
-              className="px-6 py-3 bg-blue-600 hover:bg-blue-700 rounded-xl font-semibold flex items-center gap-2 transition"
-            >
-              Probeer nu <ArrowRight className="w-4 h-4" />
-            </a>
+          </div>
+        )}
+
+        {/* Quick Access */}
+        <div className="mt-16">
+          <h2 className="text-2xl font-bold mb-6 flex items-center gap-3">
+            <Zap className="w-6 h-6 text-yellow-400" />
+            Snel toegang
+          </h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {quickTools.map(tool => (
+              <a
+                key={tool.name}
+                href={tool.href}
+                className="bg-slate-800 rounded-xl p-4 border border-slate-700 hover:border-slate-600 hover-lift transition-all group"
+              >
+                <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${tool.color} flex items-center justify-center text-2xl mb-3 shadow-lg`}>
+                  {tool.icon}
+                </div>
+                <div className="font-semibold group-hover:text-violet-300 transition">{tool.name}</div>
+              </a>
+            ))}
           </div>
         </div>
       </div>

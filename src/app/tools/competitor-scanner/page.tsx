@@ -179,14 +179,22 @@ export default function CompetitorScanner() {
                 <p className="text-slate-400">Ontdek wat je concurrenten doen en waar kansen liggen</p>
               </div>
             </div>
-            <TemplateSwitcher
-              toolId="competitor-scanner"
-              onApply={(data) => {
-                if (data.city) setCity(data.city)
-                if (data.industry) setIndustry(data.industry)
-              }}
-              currentData={{ city, industry }}
-            />
+            <div className="flex items-center gap-3">
+              <TemplateSwitcher
+                toolId="competitor-scanner"
+                onApply={(data) => {
+                  if (data.city) setCity(data.city)
+                  if (data.industry) setIndustry(data.industry)
+                }}
+                currentData={{ city, industry }}
+              />
+              <a
+                href="/tools/lead-finder"
+                className="px-4 py-2 bg-slate-700 hover:bg-slate-600 rounded-xl font-medium transition text-sm flex items-center gap-2"
+              >
+                <span>🎯</span> Lead Finder
+              </a>
+            </div>
           </div>
         </div>
 
