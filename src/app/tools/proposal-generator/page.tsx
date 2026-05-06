@@ -402,7 +402,7 @@ Handtekening: _______________________`
                       Bekijk alle templates →
                     </a>
                   </div>
-                ) : emailTemplates ? (
+                ) : linkedEmailTemplate ? (
                   <div className="text-xs text-slate-400">
                     ✓ {getLinkedEmailSequence()?.title} - {getLinkedEmailSequence()?.delay}
                   </div>

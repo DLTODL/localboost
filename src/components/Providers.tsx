@@ -19,15 +19,6 @@ export default function Providers({ children }: { children: React.ReactNode }) {
     }
   }, [])
 
-  // Expose toast function globally for use across tools
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      (window as any).showToast = (message: string, type: 'success' | 'error' | 'info' = 'success') => {
-        window.dispatchEvent(new CustomEvent('show-toast', { detail: { message, type } }))
-      }
-    }
-  }, [])
-
   if (!mounted) return <>{children}</>
 
   return (

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Sparkles, Copy, Check, RefreshCw, Instagram, Facebook, Linkedin, Calendar, X, ExternalLink, Send } from 'lucide-react'
-import { useBusinessProfile, useToolInputs, useSelectedBusiness, useTemplates, copyWithToast } from '@/lib/useSharedData'
+import { useBusinessProfile, useToolInputs, useSelectedBusiness, copyWithToast } from '@/lib/useSharedData'
 import TemplateSwitcher from '@/components/polish/TemplateSwitcher'
 
 const postTypes = [
@@ -80,9 +80,6 @@ export default function SocialPostGenerator() {
   const { profile } = useBusinessProfile()
   const { inputs, saveInputs } = useToolInputs('social-post-generator')
   const { business: selectedBusiness } = useSelectedBusiness()
-  const { saveTemplate, getTemplatesForTool } = useTemplates()
-
-  const savedTemplates = getTemplatesForTool('social-post-generator')
 
   const [business, setBusiness] = useState('')
   const [industry, setIndustry] = useState('')
