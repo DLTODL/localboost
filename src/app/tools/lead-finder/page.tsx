@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { Search, MapPin, Phone, Mail, Globe, Copy, Check, Download, Star, Save, Trash2, Building, User, ChevronDown, X, ExternalLink } from 'lucide-react'
+import { Search, MapPin, Phone, Mail, Globe, Copy, Check, Download, Star, Save, Trash2, Building, User, ChevronDown, X, ExternalLink, MessageSquare } from 'lucide-react'
 import { useBusinessProfile, useLeads, useToolInputs, useTemplates, useSelectedBusiness, copyWithToast } from '@/lib/useSharedData'
 import TemplateSwitcher from '@/components/polish/TemplateSwitcher'
 import { CardSkeleton, ListSkeleton, FormSkeleton } from '@/components/polish/Skeleton'
@@ -172,7 +172,7 @@ export default function LeadFinder() {
 
 
   const handleOpenReviewGenerator = (lead: Lead) => {
-    selectBusiness({
+    const businessData = {
       name: lead.name,
       phone: lead.phone,
       email: '',
@@ -182,7 +182,8 @@ export default function LeadFinder() {
       industry: lead.needs[0] || '',
       rating: lead.rating,
       reviewCount: lead.reviewCount
-    })
+    }
+    selectBusiness(businessData)
     // Auto-save to CRM as well when opening Review Generator
     saveLeadFromFinder({
       name: lead.name,
@@ -194,6 +195,24 @@ export default function LeadFinder() {
     })
     copyWithToast('✓ Lead opgeslagen - Review Generator geopend', 'success')
     router.push('/tools/review-generator')
+  }
+
+  // Also offer to open Social Post Generator with business info
+  const handleOpenSocialPost = (lead: Lead) => {
+    const businessData = {
+      name: lead.name,
+      phone: lead.phone,
+      email: '',
+      website: lead.website,
+      address: lead.address,
+      city: lead.city,
+      industry: lead.needs[0] || '',
+      rating: lead.rating,
+      reviewCount: lead.reviewCount
+    }
+    selectBusiness(businessData)
+    copyWithToast('✓ Bedrijf geselecteerd - Social Post Generator', 'success')
+    router.push('/tools/social-post-generator')
   }
 
   const filteredLeads = filterPriority === 'all' 
@@ -429,6 +448,13 @@ export default function LeadFinder() {
                           title="Open in Review Generator (slaat ook op in CRM)"
                         >
                           <Star className="w-5 h-5" />
+                        </button>
+                        <button
+                          onClick={() => handleOpenSocialPost(lead)}
+                          className="p-2 bg-pink-600 hover:bg-pink-700 rounded-lg transition"
+                          title="Open in Social Post Generator"
+                        >
+                          <MessageSquare className="w-5 h-5" />
                         </button>
                         {lead.phone && (
                           <button
