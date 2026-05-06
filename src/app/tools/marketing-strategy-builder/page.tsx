@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Target, TrendingUp, DollarSign, Users, MapPin, Star, Clock, AlertCircle, Check, Loader2, Mail } from 'lucide-react'
+import Link from 'next/link'
 import { copyWithToast, useBusinessProfile, useToolInputs, useTemplates } from '@/lib/useSharedData'
 import TemplateSwitcher from '@/components/polish/TemplateSwitcher'
 import ProfileBar from '@/components/polish/ProfileBar'
@@ -369,13 +370,13 @@ export default function MarketingStrategyBuilder() {
                 {/* Cross-tool CTA */}
                 <div className="mt-6 bg-gradient-to-r from-violet-900/30 to-purple-900/30 rounded-2xl p-4 border border-violet-700/50">
                   <p className="text-sm text-violet-300 mb-2">Wil je deze strategie omzetten in een email campagne?</p>
-                  <a 
-                    href="/tools/email-campaign-builder"
-                    className="inline-flex items-center gap-2 px-4 py-2 bg-violet-600 hover:bg-violet-500 rounded-lg text-sm font-medium transition"
-                  >
-                    <Mail className="w-4 h-4" />
-                    Bouw Email Campagne
-                  </a>
+              <Link
+                href="/tools/email-campaign-builder"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-violet-600 hover:bg-violet-500 rounded-lg text-sm font-medium transition"
+              >
+                <Mail className="w-4 h-4" />
+                Bouw Email Campagne
+              </Link>
                 </div>
               </div>
             )}
