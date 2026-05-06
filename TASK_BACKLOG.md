@@ -238,7 +238,17 @@ ebf2bd0 v12.6: Proposal Generator gets full TemplateSwitcher
 
 **Git Log**
 ```
-b3457f4 v13.8: SPA navigation - replace <a href> with Link components
+56123ab v13.8: Add input persistence to SEO Scanner, Task Manager, Google Business Guide
+b3457f4 v13.7: SPA navigation - replace <a href> with Link components
 5c1a556 v13.7: Tools Hub SPA nav, onboarding trigger fix, Dashboard polish
 4bb3026 v13.6: ProfileBar on all tools, build verified
 ```
+
+## Polish Session 2026-05-06-8 (v13.8) - Input Persistence Polish
+- **Build verified**: All 29 routes compile successfully ✅
+- **SEO Scanner**: Add URL persistence via useToolInputs hook - resumes last scanned URL
+- **Task Manager**: Add filter persistence (filterLead, filterStatus, filterCategory)
+- **Google Business Guide**: Add showOnlyIncomplete filter persistence
+- **Status: LocalBoost v13.8 is production-ready**
+
+## Polish Session 2026-05-06-7 (v13.7) - SPA Navigation & Onboarding Fix
