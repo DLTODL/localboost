@@ -218,8 +218,13 @@ export default function SocialPostGenerator() {
               <div className="text-lg font-medium text-violet-300">Social posts genereren...</div>
             </div>
             <div className="space-y-4">
-              <div className="h-32 bg-slate-700/50 rounded-xl animate-pulse"></div>
-              <div className="h-20 bg-slate-700/30 rounded-xl animate-pulse"></div>
+              <div className="h-12 bg-slate-700/50 rounded-xl animate-pulse"></div>
+              <div className="h-32 bg-slate-700/30 rounded-xl animate-pulse"></div>
+              <div className="grid grid-cols-3 gap-4">
+                <div className="h-10 bg-slate-700/30 rounded-xl animate-pulse"></div>
+                <div className="h-10 bg-slate-700/30 rounded-xl animate-pulse"></div>
+                <div className="h-10 bg-slate-700/30 rounded-xl animate-pulse"></div>
+              </div>
             </div>
           </div>
         )}

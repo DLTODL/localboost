@@ -11,13 +11,21 @@ interface TemplateSwitcherProps {
 }
 
 export default function TemplateSwitcher({ toolId, onApply, currentData }: TemplateSwitcherProps) {
-  const { templates, saveTemplate, deleteTemplate, getTemplatesForTool } = useTemplates()
+  const { templates, saveTemplate, deleteTemplate, getTemplatesForTool, applyTemplate } = useTemplates()
   const [isOpen, setIsOpen] = useState(false)
   const [showSave, setShowSave] = useState(false)
   const [templateName, setTemplateName] = useState('')
   const toolTemplates = getTemplatesForTool(toolId)
 
+  // Sort: most used first, then by last used
+  const sortedTemplates = [...toolTemplates].sort((a, b) => {
+    const countDiff = (b.useCount || 0) - (a.useCount || 0)
+    if (countDiff !== 0) return countDiff
+    return new Date(b.lastUsed || 0).getTime() - new Date(a.lastUsed || 0).getTime()
+  })
+
   const handleApply = (template: typeof toolTemplates[0]) => {
+    applyTemplate(template.id) // Track usage
     onApply(template.data)
     showToast(`${template.name} geladen`, 'success')
     setIsOpen(false)
@@ -99,7 +107,7 @@ export default function TemplateSwitcher({ toolId, onApply, currentData }: Templ
           </div>
 
           <div className="max-h-64 overflow-y-auto">
-            {toolTemplates.length === 0 ? (
+            {sortedTemplates.length === 0 ? (
               <div className="p-4 text-center text-slate-400 text-sm">
                 Nog geen templates.
                 <br />
@@ -107,7 +115,7 @@ export default function TemplateSwitcher({ toolId, onApply, currentData }: Templ
               </div>
             ) : (
               <div className="divide-y divide-slate-700">
-                {toolTemplates.map(template => (
+                {sortedTemplates.map(template => (
                   <div key={template.id} className="p-3 hover:bg-slate-700/50 transition">
                     <div className="flex items-center justify-between mb-1">
                       <span className="text-sm font-medium text-white">{template.name}</span>
@@ -128,9 +136,15 @@ export default function TemplateSwitcher({ toolId, onApply, currentData }: Templ
                         </button>
                       </div>
                     </div>
-                    <span className="text-xs text-slate-500">
-                      {new Date(template.createdAt).toLocaleDateString('nl-NL')}
-                    </span>
+                    <div className="flex items-center gap-2 text-xs text-slate-500">
+                      <span>{template.useCount || 0}x gebruikt</span>
+                      {template.lastUsed && (
+                        <>
+                          <span>•</span>
+                          <span>Laatst: {new Date(template.lastUsed).toLocaleDateString('nl-NL')}</span>
+                        </>
+                      )}
+                    </div>
                   </div>
                 ))}
               </div>

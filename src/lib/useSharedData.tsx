@@ -34,6 +34,8 @@ export interface ToolTemplate {
   name: string
   data: Record<string, any>
   createdAt: string
+  lastUsed?: string
+  useCount?: number
 }
 
 const STORAGE_KEYS = {
@@ -223,7 +225,9 @@ export function useTemplates() {
       tool,
       name,
       data,
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
+      lastUsed: new Date().toISOString(),
+      useCount: 1
     }
     setTemplates(prev => {
       const updated = [newTemplate, ...prev]
@@ -231,6 +235,18 @@ export function useTemplates() {
       return updated
     })
     return newTemplate
+  }, [])
+
+  const applyTemplate = useCallback((id: string) => {
+    setTemplates(prev => {
+      const updated = prev.map(t => 
+        t.id === id 
+          ? { ...t, lastUsed: new Date().toISOString(), useCount: (t.useCount || 0) + 1 }
+          : t
+      )
+      localStorage.setItem(STORAGE_KEYS.templates, JSON.stringify(updated))
+      return updated
+    })
   }, [])
 
   const deleteTemplate = useCallback((id: string) => {
@@ -245,7 +261,7 @@ export function useTemplates() {
     return templates.filter(t => t.tool === tool)
   }, [templates])
 
-  return { templates, saveTemplate, deleteTemplate, getTemplatesForTool, loading }
+  return { templates, saveTemplate, deleteTemplate, getTemplatesForTool, applyTemplate, loading }
 }
 
 // ==================
