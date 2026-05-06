@@ -2,6 +2,8 @@
 
 > All-in-one marketing toolkit for local Dutch businesses. Generate leads, create proposals, build email campaigns, and automate your marketing — all from one place.
 
+**Version: v13.24** | Production Ready
+
 ## Features
 
 ### Free Tools (no account needed)
