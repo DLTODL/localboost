@@ -3,8 +3,8 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 
-import { Sparkles, Copy, Check, RefreshCw, Instagram, Facebook, Linkedin, Calendar, X, ExternalLink, Send } from 'lucide-react'
-import { useBusinessProfile, useToolInputs, useSelectedBusiness, copyWithToast } from '@/lib/useSharedData'
+import { Sparkles, Copy, Check, RefreshCw, Instagram, Facebook, Linkedin, Calendar, X, ExternalLink, Send, Building, MapPin } from 'lucide-react'
+import { useBusinessProfile, useToolInputs, useSelectedBusiness, useLeads, copyWithToast, useCrossToolBridge } from '@/lib/useSharedData'
 import TemplateSwitcher from '@/components/polish/TemplateSwitcher'
 import ProfileBar from '@/components/polish/ProfileBar'
 import { FormSkeleton } from '@/components/polish/Skeleton'
@@ -80,14 +80,101 @@ const generatePosts = (business: string, type: string): GeneratedPost[] => {
   return posts
 }
 
+// Lead Picker Dropdown Component
+function LeadPickerDropdown({ onSelect, onClose }: { onSelect: (lead: any) => void; onClose: () => void }) {
+  const { leads } = useLeads()
+  const [search, setSearch] = useState('')
+
+  const filteredLeads = search
+    ? leads.filter(l => l.name.toLowerCase().includes(search.toLowerCase()) || l.city?.toLowerCase().includes(search.toLowerCase()))
+    : leads.slice(0, 5)
+
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      const target = e.target as Element
+      if (!target.closest('.lead-picker-dropdown')) {
+        onClose()
+      }
+    }
+    document.addEventListener('click', handleClick)
+    return () => document.removeEventListener('click', handleClick)
+  }, [onClose])
+
+  if (leads.length === 0) {
+    return (
+      <div className="absolute top-full left-0 right-0 mt-1 bg-slate-800 border border-slate-700 rounded-xl shadow-xl z-50 p-4 lead-picker-dropdown">
+        <div className="text-sm text-slate-400 text-center">
+          <p>Geen leads in CRM</p>
+          <Link href="/tools/lead-finder" className="text-violet-400 hover:text-violet-300 mt-2 inline-block">
+            Zoek leads →
+          </Link>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="absolute top-full left-0 right-0 mt-1 bg-slate-800 border border-slate-700 rounded-xl shadow-xl z-50 lead-picker-dropdown">
+      <div className="p-2 border-b border-slate-700">
+        <input
+          type="text"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Zoek in CRM..."
+          className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-sm outline-none focus:border-violet-500"
+          autoFocus
+        />
+      </div>
+      <div className="max-h-48 overflow-y-auto p-1">
+        {filteredLeads.length > 0 ? (
+          filteredLeads.map(lead => (
+            <button
+              key={lead.id}
+              onClick={() => onSelect(lead)}
+              className="w-full flex items-center gap-3 p-2.5 rounded-lg hover:bg-slate-700 transition text-left"
+            >
+              <div className="w-8 h-8 bg-violet-600/20 rounded-lg flex items-center justify-center text-sm">
+                {lead.name.charAt(0)}
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="font-medium text-sm truncate">{lead.name}</div>
+                <div className="text-xs text-slate-500 flex items-center gap-1">
+                  <MapPin className="w-3 h-3" />
+                  {lead.city || 'Onbekend'}
+                </div>
+              </div>
+              <span className={`px-1.5 py-0.5 rounded text-xs ${
+                lead.status === 'new' ? 'bg-green-500/20 text-green-400' : 'bg-slate-600/50 text-slate-400'
+              }`}>
+                {lead.status === 'new' ? 'Nieuw' : lead.status}
+              </span>
+            </button>
+          ))
+        ) : (
+          <div className="p-4 text-center text-sm text-slate-500">
+            Geen resultaten
+          </div>
+        )}
+      </div>
+      <div className="p-2 border-t border-slate-700">
+        <Link href="/tools/lead-finder" className="flex items-center justify-center gap-2 py-2 text-xs text-violet-400 hover:text-violet-300 transition">
+          Bekijk alle leads in CRM →
+        </Link>
+      </div>
+    </div>
+  )
+}
+
 export default function SocialPostGenerator() {
   const { profile } = useBusinessProfile()
   const { inputs, saveInputs } = useToolInputs('social-post-generator')
-  const { business: selectedBusiness } = useSelectedBusiness()
+  const { business: selectedBusiness, selectBusiness } = useSelectedBusiness()
+  const { getLastBusiness } = useCrossToolBridge()
 
   const [business, setBusiness] = useState('')
   const [industry, setIndustry] = useState('')
   const [isInitialLoad, setIsInitialLoad] = useState(true)
+  const [showLeadPicker, setShowLeadPicker] = useState(false)
 
   // Initial load skeleton simulation
   useEffect(() => {
@@ -102,16 +189,26 @@ export default function SocialPostGenerator() {
 
   // Pre-fill from profile or shared business selection
   useEffect(() => {
+    // Priority: 1) URL params, 2) Selected business from Lead Finder, 3) Profile
     if (selectedBusiness) {
-      if (selectedBusiness.name && !inputs.business) setBusiness(selectedBusiness.name)
-      if (selectedBusiness.industry && !inputs.industry) setIndustry(selectedBusiness.industry)
-    } else if (profile && profile.name && !inputs.business) {
-      setBusiness(profile.name)
+      if (selectedBusiness.name) {
+        setBusiness(selectedBusiness.name)
+      }
+      if (selectedBusiness.industry) {
+        setIndustry(selectedBusiness.industry)
+      }
+    } else {
+      // Check for last business from cross-tool bridge
+      const lastBusiness = getLastBusiness()
+      if (lastBusiness) {
+        setBusiness(lastBusiness.name || '')
+        setIndustry(lastBusiness.industry || '')
+      } else if (profile && profile.name) {
+        setBusiness(profile.name)
+        if (profile.type) setIndustry(profile.type)
+      }
     }
-    if (profile?.type && !inputs.industry) {
-      setIndustry(profile.type)
-    }
-  }, [profile, selectedBusiness, inputs.business, inputs.industry])
+  }, [profile, selectedBusiness, getLastBusiness])
 
   // Save inputs on change
   useEffect(() => {
@@ -181,16 +278,54 @@ export default function SocialPostGenerator() {
 
         {/* Input */}
         <div className="bg-slate-800 rounded-2xl p-6 mb-8 border border-slate-700">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-sm font-medium text-slate-300">Genereer posts voor:</h2>
+            {selectedBusiness && (
+              <div className="flex items-center gap-2 px-3 py-1.5 bg-violet-500/20 border border-violet-500/30 rounded-lg text-xs">
+                <span className="text-violet-400">🎯</span>
+                <span className="text-violet-300">Geladen uit Lead Finder</span>
+              </div>
+            )}
+          </div>
           <div className="grid md:grid-cols-3 gap-4">
             <div>
               <label className="block text-sm font-medium text-slate-400 mb-2">Bedrijfsnaam</label>
-              <input
-                type="text"
-                value={business}
-                onChange={(e) => setBusiness(e.target.value)}
-                placeholder="De Loodgieter Amsterdam"
-                className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl focus:ring-2 focus:ring-violet-500 outline-none transition"
-              />
+              <div className="relative">
+                <input
+                  type="text"
+                  value={business}
+                  onChange={(e) => setBusiness(e.target.value)}
+                  placeholder="De Loodgieter Amsterdam"
+                  className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl focus:ring-2 focus:ring-violet-500 outline-none transition pr-20"
+                />
+                <button
+                  onClick={() => setShowLeadPicker(!showLeadPicker)}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 px-2 py-1 text-xs bg-slate-700 hover:bg-slate-600 text-slate-300 rounded-lg transition"
+                  title="Laad uit CRM"
+                >
+                  CRM
+                </button>
+              </div>
+              {/* Lead Picker Dropdown */}
+              {showLeadPicker && (
+                <LeadPickerDropdown
+                  onSelect={(lead) => {
+                    setBusiness(lead.company || lead.name)
+                    setIndustry(lead.industry || '')
+                    selectBusiness({
+                      name: lead.company || lead.name,
+                      phone: lead.phone,
+                      email: lead.email,
+                      website: '',
+                      address: lead.address || '',
+                      city: lead.city,
+                      industry: lead.industry || ''
+                    })
+                    setShowLeadPicker(false)
+                  }}
+                  onClose={() => setShowLeadPicker(false)}
+                />
+              )}
             </div>
             <div>
               <label className="block text-sm font-medium text-slate-400 mb-2">Branche</label>

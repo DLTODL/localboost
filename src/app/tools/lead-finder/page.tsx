@@ -570,28 +570,167 @@ export default function LeadFinder() {
             <div className="w-full max-w-lg bg-slate-800 border-l border-slate-700 overflow-y-auto">
               <div className="p-6">
                 <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-xl font-bold">CRM - Opgeslagen Leads ({savedLeads.length})</h3>
+                  <div>
+                    <h3 className="text-xl font-bold">CRM - Opgeslagen Leads</h3>
+                    <p className="text-sm text-slate-400 mt-1">
+                      {savedLeads.length} {savedLeads.length === 1 ? 'lead' : 'leads'} opgeslagen
+                    </p>
+                  </div>
                   <button onClick={() => setShowSavedLeads(false)} className="p-2 hover:bg-slate-700 rounded-lg transition">
                     <X className="w-5 h-5" />
                   </button>
                 </div>
+
+                {/* Quick Stats */}
+                {savedLeads.length > 0 && (
+                  <div className="grid grid-cols-3 gap-2 mb-6">
+                    <div className="bg-green-500/10 border border-green-500/20 rounded-xl p-3 text-center">
+                      <div className="text-2xl font-bold text-green-400">
+                        {savedLeads.filter(l => l.status === 'new').length}
+                      </div>
+                      <div className="text-xs text-green-400/70">Nieuw</div>
+                    </div>
+                    <div className="bg-blue-500/10 border border-blue-500/20 rounded-xl p-3 text-center">
+                      <div className="text-2xl font-bold text-blue-400">
+                        {savedLeads.filter(l => l.status === 'contacted').length}
+                      </div>
+                      <div className="text-xs text-blue-400/70">Contact</div>
+                    </div>
+                    <div className="bg-violet-500/10 border border-violet-500/20 rounded-xl p-3 text-center">
+                      <div className="text-2xl font-bold text-violet-400">
+                        {savedLeads.filter(l => ['qualified', 'won'].includes(l.status)).length}
+                      </div>
+                      <div className="text-xs text-violet-400/70">Gekwalificeerd</div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Quick Actions */}
+                {savedLeads.length > 0 && (
+                  <div className="flex gap-2 mb-6">
+                    <button
+                      onClick={() => {
+                        if (savedLeads[0]) {
+                          const businessData = {
+                            name: savedLeads[0].company || savedLeads[0].name,
+                            phone: savedLeads[0].phone,
+                            email: savedLeads[0].email,
+                            website: '',
+                            address: savedLeads[0].address || '',
+                            city: savedLeads[0].city,
+                            industry: savedLeads[0].industry || ''
+                          }
+                          selectBusiness(businessData)
+                          router.push('/tools/review-generator')
+                        }
+                      }}
+                      className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-yellow-600 hover:bg-yellow-700 rounded-xl font-medium transition"
+                    >
+                      <Star className="w-4 h-4" />
+                      Laatste in Review Generator
+                    </button>
+                  </div>
+                )}
+
+                {/* Leads List */}
                 {savedLeads.length > 0 ? (
                   <div className="space-y-3">
                     {savedLeads.map(lead => (
-                      <div key={lead.id} className="bg-slate-900 rounded-xl p-4">
-                        <div className="flex items-center justify-between mb-2">
-                          <div className="font-bold">{lead.name}</div>
-                          <span className={`px-2 py-1 rounded text-xs ${
-                            lead.status === 'new' ? 'bg-green-600' :
-                            lead.status === 'contacted' ? 'bg-blue-600' :
-                            lead.status === 'qualified' ? 'bg-violet-600' :
-                            'bg-slate-600'
-                          }`}>
-                            {lead.status}
-                          </span>
+                      <div key={lead.id} className="bg-slate-900 rounded-xl p-4 hover:bg-slate-900/80 transition group">
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-1">
+                              <div className="font-bold truncate">{lead.name}</div>
+                              {lead.status === 'new' && (
+                                <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse flex-shrink-0"></span>
+                              )}
+                            </div>
+                            <div className="text-sm text-slate-400">{lead.city || 'Onbekend'}</div>
+                            {lead.phone && (
+                              <div className="text-sm text-slate-500 mt-1">{lead.phone}</div>
+                            )}
+                            {lead.notes && (
+                              <div className="text-xs text-slate-600 mt-2 truncate">
+                                {lead.notes}
+                              </div>
+                            )}
+                          </div>
+                          <div className="flex flex-col gap-1">
+                            <span className={`px-2 py-1 rounded text-xs ${
+                              lead.status === 'new' ? 'bg-green-600/30 text-green-400 border border-green-600/30' :
+                              lead.status === 'contacted' ? 'bg-blue-600/30 text-blue-400 border border-blue-600/30' :
+                              lead.status === 'qualified' ? 'bg-violet-600/30 text-violet-400 border border-violet-600/30' :
+                              lead.status === 'won' ? 'bg-emerald-600/30 text-emerald-400 border border-emerald-600/30' :
+                              'bg-slate-600/30 text-slate-400 border border-slate-600/30'
+                            }`}>
+                              {lead.status}
+                            </span>
+                          </div>
                         </div>
-                        <div className="text-sm text-slate-400">{lead.city}</div>
-                        {lead.phone && <div className="text-sm text-slate-400">{lead.phone}</div>}
+
+                        {/* Quick Actions for Lead */}
+                        <div className="flex gap-2 mt-3 pt-3 border-t border-slate-700/50">
+                          <button
+                            onClick={() => {
+                              const businessData = {
+                                name: lead.company || lead.name,
+                                phone: lead.phone,
+                                email: lead.email,
+                                website: '',
+                                address: lead.address || '',
+                                city: lead.city,
+                                industry: lead.industry || ''
+                              }
+                              selectBusiness(businessData)
+                              router.push('/tools/review-generator')
+                            }}
+                            className="flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 bg-yellow-600/20 hover:bg-yellow-600/30 text-yellow-400 rounded-lg text-xs transition"
+                            title="Open in Review Generator"
+                          >
+                            <Star className="w-3.5 h-3.5" />
+                            Reviews
+                          </button>
+                          <button
+                            onClick={() => {
+                              const businessData = {
+                                name: lead.company || lead.name,
+                                phone: lead.phone,
+                                email: lead.email,
+                                website: '',
+                                address: lead.address || '',
+                                city: lead.city,
+                                industry: lead.industry || ''
+                              }
+                              selectBusiness(businessData)
+                              router.push('/tools/proposal-generator')
+                            }}
+                            className="flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 rounded-lg text-xs transition"
+                            title="Open in Proposal Generator"
+                          >
+                            <FileText className="w-3.5 h-3.5" />
+                            Voorstel
+                          </button>
+                          <button
+                            onClick={() => {
+                              const businessData = {
+                                name: lead.company || lead.name,
+                                phone: lead.phone,
+                                email: lead.email,
+                                website: '',
+                                address: lead.address || '',
+                                city: lead.city,
+                                industry: lead.industry || ''
+                              }
+                              selectBusiness(businessData)
+                              router.push('/tools/social-post-generator')
+                            }}
+                            className="flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 bg-pink-600/20 hover:bg-pink-600/30 text-pink-400 rounded-lg text-xs transition"
+                            title="Open in Social Post Generator"
+                          >
+                            <MessageSquare className="w-3.5 h-3.5" />
+                            Social
+                          </button>
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -600,6 +739,12 @@ export default function LeadFinder() {
                     <User className="w-12 h-12 mx-auto mb-4 opacity-50" />
                     <p>Nog geen leads opgeslagen</p>
                     <p className="text-sm mt-2">Sla leads op vanuit de zoekresultaten</p>
+                    <button
+                      onClick={() => setShowSavedLeads(false)}
+                      className="mt-4 px-4 py-2 bg-violet-600 hover:bg-violet-700 rounded-xl text-sm transition"
+                    >
+                      Zoek leads →
+                    </button>
                   </div>
                 )}
               </div>
