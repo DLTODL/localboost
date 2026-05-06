@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { Settings, ArrowRight } from 'lucide-react'
 import { ListSkeleton } from '@/components/polish/Skeleton'
 import { EmptyState } from '@/components/polish/EmptyState'
+import { showToast } from '@/lib/useSharedData'
 
 interface Lead {
   id: number
@@ -36,7 +37,7 @@ export default function Dashboard() {
       const data = await res.json()
       setLeads(data.leads || [])
     } catch (error) {
-      console.error('Error fetching leads:', error)
+      showToast('Kon leads niet laden', 'error')
     } finally {
       setLoading(false)
     }
@@ -51,7 +52,7 @@ export default function Dashboard() {
       })
       setLeads(leads.map(l => l.id === id ? { ...l, status } : l))
     } catch (error) {
-      console.error('Error updating lead:', error)
+      showToast('Kon status niet updaten', 'error')
     }
   }
 

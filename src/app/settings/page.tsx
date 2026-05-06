@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { Settings, Trash2, Download, Upload, AlertTriangle, Check, Database, User, Bell, Shield } from 'lucide-react'
 import { useBusinessProfile, clearAllData, showToast } from '@/lib/useSharedData'
-import DataManagement from '@/components/polish/DataManagement'
 
 export default function SettingsPage() {
   const { profile, clearProfile } = useBusinessProfile()

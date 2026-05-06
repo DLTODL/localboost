@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { X, ArrowRight, Building, MapPin, Phone, Mail, Globe, Check, Sparkles } from 'lucide-react'
 
 interface OnboardingProps {
@@ -31,7 +31,59 @@ export default function OnboardingModal({ onComplete }: OnboardingProps) {
     website: '',
     googleReviewLink: ''
   })
-  const [showSkip, setShowSkip] = useState(false)
+  const modalRef = useRef<HTMLDivElement>(null)
+  const firstInputRef = useRef<HTMLInputElement>(null)
+
+  // Escape key to close
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onComplete()
+      }
+    }
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [onComplete])
+
+  // Focus first input on step 1
+  useEffect(() => {
+    if (step === 1 && firstInputRef.current) {
+      setTimeout(() => firstInputRef.current?.focus(), 100)
+    }
+  }, [step])
+
+  // Trap focus within modal
+  useEffect(() => {
+    const modal = modalRef.current
+    if (!modal) return
+
+    const focusableElements = modal.querySelectorAll<HTMLElement>(
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    )
+    const firstEl = focusableElements[0] as HTMLElement
+    const lastEl = focusableElements[focusableElements.length - 1] as HTMLElement
+
+    const handleTab = (e: KeyboardEvent) => {
+      if (e.key !== 'Tab') return
+      if (e.shiftKey) {
+        if (document.activeElement === firstEl) {
+          e.preventDefault()
+          lastEl.focus()
+        }
+      } else {
+        if (document.activeElement === lastEl) {
+          e.preventDefault()
+          firstEl.focus()
+        }
+      }
+    }
+
+    modal.addEventListener('keydown', handleTab)
+    // Initial focus
+    firstEl?.focus()
+
+    return () => modal.removeEventListener('keydown', handleTab)
+  }, [])
 
   const handleChange = (field: string, value: string) => {
     setData(prev => ({ ...prev, [field]: value }))
@@ -53,7 +105,7 @@ export default function OnboardingModal({ onComplete }: OnboardingProps) {
 
   return (
     <div className="fixed inset-0 bg-slate-900/95 backdrop-blur-xl z-50 flex items-center justify-center p-4">
-      <div className="w-full max-w-lg bg-slate-800 rounded-3xl border border-slate-700 overflow-hidden shadow-2xl">
+      <div ref={modalRef} className="w-full max-w-lg bg-slate-800 rounded-3xl border border-slate-700 overflow-hidden shadow-2xl">
         {/* Header */}
         <div className="bg-gradient-to-r from-violet-600 to-purple-600 p-6">
           <div className="flex items-center justify-between">
@@ -123,6 +175,7 @@ export default function OnboardingModal({ onComplete }: OnboardingProps) {
               <div>
                 <label className="block text-sm font-medium text-slate-400 mb-2">Bedrijfsnaam *</label>
                 <input
+                  ref={firstInputRef}
                   type="text"
                   value={data.name}
                   onChange={(e) => handleChange('name', e.target.value)}

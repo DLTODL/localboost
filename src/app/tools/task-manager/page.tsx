@@ -82,7 +82,8 @@ export default function TaskManager() {
       try {
         setTasks(JSON.parse(stored))
       } catch (e) {
-        console.error('Failed to parse tasks:', e)
+        // Silently reset corrupted data
+        localStorage.removeItem(STORAGE_KEY)
       }
     }
     setLoading(false)

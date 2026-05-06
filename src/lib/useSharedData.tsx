@@ -58,8 +58,9 @@ export function useBusinessProfile() {
     if (stored) {
       try {
         setProfile(JSON.parse(stored))
-      } catch (e) {
-        console.error('Failed to parse business profile:', e)
+      } catch {
+        // Silently reset corrupted data
+        localStorage.removeItem(STORAGE_KEYS.businessProfile)
       }
     }
     setLoading(false)
@@ -102,8 +103,8 @@ export function useSelectedBusiness() {
     if (stored) {
       try {
         setBusiness(JSON.parse(stored))
-      } catch (e) {
-        console.error('Failed to parse selected business:', e)
+      } catch {
+        localStorage.removeItem(STORAGE_KEYS.selectedBusiness)
       }
     }
     setLoading(false)
@@ -135,8 +136,8 @@ export function useLeads() {
     if (stored) {
       try {
         setLeads(JSON.parse(stored))
-      } catch (e) {
-        console.error('Failed to parse leads:', e)
+      } catch {
+        localStorage.removeItem(STORAGE_KEYS.leads)
       }
     }
     setLoading(false)
@@ -209,8 +210,8 @@ export function useTemplates() {
     if (stored) {
       try {
         setTemplates(JSON.parse(stored))
-      } catch (e) {
-        console.error('Failed to parse templates:', e)
+      } catch {
+        localStorage.removeItem(STORAGE_KEYS.templates)
       }
     }
     setLoading(false)
@@ -260,8 +261,8 @@ export function useToolInputs(toolId: string) {
       try {
         const allInputs = JSON.parse(stored)
         setInputs(allInputs[toolId] || {})
-      } catch (e) {
-        console.error('Failed to parse tool inputs:', e)
+      } catch {
+        localStorage.removeItem(STORAGE_KEYS.toolInputs)
       }
     }
     setLoading(false)

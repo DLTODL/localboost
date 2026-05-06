@@ -10,19 +10,18 @@ export default function Providers({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     setMounted(true)
-    // Check if onboarding is complete
+    // Check if onboarding is complete OR if explicitly triggered
     const onboardingDone = localStorage.getItem('localboost_onboarding_done')
     const showOnboarding = localStorage.getItem('localboost_show_onboarding')
     
-    if (!onboardingDone) {
-      // If triggered from Tools Hub banner, show immediately; otherwise delay 1.5s
-      if (showOnboarding) {
-        localStorage.removeItem('localboost_show_onboarding')
-        setShowOnboarding(true)
-      } else {
-        const timer = setTimeout(() => setShowOnboarding(true), 1500)
-        return () => clearTimeout(timer)
-      }
+    // Show onboarding if: not done OR explicitly triggered (e.g., from Settings)
+    if (showOnboarding) {
+      localStorage.removeItem('localboost_show_onboarding')
+      setShowOnboarding(true)
+    } else if (!onboardingDone) {
+      // First time user: delay 1.5s for better UX
+      const timer = setTimeout(() => setShowOnboarding(true), 1500)
+      return () => clearTimeout(timer)
     }
   }, [])
 
