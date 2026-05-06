@@ -56,9 +56,6 @@ ${lead.message || 'Geen bericht'}
       });
     }
 
-    // Also log to console for debugging
-    console.log('New lead received:', lead);
-
     return NextResponse.json({ success: true, message: 'Notification sent' });
   } catch (error) {
     console.error('Notification error:', error);
