@@ -1,11 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { 
   Search, Globe, Shield, AlertTriangle, CheckCircle, 
   Clock, Image, Smartphone, ExternalLink, RefreshCw, Zap
 } from 'lucide-react'
-import { copyWithToast, useTemplates } from '@/lib/useSharedData'
+import { useBusinessProfile, useTemplates, useToolInputs } from '@/lib/useSharedData'
 import Link from 'next/link'
 import TemplateSwitcher from '@/components/polish/TemplateSwitcher'
 import ProfileBar from '@/components/polish/ProfileBar'
@@ -37,10 +37,21 @@ interface ScanResult {
 export default function SEOScanner() {
   const { saveTemplate, getTemplatesForTool } = useTemplates()
   const savedTemplates = getTemplatesForTool('seo-scanner')
+  const { inputs, saveInputs } = useToolInputs('seo-scanner')
   const [url, setUrl] = useState('')
   const [loading, setLoading] = useState(false)
   const [results, setResults] = useState<ScanResult | null>(null)
   const [scanHistory, setScanHistory] = useState<ScanResult[]>([])
+
+  // Pre-fill URL from saved inputs
+  useEffect(() => {
+    if (inputs.url) setUrl(inputs.url)
+  }, [inputs.url])
+
+  // Save URL on change
+  useEffect(() => {
+    if (url) saveInputs({ url })
+  }, [url, saveInputs])
 
   const scanWebsite = async () => {
     if (!url) return

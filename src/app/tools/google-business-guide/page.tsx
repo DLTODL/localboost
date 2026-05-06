@@ -1,8 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { CheckCircle, Circle, ExternalLink, Lightbulb, ChevronDown, ChevronUp, Star } from 'lucide-react'
-import { useBusinessProfile, useTemplates } from '@/lib/useSharedData'
+import { useBusinessProfile, useTemplates, useToolInputs } from '@/lib/useSharedData'
 import TemplateSwitcher from '@/components/polish/TemplateSwitcher'
 import ProfileBar from '@/components/polish/ProfileBar'
 
@@ -59,10 +59,24 @@ const tasks = [
 export default function GoogleBusinessGuide() {
   const { profile } = useBusinessProfile()
   const { saveTemplate, getTemplatesForTool } = useTemplates()
+  const { inputs, saveInputs } = useToolInputs('google-business-guide')
   const savedTemplates = getTemplatesForTool('google-business-guide')
+  
   const [taskList, setTaskList] = useState<Task[]>(tasks.map(t => ({ ...t })))
   const [expandedCategory, setExpandedCategory] = useState<string | null>('setup')
   const [showOnlyIncomplete, setShowOnlyIncomplete] = useState(false)
+
+  // Pre-fill showOnlyIncomplete from saved inputs
+  useEffect(() => {
+    if (inputs.showOnlyIncomplete !== undefined) {
+      setShowOnlyIncomplete(inputs.showOnlyIncomplete)
+    }
+  }, [inputs.showOnlyIncomplete])
+
+  // Save showOnlyIncomplete on change
+  useEffect(() => {
+    saveInputs({ showOnlyIncomplete })
+  }, [showOnlyIncomplete, saveInputs])
 
   const toggleTask = (id: number) => {
     setTaskList(prev => prev.map(t => t.id === id ? { ...t, completed: !t.completed } : t))

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { CheckSquare, Plus, Trash2, Calendar, User, Play, CheckCircle, X, Loader2 } from 'lucide-react'
-import { useLeads, showToast, copyWithToast, useTemplates } from '@/lib/useSharedData'
+import { useLeads, showToast, copyWithToast, useTemplates, useToolInputs } from '@/lib/useSharedData'
 import TemplateSwitcher from '@/components/polish/TemplateSwitcher'
 import ProfileBar from '@/components/polish/ProfileBar'
 import { ListSkeleton } from '@/components/polish/Skeleton'
@@ -45,6 +45,7 @@ export default function TaskManager() {
   const { leads } = useLeads()
   const { saveTemplate, getTemplatesForTool } = useTemplates()
   const savedTemplates = getTemplatesForTool('task-manager')
+  const { inputs, saveInputs } = useToolInputs('task-manager')
   const [tasks, setTasks] = useState<Task[]>([])
   const [loading, setLoading] = useState(true)
   const [filterLead, setFilterLead] = useState<string>('all')
@@ -61,6 +62,18 @@ export default function TaskManager() {
     priority: 'medium' as Task['priority'],
     dueDate: ''
   })
+
+  // Pre-fill filters from saved inputs
+  useEffect(() => {
+    if (inputs.filterLead) setFilterLead(inputs.filterLead)
+    if (inputs.filterStatus) setFilterStatus(inputs.filterStatus)
+    if (inputs.filterCategory) setFilterCategory(inputs.filterCategory)
+  }, [inputs.filterLead, inputs.filterStatus, inputs.filterCategory])
+
+  // Save filters on change
+  useEffect(() => {
+    saveInputs({ filterLead, filterStatus, filterCategory })
+  }, [filterLead, filterStatus, filterCategory, saveInputs])
 
   // Load tasks from localStorage
   useEffect(() => {
