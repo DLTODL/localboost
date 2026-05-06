@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { Star, Copy, Check, MessageSquare, Sparkles, Building, ChevronRight, RotateCcw, ExternalLink, Loader2, Save } from 'lucide-react'
 import { useBusinessProfile, useToolInputs, useSelectedBusiness, copyWithToast, showToast } from '@/lib/useSharedData'
+import { Skeleton, FormSkeleton } from '@/components/polish/Skeleton'
 import TemplateSwitcher from '@/components/polish/TemplateSwitcher'
 import ProfileBar from '@/components/polish/ProfileBar'
 
@@ -77,6 +78,13 @@ export default function ReviewGenerator() {
   const [loadingSaved, setLoadingSaved] = useState(false)
   const [savedLeads, setSavedLeads] = useState<any[]>([])
   const [showLeadPicker, setShowLeadPicker] = useState(false)
+  const [isInitialLoad, setIsInitialLoad] = useState(true)
+
+  // Skeleton loading simulation
+  useEffect(() => {
+    const timer = setTimeout(() => setIsInitialLoad(false), 600)
+    return () => clearTimeout(timer)
+  }, [])
 
   // Load saved leads for quick fill
   useEffect(() => {
@@ -146,42 +154,70 @@ export default function ReviewGenerator() {
     <div className="min-h-screen bg-slate-900 text-white">
       <ProfileBar />
       <div className="max-w-3xl mx-auto p-6">
-        {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3 mb-2">
-              <span className="text-4xl">⭐</span>
-              <div>
-                <h1 className="text-3xl font-black">Review Generator</h1>
-                <p className="text-slate-400">Genereer gepersonaliseerde review-verzoeken</p>
+        <div className={isInitialLoad ? 'hidden' : ''}>
+          {/* Header */}
+          <div className="mb-8">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3 mb-2">
+                <span className="text-4xl">⭐</span>
+                <div>
+                  <h1 className="text-3xl font-black">Review Generator</h1>
+                  <p className="text-slate-400">Genereer gepersonaliseerde review-verzoeken</p>
+                </div>
               </div>
+              <TemplateSwitcher 
+                toolId="review-generator"
+                onApply={(data) => {
+                  if (data.businessName) setBusinessName(data.businessName)
+                  if (data.businessType) setBusinessType(data.businessType)
+                  if (data.reviewLink) setReviewLink(data.reviewLink)
+                }}
+                currentData={{ businessName, businessType, reviewLink }}
+              />
             </div>
-            <TemplateSwitcher 
-              toolId="review-generator"
-              onApply={(data) => {
-                if (data.businessName) setBusinessName(data.businessName)
-                if (data.businessType) setBusinessType(data.businessType)
-                if (data.reviewLink) setReviewLink(data.reviewLink)
-              }}
-              currentData={{ businessName, businessType, reviewLink }}
-            />
+          </div>
+
+          {/* Progress */}
+          <div className="flex items-center gap-2 mb-8">
+            {[1, 2, 3].map(s => (
+              <div key={s} className="flex-1">
+                <div className={`h-2 rounded-full transition ${s <= step ? 'bg-violet-600' : 'bg-slate-700'}`} />
+                <div className="text-xs text-slate-500 mt-1">{
+                  s === 1 ? 'Bedrijf' : s === 2 ? 'Klant' : 'Genereer'
+                }</div>
+              </div>
+            ))}
           </div>
         </div>
 
-        {/* Progress */}
-        <div className="flex items-center gap-2 mb-8">
-          {[1, 2, 3].map(s => (
-            <div key={s} className="flex-1">
-              <div className={`h-2 rounded-full transition ${s <= step ? 'bg-violet-600' : 'bg-slate-700'}`} />
-              <div className="text-xs text-slate-500 mt-1">{
-                s === 1 ? 'Bedrijf' : s === 2 ? 'Klant' : 'Genereer'
-              }</div>
+        {/* Skeleton Loading */}
+        {isInitialLoad && (
+          <div>
+            <div className="mb-8">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3 mb-2">
+                  <span className="text-4xl">⭐</span>
+                  <div>
+                    <Skeleton width={200} height={32} className="mb-2" />
+                    <Skeleton width={280} height={18} />
+                  </div>
+                </div>
+                <Skeleton width={140} height={40} />
+              </div>
             </div>
-          ))}
-        </div>
+            <div className="flex items-center gap-2 mb-8">
+              {[1, 2, 3].map(s => (
+                <div key={s} className="flex-1">
+                  <Skeleton height={8} className="rounded-full" />
+                </div>
+              ))}
+            </div>
+            <FormSkeleton fields={4} />
+          </div>
+        )}
 
-        {/* Step 1: Business Info */}
-        {step === 1 && (
+          {/* Step 1: Business Info */}
+          {step === 1 && (
           <div className="bg-slate-800 rounded-2xl p-6 border border-slate-700 animate-slide-up">
             <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
               <Building className="w-5 h-5 text-violet-400" />
