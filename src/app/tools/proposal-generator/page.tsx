@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { FileText, Download, User, Building, CheckCircle, ChevronRight, ChevronLeft, RotateCcw, Mail, Save, Database, Loader2 } from 'lucide-react'
+import { FileText, Download, User, Building, CheckCircle, ChevronRight, ChevronLeft, RotateCcw, Mail, Save, Database, Loader2, BookOpen } from 'lucide-react'
 import Link from 'next/link'
 import { useBusinessProfile, useToolInputs, useSelectedBusiness, useTemplates, showToast } from '@/lib/useSharedData'
 import TemplateSwitcher from '@/components/polish/TemplateSwitcher'
@@ -45,6 +45,7 @@ export default function ProposalGenerator() {
   const [generated, setGenerated] = useState(false)
   const [linkedEmailTemplate, setLinkedEmailTemplate] = useState<string | null>(null)
   const [showEmailPicker, setShowEmailPicker] = useState(false)
+  const [showLinkedEmail, setShowLinkedEmail] = useState(false)
   const [isInitialLoad, setIsInitialLoad] = useState(true)
 
   // Skeleton loading simulation
