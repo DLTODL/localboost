@@ -2,7 +2,7 @@
 
 > All-in-one marketing toolkit for local Dutch businesses. Generate leads, create proposals, build email campaigns, and automate your marketing — all from one place.
 
-**Version: v13.24** | Production Ready
+**Version: v13.25** | Production Ready
 
 ## Features
 
@@ -111,7 +111,7 @@ npm run lint      # ESLint check
 
 ## Version History
 
-- **v13.23** - Polish polish: skeleton loading in Lead Conversion Calculator, Email Campaign CTA in Marketing Strategy Builder
+- **v13.25** - Final verification: build clean, TypeScript OK, no TODOs
 - **v13.9** - Senior dev polish (accessibility, UX, dead code cleanup)
 - **v13.8** - Input persistence, SPA navigation
 - **v13.7** - Onboarding flow, toast system
