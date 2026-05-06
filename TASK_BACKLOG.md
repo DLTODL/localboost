@@ -8,6 +8,14 @@
 - **Build verified**: All 29 routes compile successfully ✅
 - **Status: LocalBoost v13.10 is production-ready**
 
+## Polish Session 2026-05-06 (v13.11) - SPA Navigation Fix
+- **SPA Navigation**: Replaced all `window.location.href` with Next.js `useRouter` for proper SPA navigation
+  - lead-finder: Extracted `handleOpenReviewGenerator()`, use `router.push()`
+  - tools/page: Use `router.push('/')` for onboarding redirect
+  - settings: Use `router.refresh()` instead of `window.location.reload()` for data import/clear
+- **Build verified**: All 29 routes compile successfully
+- **Status: LocalBoost v13.11 is production-ready**
+
 ## Polish Session 2026-05-06 (v13.9) - Senior Dev Polish
 - **Accessibility & Keyboard**:
   - OnboardingModal: Escape key to close, focus trap, auto-focus first input on step 1
