@@ -2,6 +2,15 @@
 
 ## Sprint: Polish & Integration (Current)
 
+## Polish Session 2026-05-06 (v13.26) - Language Polish ✅
+- **Landing page**: Fixed Chinese characters mixed in Dutch text (Starter tagline, Lead Finder tool description)
+- **Landing page**: Fixed English "only" → Dutch "maar" in testimonial
+- **Landing page**: Fixed French "présence" → Dutch "aanwezigheid" in Problem section
+- **OnboardingModal**: Completion summary now shows email + website (not just name/city/phone)
+- **Build verified**: All 29 routes compile successfully ✅
+- **Git**: Committed + pushed to origin/master ✅
+- **Status**: LocalBoost v13.26 is production-ready
+
 ## Polish Session 2026-05-06 (v13.25) - Final Verification ✅
 - **Build verified**: All 29 routes compile successfully ✅
 - **TypeScript**: `tsc --noEmit` passes with no errors ✅

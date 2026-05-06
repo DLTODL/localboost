@@ -2,7 +2,7 @@
 
 > All-in-one marketing toolkit for local Dutch businesses. Generate leads, create proposals, build email campaigns, and automate your marketing — all from one place.
 
-**Version: v13.25** | Production Ready
+**Version: v13.26** | Production Ready
 
 ## Features
 
@@ -111,6 +111,7 @@ npm run lint      # ESLint check
 
 ## Version History
 
+- **v13.26** - Language polish: fix Chinese/Dutch/English mix in landing page, polish onboarding summary
 - **v13.25** - Final verification: build clean, TypeScript OK, no TODOs
 - **v13.9** - Senior dev polish (accessibility, UX, dead code cleanup)
 - **v13.8** - Input persistence, SPA navigation
