@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import { CheckSquare, Plus, Trash2, Calendar, User, Play, CheckCircle, X, Loader2 } from 'lucide-react'
-import { useLeads, showToast, copyWithToast } from '@/lib/useSharedData'
+import { useLeads, showToast, copyWithToast, useTemplates } from '@/lib/useSharedData'
+import TemplateSwitcher from '@/components/polish/TemplateSwitcher'
 import { ListSkeleton } from '@/components/polish/Skeleton'
 import { EmptyState } from '@/components/polish/EmptyState'
 
@@ -41,6 +42,8 @@ const categoryLabels: Record<string, string> = {
 
 export default function TaskManager() {
   const { leads } = useLeads()
+  const { saveTemplate, getTemplatesForTool } = useTemplates()
+  const savedTemplates = getTemplatesForTool('task-manager')
   const [tasks, setTasks] = useState<Task[]>([])
   const [loading, setLoading] = useState(true)
   const [filterLead, setFilterLead] = useState<string>('all')
@@ -141,11 +144,24 @@ export default function TaskManager() {
     <div className="min-h-screen bg-slate-900 text-white">
       <div className="bg-gradient-to-b from-slate-800/50 to-slate-900 border-b border-slate-800">
         <div className="max-w-7xl mx-auto px-6 py-6">
-          <h1 className="text-2xl font-bold flex items-center gap-2">
-            <CheckSquare className="w-6 h-6 text-violet-400" />
-            Taak Manager
-          </h1>
-          <p className="text-slate-400 text-sm mt-1">Beheer taken voor elke lead en servicedelivery</p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-bold flex items-center gap-2">
+                <CheckSquare className="w-6 h-6 text-violet-400" />
+                Taak Manager
+              </h1>
+              <p className="text-slate-400 text-sm mt-1">Beheer taken voor elke lead en servicedelivery</p>
+            </div>
+            {savedTemplates.length > 0 && (
+              <TemplateSwitcher
+                toolId="task-manager"
+                onApply={(data) => {
+                  // Apply template data to form or filters
+                }}
+                currentData={{ filterLead, filterStatus, filterCategory }}
+              />
+            )}
+          </div>
         </div>
       </div>
 

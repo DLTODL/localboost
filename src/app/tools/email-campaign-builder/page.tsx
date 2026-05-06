@@ -1,8 +1,9 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { FileText, Clock, Send, Check, AlertCircle, User, Briefcase, TrendingUp, Target, DollarSign, Users, Calendar, Loader2, Mail, Import } from 'lucide-react'
-import { useBusinessProfile, useToolInputs, useSelectedBusiness, copyWithToast } from '@/lib/useSharedData'
+import { FileText, Clock, Send, Check, AlertCircle, User, Briefcase, TrendingUp, Target, DollarSign, Users, Calendar, Loader2, Mail, Import, Star } from 'lucide-react'
+import { useBusinessProfile, useToolInputs, useSelectedBusiness, useTemplates, copyWithToast } from '@/lib/useSharedData'
+import TemplateSwitcher from '@/components/polish/TemplateSwitcher'
 
 interface ClientData {
   name: string
@@ -49,6 +50,9 @@ export default function EmailCampaignBuilder() {
   const { profile } = useBusinessProfile()
   const { inputs, saveInputs } = useToolInputs('email-campaign-builder')
   const { business: selectedBusiness } = useSelectedBusiness()
+  const { saveTemplate, getTemplatesForTool } = useTemplates()
+
+  const savedTemplates = getTemplatesForTool('email-campaign-builder')
 
   const [clientData, setClientData] = useState<ClientData>({
     name: '',
@@ -240,6 +244,25 @@ Groet`,
                 </button>
               </div>
             )}
+          </div>
+          <div className="mt-4">
+            <TemplateSwitcher
+              toolId="email-campaign-builder"
+              onApply={(data) => {
+                if (data.name) handleInputChange('name', data.name)
+                if (data.company) handleInputChange('company', data.company)
+                if (data.industry) {
+                  handleInputChange('industry', data.industry)
+                  const template = Object.keys(industryTemplates).find(t =>
+                    data.industry?.toLowerCase().includes(t)
+                  ) || 'default'
+                  selectTemplate(template)
+                }
+                if (data.service) handleInputChange('service', data.service)
+                if (data.email) handleInputChange('email', data.email)
+              }}
+              currentData={{ name: clientData.name, company: clientData.company, industry: clientData.industry, service: clientData.service, email: clientData.email }}
+            />
           </div>
         </div>
 

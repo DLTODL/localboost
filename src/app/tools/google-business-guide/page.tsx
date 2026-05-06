@@ -1,7 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import { CheckCircle, Circle, ExternalLink, Lightbulb, ChevronDown, ChevronUp } from 'lucide-react'
+import { CheckCircle, Circle, ExternalLink, Lightbulb, ChevronDown, ChevronUp, Star } from 'lucide-react'
+import { useTemplates } from '@/lib/useSharedData'
+import TemplateSwitcher from '@/components/polish/TemplateSwitcher'
 
 interface Task { id: number; title: string; category: string; completed: boolean }
 
@@ -54,6 +56,8 @@ const tasks = [
 ]
 
 export default function GoogleBusinessGuide() {
+  const { saveTemplate, getTemplatesForTool } = useTemplates()
+  const savedTemplates = getTemplatesForTool('google-business-guide')
   const [taskList, setTaskList] = useState<Task[]>(tasks.map(t => ({ ...t })))
   const [expandedCategory, setExpandedCategory] = useState<string | null>('setup')
   const [showOnlyIncomplete, setShowOnlyIncomplete] = useState(false)
@@ -78,8 +82,19 @@ export default function GoogleBusinessGuide() {
     <div className="min-h-screen bg-slate-900 text-white">
       <div className="bg-gradient-to-b from-slate-800/50 to-slate-900 border-b border-slate-800">
         <div className="max-w-5xl mx-auto px-6 py-6">
-          <h1 className="text-2xl font-bold flex items-center gap-2">🏪 Google Business Setup Guide</h1>
-          <p className="text-slate-400 text-sm mt-1">Volg deze stappen om je Google Business profiel te optimaliseren</p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-bold flex items-center gap-2">🏪 Google Business Setup Guide</h1>
+              <p className="text-slate-400 text-sm mt-1">Volg deze stappen om je Google Business profiel te optimaliseren</p>
+            </div>
+            <TemplateSwitcher
+              toolId="google-business-guide"
+              onApply={(data) => {
+                // Guide is checklist-based, templates save task completion states
+              }}
+              currentData={{ progress: totalPercent }}
+            />
+          </div>
         </div>
       </div>
 

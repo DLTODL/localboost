@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Sparkles, Copy, Check, RefreshCw, Instagram, Facebook, Linkedin, Calendar, X, ExternalLink, Send } from 'lucide-react'
-import { useBusinessProfile, useToolInputs, useSelectedBusiness, copyWithToast } from '@/lib/useSharedData'
+import { useBusinessProfile, useToolInputs, useSelectedBusiness, useTemplates, copyWithToast } from '@/lib/useSharedData'
 import TemplateSwitcher from '@/components/polish/TemplateSwitcher'
 
 const postTypes = [
@@ -80,6 +80,9 @@ export default function SocialPostGenerator() {
   const { profile } = useBusinessProfile()
   const { inputs, saveInputs } = useToolInputs('social-post-generator')
   const { business: selectedBusiness } = useSelectedBusiness()
+  const { saveTemplate, getTemplatesForTool } = useTemplates()
+
+  const savedTemplates = getTemplatesForTool('social-post-generator')
 
   const [business, setBusiness] = useState('')
   const [industry, setIndustry] = useState('')
@@ -132,11 +135,24 @@ export default function SocialPostGenerator() {
       <div className="max-w-4xl mx-auto p-6">
         {/* Header */}
         <div className="mb-8">
-          <div className="flex items-center gap-3 mb-2">
-            <span className="text-4xl">📱</span>
-            <h1 className="text-3xl font-black">Social Post Generator</h1>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3 mb-2">
+              <span className="text-4xl">📱</span>
+              <div>
+                <h1 className="text-3xl font-black">Social Post Generator</h1>
+                <p className="text-slate-400">Genereer Social Media posts voor je lokale bedrijf</p>
+              </div>
+            </div>
+            <TemplateSwitcher
+              toolId="social-post-generator"
+              onApply={(data) => {
+                if (data.business) setBusiness(data.business)
+                if (data.industry) setIndustry(data.industry)
+                if (data.postType) setPostType(data.postType)
+              }}
+              currentData={{ business, industry, postType }}
+            />
           </div>
-          <p className="text-slate-400">Genereer Social Media posts voor je lokale bedrijf</p>
         </div>
 
         {/* Input */}

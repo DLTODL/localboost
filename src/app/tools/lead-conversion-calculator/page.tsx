@@ -1,8 +1,9 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { TrendingUp, Users, DollarSign, Target, ArrowDown, Loader2, Check, AlertCircle, Mail, Send } from 'lucide-react'
-import { copyWithToast, useBusinessProfile, useToolInputs } from '@/lib/useSharedData'
+import { TrendingUp, Users, DollarSign, Target, ArrowDown, Loader2, Check, AlertCircle, Mail, Send, Star } from 'lucide-react'
+import { copyWithToast, useBusinessProfile, useToolInputs, useTemplates } from '@/lib/useSharedData'
+import TemplateSwitcher from '@/components/polish/TemplateSwitcher'
 import { FormSkeleton } from '@/components/polish/Skeleton'
 
 interface FunnelData {
@@ -33,6 +34,9 @@ interface ROIOutput {
 export default function LeadConversionCalculator() {
   const { profile } = useBusinessProfile()
   const { inputs, saveInputs } = useToolInputs('lead-conversion-calculator')
+  const { saveTemplate, getTemplatesForTool } = useTemplates()
+
+  const savedTemplates = getTemplatesForTool('lead-conversion-calculator')
 
   const [formData, setFormData] = useState<FunnelData>({
     monthlyLeads: 50,
@@ -167,11 +171,26 @@ export default function LeadConversionCalculator() {
       <div className="max-w-6xl mx-auto p-6">
         {/* Header */}
         <div className="mb-8">
-          <div className="flex items-center gap-3 mb-2">
-            <span className="text-4xl">📊</span>
-            <h1 className="text-3xl font-black">Lead Conversion Calculator</h1>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3 mb-2">
+              <span className="text-4xl">📊</span>
+              <div>
+                <h1 className="text-3xl font-black">Lead Conversion Calculator</h1>
+                <p className="text-slate-400">Zie precies waar je leads blijven steken en hoe je meer kunt sluiten</p>
+              </div>
+            </div>
+            <TemplateSwitcher
+              toolId="lead-conversion-calculator"
+              onApply={(data) => {
+                if (data.monthlyLeads) setFormData(prev => ({ ...prev, monthlyLeads: data.monthlyLeads }))
+                if (data.websiteVisitors) setFormData(prev => ({ ...prev, websiteVisitors: data.websiteVisitors }))
+                if (data.currentRate) setFormData(prev => ({ ...prev, currentRate: data.currentRate }))
+                if (data.avgDealValue) setFormData(prev => ({ ...prev, avgDealValue: data.avgDealValue }))
+                if (data.industry) setFormData(prev => ({ ...prev, industry: data.industry }))
+              }}
+              currentData={{ ...formData }}
+            />
           </div>
-          <p className="text-slate-400">Zie precies waar je leads blijven steken en hoe je meer kunt sluiten</p>
         </div>
 
         <div className="grid lg:grid-cols-2 gap-8">
