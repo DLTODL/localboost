@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Link from 'next/link'
 import { TrendingUp, Users, DollarSign, Target, ArrowDown, Loader2, Check, AlertCircle, Mail, Send, Star } from 'lucide-react'
 import { copyWithToast, useBusinessProfile, useToolInputs, useTemplates } from '@/lib/useSharedData'
 import TemplateSwitcher from '@/components/polish/TemplateSwitcher'
@@ -287,14 +288,14 @@ export default function LeadConversionCalculator() {
             </button>
 
             {/* Cross-tool CTA */}
-            <a
+            <Link
               href="/tools/email-campaign-builder"
               onClick={handleCreateCampaign}
               className="w-full py-4 bg-slate-700 hover:bg-slate-600 rounded-xl font-bold text-lg flex items-center justify-center gap-2 transition"
             >
               <Mail className="w-5 h-5" />
               Bouw Email Campaign voor Jouw Leads
-            </a>
+            </Link>
           </div>
 
           {/* Right: Results */}

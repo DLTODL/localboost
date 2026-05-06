@@ -229,13 +229,13 @@ export default function EmailSequences() {
                 <p className="text-slate-400">Kopieer bewezen email templates voor klantwerving en nurturing</p>
               </div>
             </div>
-            <a
+            <Link
               href="/tools/email-campaign-builder"
               className="flex items-center gap-2 px-4 py-2 bg-slate-700 hover:bg-slate-600 rounded-xl text-sm transition"
             >
               <FileText className="w-4 h-4" />
               Bouw Campaign →
-            </a>
+            </Link>
           </div>
           <div className="mt-3">
             <TemplateSwitcher

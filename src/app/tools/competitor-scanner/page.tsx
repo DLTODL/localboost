@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Link from 'next/link'
 import { Target, Search, Globe, MapPin, Star, Copy, Check, Download, ExternalLink, RefreshCw, AlertCircle, CheckCircle, TrendingUp } from 'lucide-react'
 import { useBusinessProfile, useToolInputs, useTemplates, copyWithToast } from '@/lib/useSharedData'
 import TemplateSwitcher from '@/components/polish/TemplateSwitcher'
@@ -172,12 +173,12 @@ export default function CompetitorScanner() {
                 }}
                 currentData={{ city, industry }}
               />
-              <a
+              <Link
                 href="/tools/lead-finder"
                 className="px-4 py-2 bg-slate-700 hover:bg-slate-600 rounded-xl font-medium transition text-sm flex items-center gap-2"
               >
                 <span>🎯</span> Lead Finder
-              </a>
+              </Link>
             </div>
           </div>
         </div>

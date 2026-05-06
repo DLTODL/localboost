@@ -464,13 +464,13 @@ Handtekening: _______________________`
               </button>
 
               {/* Cross-tool: Email Campaign */}
-              <a
+              <Link
                 href={`/tools/email-campaign-builder?client=${encodeURIComponent(data.clientName)}&company=${encodeURIComponent(data.clientCompany)}`}
                 className="flex items-center justify-center gap-2 px-4 py-3 bg-violet-600/20 hover:bg-violet-600/30 text-violet-300 rounded-xl text-sm transition"
               >
                 <Mail className="w-4 h-4" />
                 Bouw Email Campaign voor {data.clientName || 'deze klant'} →
-              </a>
+              </Link>
             </div>
 
             <div className="bg-gradient-to-r from-violet-600 to-purple-600 rounded-2xl p-6">
