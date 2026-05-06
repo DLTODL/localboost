@@ -84,6 +84,22 @@ const allTools = [
         color: 'from-amber-600 to-orange-600',
         popular: false
       },
+      {
+        name: 'Quote Generator',
+        desc: 'Genereer professionele offertes voor klanten',
+        icon: '📋',
+        href: '/tools/quote-generator',
+        color: 'from-blue-600 to-indigo-600',
+        popular: false
+      },
+      {
+        name: 'ROI Calculator',
+        desc: 'Bereken het rendement van je marketing investering',
+        icon: '📈',
+        href: '/tools/roi-calculator',
+        color: 'from-green-600 to-teal-600',
+        popular: false
+      },
     ]
   }
 ]
@@ -150,27 +166,19 @@ export default function ToolsHub() {
           </div>
         ))}
 
-        {/* Coming Soon */}
-        <div className="mt-16">
-          <h2 className="text-2xl font-bold mb-6 flex items-center gap-3">
-            <MapPin className="w-6 h-6 text-slate-500" />
-            Binnenkort Beschikbaar
-          </h2>
-          
-          <div className="grid md:grid-cols-3 gap-4">
-            {[
-              { name: 'Quote Generator', icon: '📋', desc: 'Genereer professionele offertes' },
-              { name: 'ROI Calculator', icon: '📈', desc: 'Bereken je return on investment' },
-            ].map((tool, i) => (
-              <div 
-                key={tool.name}
-                className="bg-slate-800/50 rounded-xl p-4 border border-slate-700/50 opacity-60"
-              >
-                <div className="text-2xl mb-2">{tool.icon}</div>
-                <div className="font-medium">{tool.name}</div>
-                <div className="text-sm text-slate-500">{tool.desc}</div>
-              </div>
-            ))}
+        {/* Quote Generator Promo */}
+        <div className="mt-16 bg-gradient-to-r from-blue-600/20 to-indigo-600/20 rounded-2xl p-8 border border-blue-500/20">
+          <div className="flex items-center justify-between flex-wrap gap-4">
+            <div>
+              <h2 className="text-2xl font-bold mb-2">📋 Nieuw: Quote Generator</h2>
+              <p className="text-slate-400">Genereer professionele, printbare offertes voor je klanten met automatische berekeningen.</p>
+            </div>
+            <a 
+              href="/tools/quote-generator" 
+              className="px-6 py-3 bg-blue-600 hover:bg-blue-700 rounded-xl font-semibold flex items-center gap-2 transition"
+            >
+              Probeer nu <ArrowRight className="w-4 h-4" />
+            </a>
           </div>
         </div>
       </div>
