@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { FileText, Download, User, Building, CheckCircle, ChevronRight, ChevronLeft, RotateCcw, Mail, Save, Database } from 'lucide-react'
+import Link from 'next/link'
 import { useBusinessProfile, useToolInputs, useSelectedBusiness, useTemplates, showToast } from '@/lib/useSharedData'
 import TemplateSwitcher from '@/components/polish/TemplateSwitcher'
 import ProfileBar from '@/components/polish/ProfileBar'
@@ -400,9 +401,9 @@ Handtekening: _______________________`
                         <div className="text-slate-500">{seq.delay} • {seq.useCase}</div>
                       </button>
                     ))}
-                    <a href="/tools/email-sequences" className="block text-center py-2 text-xs text-violet-400 hover:text-violet-300">
+                    <Link href="/tools/email-sequences" className="block text-center py-2 text-xs text-violet-400 hover:text-violet-300">
                       Bekijk alle templates →
-                    </a>
+                    </Link>
                   </div>
                 ) : linkedEmailTemplate ? (
                   <div className="text-xs text-slate-400">

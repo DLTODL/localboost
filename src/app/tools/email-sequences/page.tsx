@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Mail, Copy, Check, Send, Clock, Users, MessageSquare, Tag, FileText, Sparkles } from 'lucide-react'
+import Link from 'next/link'
 import { copyWithToast, useBusinessProfile, useToolInputs, useTemplates } from '@/lib/useSharedData'
 import TemplateSwitcher from '@/components/polish/TemplateSwitcher'
 import ProfileBar from '@/components/polish/ProfileBar'
@@ -316,9 +317,9 @@ export default function EmailSequences() {
         <div className="mt-8 bg-gradient-to-r from-violet-600 to-purple-600 rounded-2xl p-6 text-center">
           <h3 className="text-xl font-bold mb-2">Wil je dat wij dit voor je automatiseren?</h3>
           <p className="text-white/80 mb-4">Wij zetten deze sequences op en zorgen dat ze op het juiste moment worden verstuurd</p>
-          <a href="/#contact" className="inline-block bg-white text-violet-600 px-6 py-3 rounded-xl font-semibold hover:bg-slate-100 transition">
+          <Link href="/#contact" className="inline-block bg-white text-violet-600 px-6 py-3 rounded-xl font-semibold hover:bg-slate-100 transition">
             Vraag offer aan →
-          </a>
+          </Link>
         </div>
       </div>
     </div>

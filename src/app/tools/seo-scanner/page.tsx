@@ -6,6 +6,7 @@ import {
   Clock, Image, Smartphone, ExternalLink, RefreshCw, Zap
 } from 'lucide-react'
 import { copyWithToast, useTemplates } from '@/lib/useSharedData'
+import Link from 'next/link'
 import TemplateSwitcher from '@/components/polish/TemplateSwitcher'
 import ProfileBar from '@/components/polish/ProfileBar'
 
@@ -285,12 +286,12 @@ export default function SEOScanner() {
             <div className="bg-gradient-to-r from-violet-600/20 to-purple-600/20 rounded-2xl p-6 border border-violet-500/20 text-center">
               <h3 className="text-xl font-bold mb-2">Wil je dat wij dit oplossen?</h3>
               <p className="text-white/70 mb-4">Wij verbeteren je SEO en zorgen dat je hoger rankt in Google</p>
-              <a 
+              <Link 
                 href="/#contact" 
                 className="inline-block bg-gradient-to-r from-violet-600 to-purple-600 text-white px-6 py-3 rounded-xl font-semibold hover:opacity-90 transition"
               >
                 Vraag gratis analyse aan
-              </a>
+              </Link>
             </div>
           </div>
         )}
