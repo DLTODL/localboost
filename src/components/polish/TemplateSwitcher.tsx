@@ -15,6 +15,7 @@ export default function TemplateSwitcher({ toolId, onApply, currentData }: Templ
   const [isOpen, setIsOpen] = useState(false)
   const [showSave, setShowSave] = useState(false)
   const [templateName, setTemplateName] = useState('')
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null)
   const toolTemplates = getTemplatesForTool(toolId)
 
   // Sort: most used first, then by last used
@@ -24,14 +25,42 @@ export default function TemplateSwitcher({ toolId, onApply, currentData }: Templ
     return new Date(b.lastUsed || 0).getTime() - new Date(a.lastUsed || 0).getTime()
   })
 
-  const handleApply = (template: typeof toolTemplates[0]) => {
+  // Close on outside click
+  useEffect(() => {
+    if (!isOpen) return
+    const handleClick = (e: MouseEvent) => {
+      const target = e.target as Element
+      if (!target.closest('.template-switcher')) {
+        setIsOpen(false)
+        setShowSave(false)
+        setShowDeleteConfirm(null)
+      }
+    }
+    document.addEventListener('click', handleClick)
+    return () => document.removeEventListener('click', handleClick)
+  }, [isOpen])
+
+  // Close on Escape
+  useEffect(() => {
+    if (!isOpen) return
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setIsOpen(false)
+        setShowSave(false)
+      }
+    }
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [isOpen])
+
+  const handleApply = useCallback((template: typeof toolTemplates[0]) => {
     applyTemplate(template.id) // Track usage
     onApply(template.data)
     showToast(`${template.name} geladen`, 'success')
     setIsOpen(false)
-  }
+  }, [applyTemplate, onApply])
 
-  const handleSave = () => {
+  const handleSave = useCallback(() => {
     if (!templateName.trim()) {
       showToast('Geef een naam op', 'error')
       return
@@ -40,12 +69,19 @@ export default function TemplateSwitcher({ toolId, onApply, currentData }: Templ
     setTemplateName('')
     setShowSave(false)
     showToast('Template opgeslagen', 'success')
-  }
+  }, [templateName, saveTemplate, toolId, currentData])
 
-  const handleDelete = (id: string) => {
-    deleteTemplate(id)
-    showToast('Template verwijderd', 'info')
-  }
+  const handleDelete = useCallback((id: string) => {
+    if (showDeleteConfirm === id) {
+      deleteTemplate(id)
+      showToast('Template verwijderd', 'info')
+      setShowDeleteConfirm(null)
+    } else {
+      setShowDeleteConfirm(id)
+      // Auto-reset after 3 seconds
+      setTimeout(() => setShowDeleteConfirm(prev => prev === id ? null : prev), 3000)
+    }
+  }, [showDeleteConfirm, deleteTemplate])
 
   const handleExport = () => {
     const data = JSON.stringify(toolTemplates, null, 2)
@@ -83,43 +119,88 @@ export default function TemplateSwitcher({ toolId, onApply, currentData }: Templ
   }
 
   return (
-    <div className="relative">
+    <div className="relative template-switcher">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 px-3 py-2 text-sm bg-slate-700 hover:bg-slate-600 text-slate-200 rounded-lg transition"
+        className={`flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition ${
+          isOpen 
+            ? 'bg-violet-600 text-white' 
+            : 'bg-slate-700 hover:bg-slate-600 text-slate-200'
+        }`}
+        title="Templates (Sla je invoer op en hergebruik)"
       >
         <Star className="w-4 h-4" />
         Templates
         {toolTemplates.length > 0 && (
-          <span className="px-1.5 py-0.5 bg-violet-600 text-white text-xs rounded-full">
+          <span className={`px-1.5 py-0.5 text-xs rounded-full ${
+            isOpen ? 'bg-white/30 text-white' : 'bg-violet-600 text-white'
+          }`}>
             {toolTemplates.length}
           </span>
         )}
       </button>
 
       {isOpen && (
-        <div className="absolute top-full right-0 mt-2 w-72 bg-slate-800 border border-slate-700 rounded-xl shadow-2xl z-50 overflow-hidden">
+        <div className="absolute top-full right-0 mt-2 w-72 bg-slate-800 border border-slate-700 rounded-xl shadow-2xl z-50 overflow-hidden animate-bounce-in">
           <div className="p-3 border-b border-slate-700 flex items-center justify-between">
-            <span className="text-sm font-semibold text-white">Templates</span>
-            <button onClick={() => setIsOpen(false)} className="text-slate-400 hover:text-white">
+            <span className="text-sm font-semibold text-white">
+              {showSave ? 'Template opslaan' : 'Templates'}
+            </span>
+            <button 
+              onClick={() => { setIsOpen(false); setShowSave(false); }}
+              className="text-slate-400 hover:text-white transition"
+            >
               <X className="w-4 h-4" />
             </button>
           </div>
 
           <div className="max-h-64 overflow-y-auto">
-            {sortedTemplates.length === 0 ? (
-              <div className="p-4 text-center text-slate-400 text-sm">
-                Nog geen templates.
-                <br />
-                <span className="text-slate-500">Sla je huidige invoer op als template.</span>
+            {showSave ? (
+              <div className="p-4 space-y-3">
+                <div className="text-sm text-slate-400">
+                  Sla je huidige invoer op als template om later snel te kunnen laden.
+                </div>
+                <input
+                  type="text"
+                  value={templateName}
+                  onChange={e => setTemplateName(e.target.value)}
+                  onKeyDown={e => e.key === 'Enter' && handleSave()}
+                  placeholder="Bijv: Mijn Restaurant Setup"
+                  className="w-full px-3 py-2.5 text-sm bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-violet-500 focus:outline-none transition"
+                  autoFocus
+                />
+                <div className="flex gap-2">
+                  <button
+                    onClick={handleSave}
+                    className="flex-1 px-3 py-2 text-sm bg-violet-600 hover:bg-violet-500 text-white rounded-lg transition font-medium"
+                  >
+                    Opslaan ✓
+                  </button>
+                  <button
+                    onClick={() => setShowSave(false)}
+                    className="px-3 py-2 text-sm bg-slate-700 hover:bg-slate-600 text-slate-300 rounded-lg transition"
+                  >
+                    Annuleer
+                  </button>
+                </div>
+              </div>
+            ) : sortedTemplates.length === 0 ? (
+              <div className="p-4 text-center">
+                <div className="text-4xl mb-2">📋</div>
+                <div className="text-sm text-slate-400">
+                  Nog geen templates.
+                </div>
+                <div className="text-xs text-slate-500 mt-1">
+                  Sla je huidige invoer op als template.
+                </div>
               </div>
             ) : (
               <div className="divide-y divide-slate-700">
                 {sortedTemplates.map(template => (
-                  <div key={template.id} className="p-3 hover:bg-slate-700/50 transition">
+                  <div key={template.id} className="p-3 hover:bg-slate-700/50 transition group">
                     <div className="flex items-center justify-between mb-1">
                       <span className="text-sm font-medium text-white">{template.name}</span>
-                      <div className="flex gap-1">
+                      <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition">
                         <button
                           onClick={() => handleApply(template)}
                           className="p-1.5 text-violet-400 hover:bg-violet-600/30 rounded transition"
@@ -129,19 +210,29 @@ export default function TemplateSwitcher({ toolId, onApply, currentData }: Templ
                         </button>
                         <button
                           onClick={() => handleDelete(template.id)}
-                          className="p-1.5 text-red-400 hover:bg-red-600/30 rounded transition"
-                          title="Verwijderen"
+                          className={`p-1.5 rounded transition ${
+                            showDeleteConfirm === template.id
+                              ? 'bg-red-600 text-white'
+                              : 'text-red-400 hover:bg-red-600/30'
+                          }`}
+                          title={showDeleteConfirm === template.id ? 'Klik opnieuw om te verwijderen' : 'Verwijderen'}
                         >
-                          <Trash2 className="w-3.5 h-3.5" />
+                          {showDeleteConfirm === template.id ? (
+                            <Trash2 className="w-3.5 h-3.5" />
+                          ) : (
+                            <Trash2 className="w-3.5 h-3.5" />
+                          )}
                         </button>
                       </div>
                     </div>
                     <div className="flex items-center gap-2 text-xs text-slate-500">
-                      <span>{template.useCount || 0}x gebruikt</span>
+                      <span className={template.useCount ? 'text-violet-400' : ''}>
+                        {template.useCount || 0}x gebruikt
+                      </span>
                       {template.lastUsed && (
                         <>
                           <span>•</span>
-                          <span>Laatst: {new Date(template.lastUsed).toLocaleDateString('nl-NL')}</span>
+                          <span>{new Date(template.lastUsed).toLocaleDateString('nl-NL')}</span>
                         </>
                       )}
                     </div>
@@ -152,44 +243,21 @@ export default function TemplateSwitcher({ toolId, onApply, currentData }: Templ
           </div>
 
           <div className="p-3 border-t border-slate-700 space-y-2">
-            {showSave ? (
-              <div className="space-y-2">
-                <input
-                  type="text"
-                  value={templateName}
-                  onChange={e => setTemplateName(e.target.value)}
-                  placeholder="Template naam..."
-                  className="w-full px-3 py-2 text-sm bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-violet-500 focus:outline-none"
-                />
-                <div className="flex gap-2">
-                  <button
-                    onClick={handleSave}
-                    className="flex-1 px-3 py-2 text-sm bg-violet-600 hover:bg-violet-500 text-white rounded-lg transition"
-                  >
-                    Opslaan
-                  </button>
-                  <button
-                    onClick={() => setShowSave(false)}
-                    className="px-3 py-2 text-sm bg-slate-700 hover:bg-slate-600 text-slate-300 rounded-lg transition"
-                  >
-                    Annuleer
-                  </button>
-                </div>
-              </div>
-            ) : (
+            {!showSave && (
               <button
                 onClick={() => setShowSave(true)}
-                className="w-full flex items-center justify-center gap-2 px-3 py-2 text-sm bg-violet-600 hover:bg-violet-500 text-white rounded-lg transition"
+                className="w-full flex items-center justify-center gap-2 px-3 py-2 text-sm bg-violet-600 hover:bg-violet-500 text-white rounded-lg transition font-medium"
               >
                 <Star className="w-4 h-4" />
-                Huidige opslaan als template
+                Sla huidige invoer op
               </button>
             )}
 
             <div className="flex gap-2">
               <button
                 onClick={handleExport}
-                className="flex-1 flex items-center justify-center gap-1.5 px-2 py-1.5 text-xs bg-slate-700 hover:bg-slate-600 text-slate-300 rounded-lg transition"
+                disabled={toolTemplates.length === 0}
+                className="flex-1 flex items-center justify-center gap-1.5 px-2 py-1.5 text-xs bg-slate-700 hover:bg-slate-600 text-slate-300 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <Download className="w-3.5 h-3.5" />
                 Export
