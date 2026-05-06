@@ -55,6 +55,13 @@ export default function LeadConversionCalculator() {
     improvement: number
   } | null>(null)
   const [calculating, setCalculating] = useState(false)
+  const [isInitialLoad, setIsInitialLoad] = useState(true)
+
+  // Initial skeleton load
+  useEffect(() => {
+    const timer = setTimeout(() => setIsInitialLoad(false), 800)
+    return () => clearTimeout(timer)
+  }, [])
 
   const industries = [
     'Loodgieter', 'Elektricien', 'Restaurant', 'Salon', 'Makelaar',
@@ -300,7 +307,16 @@ export default function LeadConversionCalculator() {
 
           {/* Right: Results */}
           <div>
-            {results ? (
+            {(isInitialLoad || calculating) ? (
+              <div className="space-y-6">
+                <div className="bg-gradient-to-br from-green-600/50 to-emerald-700/50 rounded-2xl p-6 animate-pulse">
+                  <div className="h-4 w-32 bg-white/10 rounded mb-2 mx-auto"></div>
+                  <div className="h-12 w-40 bg-white/10 rounded mx-auto mt-4"></div>
+                  <div className="h-4 w-48 bg-white/10 rounded mt-2 mx-auto"></div>
+                </div>
+                <FormSkeleton fields={4} />
+              </div>
+            ) : results ? (
               <div className="space-y-6">
                 {/* Summary */}
                 <div className="bg-gradient-to-br from-green-600 to-emerald-700 rounded-2xl p-6 text-center">
