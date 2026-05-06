@@ -123,6 +123,12 @@
 - **Toast notifications**: copyWithToast + showToast across all tools (working)
 - **Status: LocalBoost v13.0 is production-ready**
 
+## Polish Session 2026-05-06-4 (v13.2) - Polish Final v2
+- **Build verified**: All 29 routes compile successfully ✅
+- **Social Post Generator**: Added input persistence via useToolInputs + industry pre-fill from profile.type
+- **useKeyboardShortcuts.ts**: New utility for keyboard shortcut handling in tools
+- **Status: LocalBoost v13.2 is production-ready**
+
 ## Polish Session 2026-05-06-3 (v13.1) - Polish Final Verification
 - **Build verified**: All 29 routes compile successfully ✅
 - **Onboarding**: 4-step wizard with business profile capture ✅

@@ -100,7 +100,15 @@ export default function SocialPostGenerator() {
     } else if (profile && profile.name && !inputs.business) {
       setBusiness(profile.name)
     }
+    if (profile?.type && !inputs.industry) {
+      setIndustry(profile.type)
+    }
   }, [profile, selectedBusiness, inputs.business, inputs.industry])
+
+  // Save inputs on change
+  useEffect(() => {
+    saveInputs({ business, industry, postType })
+  }, [business, industry, postType, saveInputs])
 
   // Save inputs on change
   useEffect(() => {
