@@ -211,3 +211,11 @@ ebf2bd0 v12.6: Proposal Generator gets full TemplateSwitcher
 - Build verified: all 28 routes compile successfully
 
 **Status: LocalBoost v12.8 is production-ready**
+
+## Polish Session 2026-05-06-5 (v13.3) - Bug Fixes & Dead Code Removal
+- **Proposal Generator bug fix**: Fixed email template conditional that was checking `emailTemplates` (always truthy array) instead of `linkedEmailTemplate`
+- **Social Post Generator cleanup**: Removed unused `savedTemplates` variable and related `useTemplates` import (saved ~0.04KB)
+- **Providers.tsx cleanup**: Removed dead `window.showToast` code that dispatched custom event nothing was listening to
+- Build verified: all 29 routes compile successfully
+
+**Status: LocalBoost v13.3 is production-ready**
