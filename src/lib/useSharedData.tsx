@@ -371,6 +371,41 @@ export function notifyTemplateApplied(toolId: string, templateData: Record<strin
 }
 
 // ==================
+// CROSS-TOOL DATA BRIDGE
+// ==================
+// Allows tools to share data without tight coupling
+// Lead Finder → Review Generator: share selected business + auto-save to CRM
+// Review Generator → Social Post: share business info for posts
+// Proposal Generator → Email Sequences: link email templates
+
+export interface CrossToolDataBridge {
+  // Get the most recently selected/created business
+  getLastBusiness: () => SelectedBusiness | null
+  // Get all leads as quick-pick list
+  getLeadsAsPickList: () => { id: number; label: string; sublabel: string }[]
+  // Auto-share between tools: when Lead Finder saves, notify other tools
+  shareLeadToTools: (lead: SavedLead) => void
+}
+
+export function useCrossToolBridge(): CrossToolDataBridge {
+  const { leads } = useLeads()
+  const { business } = useSelectedBusiness()
+
+  return {
+    getLastBusiness: () => business,
+    getLeadsAsPickList: () => leads.map(l => ({
+      id: l.id,
+      label: l.name,
+      sublabel: l.city || l.company || ''
+    })),
+    shareLeadToTools: (lead: SavedLead) => {
+      // Store in a shared "last shared" key for tools to pick up
+      localStorage.setItem('localboost_last_shared_lead', JSON.stringify(lead))
+    }
+  }
+}
+
+// ==================
 // CLEAR ALL DATA
 // ==================
 export function clearAllData() {
