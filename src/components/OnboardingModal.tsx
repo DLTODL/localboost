@@ -180,7 +180,7 @@ export default function OnboardingModal({ onComplete }: OnboardingProps) {
                   value={data.name}
                   onChange={(e) => handleChange('name', e.target.value)}
                   placeholder="Bijv. De Loodgieter Amsterdam"
-                  className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl focus:ring-2 focus:ring-violet-500 outline-none"
+                  className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl focus:ring-2 focus:ring-violet-500 outline-none transition"
                 />
               </div>
               <div>
@@ -188,7 +188,7 @@ export default function OnboardingModal({ onComplete }: OnboardingProps) {
                 <select
                   value={data.type}
                   onChange={(e) => handleChange('type', e.target.value)}
-                  className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl focus:ring-2 focus:ring-violet-500 outline-none"
+                  className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl focus:ring-2 focus:ring-violet-500 outline-none transition"
                 >
                   <option value="">Selecteer type...</option>
                   {businessTypes.map(t => <option key={t} value={t}>{t}</option>)}
@@ -201,7 +201,7 @@ export default function OnboardingModal({ onComplete }: OnboardingProps) {
                   value={data.city}
                   onChange={(e) => handleChange('city', e.target.value)}
                   placeholder="Bijv. Amsterdam"
-                  className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl focus:ring-2 focus:ring-violet-500 outline-none"
+                  className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl focus:ring-2 focus:ring-violet-500 outline-none transition"
                 />
               </div>
             </div>
@@ -239,7 +239,7 @@ export default function OnboardingModal({ onComplete }: OnboardingProps) {
                   value={data.website}
                   onChange={(e) => handleChange('website', e.target.value)}
                   placeholder="https://jouwwebsite.nl"
-                  className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl focus:ring-2 focus:ring-violet-500 outline-none"
+                  className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl focus:ring-2 focus:ring-violet-500 outline-none transition"
                 />
               </div>
               <div>
@@ -249,7 +249,7 @@ export default function OnboardingModal({ onComplete }: OnboardingProps) {
                   value={data.googleReviewLink}
                   onChange={(e) => handleChange('googleReviewLink', e.target.value)}
                   placeholder="https://g.page/r/.../review"
-                  className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl focus:ring-2 focus:ring-violet-500 outline-none"
+                  className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl focus:ring-2 focus:ring-violet-500 outline-none transition"
                 />
               </div>
             </div>
@@ -278,38 +278,41 @@ export default function OnboardingModal({ onComplete }: OnboardingProps) {
         </div>
 
         {/* Footer */}
-        <div className="p-6 border-t border-slate-700 flex gap-3">
-          {step > 0 && (
-            <button
-              onClick={() => setStep(s => s - 1)}
-              className="px-6 py-3 bg-slate-700 hover:bg-slate-600 rounded-xl font-medium transition"
-            >
-              Terug
-            </button>
+        <div className="p-6 border-t border-slate-700">
+          {/* Step completion hint */}
+          {step > 0 && step < steps.length - 1 && (
+            <div className="text-center text-xs text-slate-500 mb-3">
+              {step === 1 && !data.name ? '✓ Bedrijfsnaam nodig om door te gaan' :
+               step === 1 && !data.type ? '✓ Type bedrijf nodig om door te gaan' :
+               '✓ Verplichte velden ingevuld'}
+            </div>
           )}
-          <button
-            onClick={handleComplete}
-            className="px-6 py-3 text-slate-400 hover:text-white hover:bg-slate-700 rounded-xl font-medium transition"
-          >
-            Overslaan
-          </button>
-          <button
-            onClick={() => {
-              if (step < steps.length - 1) {
-                setStep(s => s + 1)
-              } else {
-                handleComplete()
-              }
-            }}
-            disabled={!canContinue()}
-            className="flex-1 py-3 bg-gradient-to-r from-violet-600 to-purple-600 hover:opacity-90 disabled:opacity-50 rounded-xl font-semibold flex items-center justify-center gap-2 transition"
-          >
-            {step < steps.length - 1 ? (
-              <>Volgende <ArrowRight className="w-5 h-5" /></>
-            ) : (
-              <>Start met Bouwen <ArrowRight className="w-5 h-5" /></>
+          <div className="flex gap-3">
+            {step > 0 && (
+              <button
+                onClick={() => setStep(s => s - 1)}
+                className="px-4 py-3 bg-slate-700 hover:bg-slate-600 rounded-xl font-medium transition text-sm"
+              >
+                ← Terug
+              </button>
             )}
-          </button>
+            {step < steps.length - 1 ? (
+              <button
+                onClick={() => setStep(s => s + 1)}
+                disabled={!canContinue()}
+                className="flex-1 py-3 bg-gradient-to-r from-violet-600 to-purple-600 hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl font-semibold flex items-center justify-center gap-2 transition text-sm"
+              >
+                {step === 1 && !data.city ? 'Overslaan' : 'Volgende'} <ArrowRight className="w-4 h-4" />
+              </button>
+            ) : (
+              <button
+                onClick={handleComplete}
+                className="flex-1 py-3 bg-gradient-to-r from-green-600 to-emerald-600 hover:opacity-90 rounded-xl font-semibold flex items-center justify-center gap-2 transition text-sm"
+              >
+                <Sparkles className="w-4 h-4" /> Start met Bouwen!
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </div>
