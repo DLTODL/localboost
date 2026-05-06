@@ -560,7 +560,7 @@ function Footer() {
         <div className="flex gap-6">
           <a href="#" className="hover:text-white">Privacy</a>
           <a href="#" className="hover:text-white">Voorwaarden</a>
-          <a href="#" className="hover:text-white">Contact</a>
+          <a href="#contact" className="hover:text-white">Contact</a>
         </div>
       </div>
     </footer>

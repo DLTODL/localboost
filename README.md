@@ -109,6 +109,7 @@ npm run lint      # ESLint check
 
 ## Version History
 
+- **v13.21** - Final polish: skeleton loading, dead code cleanup, SPA navigation
 - **v13.9** - Senior dev polish (accessibility, UX, dead code cleanup)
 - **v13.8** - Input persistence, SPA navigation
 - **v13.7** - Onboarding flow, toast system
