@@ -104,12 +104,7 @@ export default function SocialPostGenerator() {
 
   // Save inputs on change
   useEffect(() => {
-    saveInputs({ business, industry, postType })
-  }, [business, industry, postType, saveInputs])
-
-  // Save inputs on change
-  useEffect(() => {
-    if (business || postType) {
+    if (business || postType || industry) {
       saveInputs({ business, postType, industry })
     }
   }, [business, postType, industry, saveInputs])
