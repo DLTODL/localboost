@@ -164,9 +164,17 @@ export default function EmailSequences() {
   const savedTemplates = getTemplatesForTool('email-sequences')
   
   const [activeTab, setActiveTab] = useState('all')
+  const [generating, setGenerating] = useState(false)
   const [copiedId, setCopiedId] = useState<string | null>(null)
   const [showContent, setShowContent] = useState<string | null>(null)
   const [filter, setFilter] = useState('')
+  const [isInitialLoad, setIsInitialLoad] = useState(true)
+
+  // Simulate initial skeleton load
+  useEffect(() => {
+    const timer = setTimeout(() => setIsInitialLoad(false), 800)
+    return () => clearTimeout(timer)
+  }, [])
 
   // Save inputs on change
   useEffect(() => {
@@ -176,6 +184,29 @@ export default function EmailSequences() {
   const filteredSequences = activeTab === 'all' 
     ? sequences 
     : sequences.filter(s => s.useCase.toLowerCase().includes(activeTab.toLowerCase()))
+
+  // Skeleton loading state
+  const EmailSequencesSkeleton = () => (
+    <div className="space-y-4">
+      {[1, 2, 3].map(i => (
+        <div key={i} className="bg-slate-800 rounded-2xl border border-slate-700 overflow-hidden">
+          <div className="p-6">
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="h-6 w-32 bg-slate-700 rounded animate-pulse"></div>
+                  <div className="h-5 w-20 bg-slate-700 rounded animate-pulse"></div>
+                </div>
+                <div className="h-5 w-full bg-slate-700 rounded animate-pulse mb-2"></div>
+                <div className="h-4 w-48 bg-slate-700 rounded animate-pulse"></div>
+              </div>
+              <div className="h-10 w-24 bg-slate-700 rounded-xl animate-pulse"></div>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  )
 
   const copyToClipboard = async (text: string, id: string) => {
     await copyWithToast(text, 'Email gekopieerd!')
@@ -249,9 +280,12 @@ export default function EmailSequences() {
           ))}
         </div>
 
-        {/* Sequences */}
-        <div className="space-y-4">
-          {filteredSequences.map(seq => (
+        {/* Skeleton Loading */}
+        {isInitialLoad ? (
+          <EmailSequencesSkeleton />
+        ) : (
+          <div className="space-y-4">
+            {filteredSequences.map(seq => (
             <div 
               key={seq.id}
               className="bg-slate-800 rounded-2xl border border-slate-700 overflow-hidden"
@@ -311,8 +345,8 @@ export default function EmailSequences() {
               )}
             </div>
           ))}
-        </div>
-
+          </div>
+        )}
         {/* CTA */}
         <div className="mt-8 bg-gradient-to-r from-violet-600 to-purple-600 rounded-2xl p-6 text-center">
           <h3 className="text-xl font-bold mb-2">Wil je dat wij dit voor je automatiseren?</h3>

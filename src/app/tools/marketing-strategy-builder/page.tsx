@@ -76,6 +76,13 @@ export default function MarketingStrategyBuilder() {
   const [strategy, setStrategy] = useState<StrategyOutput[]>([])
   const [generating, setGenerating] = useState(false)
   const [selectedIndustry, setSelectedIndustry] = useState('')
+  const [isInitialLoad, setIsInitialLoad] = useState(true)
+
+  // Simulate initial skeleton load
+  useEffect(() => {
+    const timer = setTimeout(() => setIsInitialLoad(false), 800)
+    return () => clearTimeout(timer)
+  }, [])
 
   // Pre-fill from profile
   useEffect(() => {
@@ -124,6 +131,36 @@ export default function MarketingStrategyBuilder() {
       setGenerating(false)
     }, 1500)
   }
+
+  // Skeleton loading state
+  const StrategySkeleton = () => (
+    <div className="space-y-4">
+      {[1, 2, 3, 4].map(i => (
+        <div key={i} className="bg-slate-800 rounded-2xl border border-slate-700 overflow-hidden">
+          <div className="p-4 border-b border-slate-700 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="h-6 w-16 bg-slate-700 rounded animate-pulse"></div>
+              <div>
+                <div className="h-5 w-40 bg-slate-700 rounded animate-pulse mb-1"></div>
+                <div className="h-4 w-28 bg-slate-700 rounded animate-pulse"></div>
+              </div>
+            </div>
+            <div className="h-5 w-5 bg-slate-700 rounded animate-pulse"></div>
+          </div>
+          <div className="p-4 space-y-3">
+            <div>
+              <div className="h-3 w-12 bg-slate-700 rounded animate-pulse mb-1"></div>
+              <div className="h-4 w-full bg-slate-700 rounded animate-pulse"></div>
+            </div>
+            <div className="bg-slate-900/50 rounded-xl p-3">
+              <div className="h-3 w-16 bg-slate-700 rounded animate-pulse mb-1"></div>
+              <div className="h-4 w-3/4 bg-slate-700 rounded animate-pulse"></div>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  )
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
@@ -288,7 +325,9 @@ export default function MarketingStrategyBuilder() {
               Jouw Persoonlijke Strategie
             </h2>
             
-            {strategy.length === 0 ? (
+            {isInitialLoad || generating ? (
+              <StrategySkeleton />
+            ) : strategy.length === 0 ? (
               <div className="bg-slate-800 rounded-2xl p-12 border border-slate-700 text-center">
                 <Target className="w-16 h-16 text-slate-600 mx-auto mb-4" />
                 <p className="text-slate-400">
