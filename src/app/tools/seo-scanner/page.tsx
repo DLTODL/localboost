@@ -9,6 +9,7 @@ import { useTemplates, useToolInputs } from '@/lib/useSharedData'
 import Link from 'next/link'
 import TemplateSwitcher from '@/components/polish/TemplateSwitcher'
 import ProfileBar from '@/components/polish/ProfileBar'
+import { FormSkeleton, CardSkeleton } from '@/components/polish/Skeleton'
 
 interface ScanResult {
   url: string
@@ -42,6 +43,13 @@ export default function SEOScanner() {
   const [loading, setLoading] = useState(false)
   const [results, setResults] = useState<ScanResult | null>(null)
   const [scanHistory, setScanHistory] = useState<ScanResult[]>([])
+  const [isInitialLoad, setIsInitialLoad] = useState(true)
+
+  // Initial load skeleton simulation
+  useEffect(() => {
+    const timer = setTimeout(() => setIsInitialLoad(false), 600)
+    return () => clearTimeout(timer)
+  }, [])
 
   // Normalize URL: prepend https:// if missing
   const normalizeUrl = (input: string) => {
@@ -136,6 +144,21 @@ export default function SEOScanner() {
   return (
     <div className="min-h-screen bg-slate-900 text-white">
       <ProfileBar />
+      {isInitialLoad ? (
+        <div className="max-w-5xl mx-auto px-6 py-8 space-y-6">
+          <div className="flex items-center gap-3">
+            <span className="text-4xl">🔍</span>
+            <div>
+              <h1 className="text-3xl font-black">SEO Scanner</h1>
+              <p className="text-slate-400">Laden...</p>
+            </div>
+          </div>
+          <FormSkeleton fields={1} />
+          <div className="grid lg:grid-cols-2 gap-6">
+            {[1,2,3,4].map(i => <CardSkeleton key={i} />)}
+          </div>
+        </div>
+      ) : (
       <div className="max-w-5xl mx-auto px-6 py-8">
         {/* Header */}
         <div className="mb-8">
@@ -357,6 +380,7 @@ export default function SEOScanner() {
           </div>
         )}
       </div>
+      )}
     </div>
   )
 }

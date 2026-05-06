@@ -7,6 +7,7 @@ import { Sparkles, Copy, Check, RefreshCw, Instagram, Facebook, Linkedin, Calend
 import { useBusinessProfile, useToolInputs, useSelectedBusiness, copyWithToast } from '@/lib/useSharedData'
 import TemplateSwitcher from '@/components/polish/TemplateSwitcher'
 import ProfileBar from '@/components/polish/ProfileBar'
+import { FormSkeleton } from '@/components/polish/Skeleton'
 
 const postTypes = [
   { id: 'promo', label: 'Aanbieding', emoji: '🎁', desc: 'Promotie of korting' },
@@ -86,6 +87,13 @@ export default function SocialPostGenerator() {
 
   const [business, setBusiness] = useState('')
   const [industry, setIndustry] = useState('')
+  const [isInitialLoad, setIsInitialLoad] = useState(true)
+
+  // Initial load skeleton simulation
+  useEffect(() => {
+    const timer = setTimeout(() => setIsInitialLoad(false), 600)
+    return () => clearTimeout(timer)
+  }, [])
   const [postType, setPostType] = useState('')
   const [posts, setPosts] = useState<GeneratedPost[]>([])
   const [loading, setLoading] = useState(false)
@@ -136,6 +144,18 @@ export default function SocialPostGenerator() {
   return (
     <div className="min-h-screen bg-slate-900 text-white">
       <ProfileBar />
+      {isInitialLoad ? (
+        <div className="max-w-4xl mx-auto p-6 space-y-6">
+          <div className="flex items-center gap-3 mb-2">
+            <span className="text-4xl">📱</span>
+            <div>
+              <h1 className="text-3xl font-black">Social Post Generator</h1>
+              <p className="text-slate-400">Laden...</p>
+            </div>
+          </div>
+          <FormSkeleton fields={3} />
+        </div>
+      ) : (
       <div className="max-w-4xl mx-auto p-6">
         {/* Header */}
         <div className="mb-8">
@@ -357,6 +377,7 @@ export default function SocialPostGenerator() {
           </div>
         )}
       </div>
+      )}
     </div>
   )
 }

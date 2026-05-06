@@ -5,6 +5,7 @@ import { FileText, Clock, Send, Check, AlertCircle, User, Briefcase, TrendingUp,
 import { useBusinessProfile, useToolInputs, useSelectedBusiness, useTemplates, copyWithToast } from '@/lib/useSharedData'
 import TemplateSwitcher from '@/components/polish/TemplateSwitcher'
 import ProfileBar from '@/components/polish/ProfileBar'
+import { FormSkeleton, EmailSkeleton } from '@/components/polish/Skeleton'
 
 interface ClientData {
   name: string
@@ -70,6 +71,13 @@ export default function EmailCampaignBuilder() {
   const [selectedTemplate, setSelectedTemplate] = useState('default')
   const [generating, setGenerating] = useState(false)
   const [copiedId, setCopiedId] = useState<string | null>(null)
+  const [isInitialLoad, setIsInitialLoad] = useState(true)
+
+  // Initial load skeleton simulation
+  useEffect(() => {
+    const timer = setTimeout(() => setIsInitialLoad(false), 600)
+    return () => clearTimeout(timer)
+  }, [])
 
   const handleInputChange = (field: keyof ClientData, value: string | string[]) => {
     setClientData(prev => ({ ...prev, [field]: value }))
@@ -233,6 +241,24 @@ Groet`,
   return (
     <div className="min-h-screen bg-slate-900 text-white">
       <ProfileBar />
+      {isInitialLoad ? (
+        <div className="max-w-6xl mx-auto p-6 space-y-6">
+          <div className="flex items-center gap-3 mb-2">
+            <span className="text-4xl">📧</span>
+            <div>
+              <h1 className="text-3xl font-black">Email Campaign Builder</h1>
+              <p className="text-slate-400">Laden...</p>
+            </div>
+          </div>
+          <FormSkeleton fields={5} />
+          <div className="grid lg:grid-cols-2 gap-8">
+            <FormSkeleton fields={4} />
+            <div className="space-y-4">
+              {[1,2,3,4].map(i => <EmailSkeleton key={i} />)}
+            </div>
+          </div>
+        </div>
+      ) : (
       <div className="max-w-6xl mx-auto p-6">
         {/* Header */}
         <div className="mb-8">
@@ -485,7 +511,8 @@ Groet`,
             )}
           </div>
         </div>
-      </div>
+        </div>
+      )}
     </div>
   )
 }
