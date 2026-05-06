@@ -5,6 +5,7 @@ import { Search, MapPin, Phone, Mail, Globe, Copy, Check, Download, Star, Save, 
 import { useBusinessProfile, useLeads, useToolInputs, useTemplates, useSelectedBusiness, copyWithToast } from '@/lib/useSharedData'
 import TemplateSwitcher from '@/components/polish/TemplateSwitcher'
 import { CardSkeleton, ListSkeleton } from '@/components/polish/Skeleton'
+import ProfileBar from '@/components/polish/ProfileBar'
 
 interface Lead {
   id: number
@@ -186,6 +187,7 @@ export default function LeadFinder() {
 
   return (
     <div className="min-h-screen bg-slate-900 text-white">
+      <ProfileBar />
       <div className="max-w-6xl mx-auto p-6">
         {/* Header */}
         <div className="mb-8">
@@ -389,7 +391,7 @@ export default function LeadFinder() {
                             handleSaveLead(lead)
                           }}
                           className="p-2 bg-slate-700 hover:bg-green-600 rounded-lg transition"
-                          title="Opslaan in CRM + Open in Review Generator"
+                          title="Opslaan in CRM"
                         >
                           <Save className="w-5 h-5" />
                         </button>
@@ -415,7 +417,7 @@ export default function LeadFinder() {
                               city: lead.city,
                               needs: lead.needs
                             })
-                            copyWithToast('Lead opgeslagen & geopend in Review Generator', 'success')
+                            copyWithToast('✓ Lead opgeslagen - Review Generator geopend', 'success')
                             window.location.href = '/tools/review-generator'
                           }}
                           className="p-2 bg-yellow-600 hover:bg-yellow-700 rounded-lg transition"

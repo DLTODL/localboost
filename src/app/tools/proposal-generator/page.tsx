@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { FileText, Download, User, Building, CheckCircle, ChevronRight, ChevronLeft, RotateCcw, Mail, Save, Database } from 'lucide-react'
 import { useBusinessProfile, useToolInputs, useSelectedBusiness, useTemplates, showToast } from '@/lib/useSharedData'
 import TemplateSwitcher from '@/components/polish/TemplateSwitcher'
+import ProfileBar from '@/components/polish/ProfileBar'
 import { emailTemplates } from '@/lib/email-templates'
 
 interface ProposalData {
@@ -194,6 +195,7 @@ Handtekening: _______________________`
 
   return (
     <div className="min-h-screen bg-slate-900 text-white">
+      <ProfileBar />
       <div className="max-w-3xl mx-auto p-6">
         {/* Header */}
         <div className="mb-8">
@@ -424,11 +426,11 @@ Handtekening: _______________________`
 
               {/* Cross-tool: Email Campaign */}
               <a
-                href="/tools/email-campaign-builder"
+                href={`/tools/email-campaign-builder?client=${encodeURIComponent(data.clientName)}&company=${encodeURIComponent(data.clientCompany)}`}
                 className="flex items-center justify-center gap-2 px-4 py-3 bg-violet-600/20 hover:bg-violet-600/30 text-violet-300 rounded-xl text-sm transition"
               >
                 <Mail className="w-4 h-4" />
-                Bouw Email Campaign voor deze klant →
+                Bouw Email Campaign voor {data.clientName || 'deze klant'} →
               </a>
             </div>
 

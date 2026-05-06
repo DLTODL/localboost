@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { FileText, Clock, Send, Check, AlertCircle, User, Briefcase, TrendingUp, Target, DollarSign, Users, Calendar, Loader2, Mail, Import, Star } from 'lucide-react'
 import { useBusinessProfile, useToolInputs, useSelectedBusiness, useTemplates, copyWithToast } from '@/lib/useSharedData'
 import TemplateSwitcher from '@/components/polish/TemplateSwitcher'
+import ProfileBar from '@/components/polish/ProfileBar'
 
 interface ClientData {
   name: string
@@ -182,8 +183,19 @@ Groet`,
     setTimeout(() => setCopiedId(null), 2000)
   }
 
-  // Pre-fill from business profile or selected business (cross-tool)
+  // Pre-fill from business profile, selected business, or URL params (cross-tool)
   useEffect(() => {
+    // Check URL params first (from Proposal Generator)
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search)
+      const urlClient = params.get('client')
+      const urlCompany = params.get('company')
+      
+      if (urlClient && !inputs.company) {
+        setClientData(prev => ({ ...prev, name: decodeURIComponent(urlClient), company: decodeURIComponent(urlCompany || urlClient) }))
+      }
+    }
+    
     if (selectedBusiness) {
       if (selectedBusiness.name && !inputs.company) {
         setClientData(prev => ({ ...prev, name: selectedBusiness.name, company: selectedBusiness.name }))
@@ -220,6 +232,7 @@ Groet`,
 
   return (
     <div className="min-h-screen bg-slate-900 text-white">
+      <ProfileBar />
       <div className="max-w-6xl mx-auto p-6">
         {/* Header */}
         <div className="mb-8">

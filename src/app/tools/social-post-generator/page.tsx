@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { Sparkles, Copy, Check, RefreshCw, Instagram, Facebook, Linkedin, Calendar, X, ExternalLink, Send } from 'lucide-react'
 import { useBusinessProfile, useToolInputs, useSelectedBusiness, copyWithToast } from '@/lib/useSharedData'
 import TemplateSwitcher from '@/components/polish/TemplateSwitcher'
+import ProfileBar from '@/components/polish/ProfileBar'
 
 const postTypes = [
   { id: 'promo', label: 'Aanbieding', emoji: '🎁', desc: 'Promotie of korting' },
@@ -132,6 +133,7 @@ export default function SocialPostGenerator() {
 
   return (
     <div className="min-h-screen bg-slate-900 text-white">
+      <ProfileBar />
       <div className="max-w-4xl mx-auto p-6">
         {/* Header */}
         <div className="mb-8">
@@ -208,9 +210,15 @@ export default function SocialPostGenerator() {
 
         {/* Loading Skeleton */}
         {loading && (
-          <div className="bg-slate-800 rounded-2xl border border-slate-700 p-6 animate-pulse">
-            <div className="h-8 w-32 bg-slate-700 rounded mb-4"></div>
-            <div className="h-32 bg-slate-700 rounded"></div>
+          <div className="bg-slate-800 rounded-2xl border border-slate-700 p-8 animate-fade-in">
+            <div className="flex items-center justify-center gap-4 mb-6">
+              <div className="w-10 h-10 border-4 border-violet-600 border-t-transparent rounded-full animate-spin"></div>
+              <div className="text-lg font-medium text-violet-300">Social posts genereren...</div>
+            </div>
+            <div className="space-y-4">
+              <div className="h-32 bg-slate-700/50 rounded-xl animate-pulse"></div>
+              <div className="h-20 bg-slate-700/30 rounded-xl animate-pulse"></div>
+            </div>
           </div>
         )}
 
@@ -326,9 +334,19 @@ export default function SocialPostGenerator() {
 
         {/* Empty State */}
         {!loading && posts.length === 0 && (
-          <div className="text-center py-16 text-slate-500 animate-fade-in">
-            <span className="text-6xl mb-4 block">📱</span>
-            <p>Voer een bedrijfsnaam en type post in om te beginnen</p>
+          <div className="text-center py-16 animate-fade-in">
+            <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-slate-800/50 flex items-center justify-center">
+              <span className="text-5xl">📱</span>
+            </div>
+            <h3 className="text-xl font-bold text-slate-400 mb-2">Genereer je eerste social post</h3>
+            <p className="text-slate-500 text-sm max-w-sm mx-auto mb-6">
+              Voer je bedrijfsnaam in, kies een type post en klik op genereren om AI-gecreëerde content te krijgen
+            </p>
+            {(!business || !postType) && (
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-violet-600/20 text-violet-300 rounded-lg text-sm">
+                <span>👆 Vul eerst de velden hierboven in</span>
+              </div>
+            )}
           </div>
         )}
       </div>

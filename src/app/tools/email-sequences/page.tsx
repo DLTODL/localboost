@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { Mail, Copy, Check, Send, Clock, Users, MessageSquare, Tag, FileText, Sparkles } from 'lucide-react'
 import { copyWithToast, useBusinessProfile, useToolInputs, useTemplates } from '@/lib/useSharedData'
 import TemplateSwitcher from '@/components/polish/TemplateSwitcher'
+import ProfileBar from '@/components/polish/ProfileBar'
 
 interface Sequence {
   id: string
@@ -183,6 +184,7 @@ export default function EmailSequences() {
 
   return (
     <div className="min-h-screen bg-slate-900 text-white">
+      <ProfileBar />
       <div className="max-w-4xl mx-auto p-6">
         {/* Header */}
         <div className="mb-8">

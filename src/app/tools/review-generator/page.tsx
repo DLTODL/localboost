@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { Star, Copy, Check, MessageSquare, Sparkles, Building, ChevronRight, RotateCcw, ExternalLink, Loader2, Save } from 'lucide-react'
 import { useBusinessProfile, useToolInputs, useSelectedBusiness, copyWithToast, showToast } from '@/lib/useSharedData'
 import TemplateSwitcher from '@/components/polish/TemplateSwitcher'
+import ProfileBar from '@/components/polish/ProfileBar'
 
 const businessTypes = [
   { id: 'restaurant', label: 'Restaurant/Café', emoji: '🍽️' },
@@ -143,6 +144,7 @@ export default function ReviewGenerator() {
 
   return (
     <div className="min-h-screen bg-slate-900 text-white">
+      <ProfileBar />
       <div className="max-w-3xl mx-auto p-6">
         {/* Header */}
         <div className="mb-8">
