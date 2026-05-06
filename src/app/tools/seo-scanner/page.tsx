@@ -5,7 +5,7 @@ import {
   Search, Globe, Shield, AlertTriangle, CheckCircle, 
   Clock, Image, Smartphone, ExternalLink, RefreshCw, Zap
 } from 'lucide-react'
-import { useBusinessProfile, useTemplates, useToolInputs } from '@/lib/useSharedData'
+import { useTemplates, useToolInputs } from '@/lib/useSharedData'
 import Link from 'next/link'
 import TemplateSwitcher from '@/components/polish/TemplateSwitcher'
 import ProfileBar from '@/components/polish/ProfileBar'
@@ -43,6 +43,15 @@ export default function SEOScanner() {
   const [results, setResults] = useState<ScanResult | null>(null)
   const [scanHistory, setScanHistory] = useState<ScanResult[]>([])
 
+  // Normalize URL: prepend https:// if missing
+  const normalizeUrl = (input: string) => {
+    let url = input.trim()
+    if (url && !url.startsWith('http://') && !url.startsWith('https://')) {
+      url = 'https://' + url
+    }
+    return url
+  }
+
   // Pre-fill URL from saved inputs
   useEffect(() => {
     if (inputs.url) setUrl(inputs.url)
@@ -55,6 +64,7 @@ export default function SEOScanner() {
 
   const scanWebsite = async () => {
     if (!url) return
+    const normalizedUrl = normalizeUrl(url)
     setLoading(true)
     setResults(null)
     
@@ -62,16 +72,16 @@ export default function SEOScanner() {
       const res = await fetch('/api/seo-scanner', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url })
+        body: JSON.stringify({ url: normalizedUrl })
       })
       const data = await res.json()
       setResults(data)
       setScanHistory(prev => [data, ...prev.slice(0, 4)])
     } catch (error) {
       setResults({
-        url,
+        url: normalizedUrl,
         score: 0,
-        error: 'Scan failed',
+        error: 'Scan mislukt',
         issues: [{
           severity: 'high',
           message: 'Verbindingsfout',
@@ -157,7 +167,7 @@ export default function SEOScanner() {
                 value={url}
                 onChange={(e) => setUrl(e.target.value)}
                 onKeyPress={handleKeyPress}
-                placeholder="https://voorbeeld.nl of voorbeeld.nl"
+                placeholder="https://jouwwebsite.nl"
                 className="w-full pl-12 pr-4 py-4 bg-slate-900/50 border border-slate-700 rounded-xl focus:ring-2 focus:ring-violet-500/50 outline-none transition text-white placeholder:text-slate-600"
               />
             </div>

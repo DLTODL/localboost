@@ -275,27 +275,14 @@ export default function LeadFinder() {
                   <><Search className="w-5 h-5" /> Vind Leads</>
                 )}
               </button>
-              {savedTemplates.length > 0 && (
-                <div className="relative">
-                  <select
-                    onChange={(e) => {
-                      const t = savedTemplates.find(t => t.id === e.target.value)
-                      if (t) {
-                        setCity(t.data.city)
-                        setIndustry(t.data.industry)
-                      }
-                      e.target.value = ''
-                    }}
-                    className="px-3 py-3 bg-slate-700 hover:bg-slate-600 rounded-xl cursor-pointer transition"
-                    title="Laad template"
-                  >
-                    <option value="">📁</option>
-                    {savedTemplates.map(t => (
-                      <option key={t.id} value={t.id}>{t.name}</option>
-                    ))}
-                  </select>
-                </div>
-              )}
+              <TemplateSwitcher
+                toolId="lead-finder"
+                onApply={(data) => {
+                  if (data.city) setCity(data.city)
+                  if (data.industry) setIndustry(data.industry)
+                }}
+                currentData={{ city, industry }}
+              />
             </div>
           </div>
         </div>

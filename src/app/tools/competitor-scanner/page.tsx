@@ -5,6 +5,7 @@ import { Target, Search, Globe, MapPin, Star, Copy, Check, Download, ExternalLin
 import { useBusinessProfile, useToolInputs, useTemplates, copyWithToast } from '@/lib/useSharedData'
 import TemplateSwitcher from '@/components/polish/TemplateSwitcher'
 import ProfileBar from '@/components/polish/ProfileBar'
+import { CardSkeleton } from '@/components/polish/Skeleton'
 
 interface Competitor {
   name: string
@@ -87,26 +88,7 @@ const generateCompetitors = (city: string, industry: string): Competitor[] => {
   })
 }
 
-function CompetitorSkeleton() {
-  return (
-    <div className="bg-slate-800 rounded-xl p-5 border border-slate-700 animate-pulse">
-      <div className="flex items-start justify-between">
-        <div className="flex-1">
-          <div className="h-6 w-48 bg-slate-700 rounded mb-3"></div>
-          <div className="flex gap-4 mb-3">
-            <div className="h-4 w-24 bg-slate-700 rounded"></div>
-            <div className="h-4 w-24 bg-slate-700 rounded"></div>
-          </div>
-          <div className="flex gap-2">
-            <div className="h-6 w-16 bg-slate-700 rounded"></div>
-            <div className="h-6 w-16 bg-slate-700 rounded"></div>
-          </div>
-        </div>
-        <div className="h-8 w-20 bg-slate-700 rounded"></div>
-      </div>
-    </div>
-  )
-}
+
 
 export default function CompetitorScanner() {
   const { profile } = useBusinessProfile()
@@ -243,7 +225,7 @@ export default function CompetitorScanner() {
         {/* Loading */}
         {loading && (
           <div className="space-y-4">
-            {[1, 2, 3, 4].map(i => <CompetitorSkeleton key={i} />)}
+            {[1, 2, 3, 4].map(i => <CardSkeleton key={i} />)}
           </div>
         )}
 
