@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { copyWithToast, useBusinessProfile, useToolInputs, useTemplates } from '@/lib/useSharedData'
 import TemplateSwitcher from '@/components/polish/TemplateSwitcher'
 import ProfileBar from '@/components/polish/ProfileBar'
+import { EmptyState } from '@/components/polish/EmptyState'
 
 interface LeadData {
   industry: string
@@ -329,12 +330,11 @@ export default function MarketingStrategyBuilder() {
             {isInitialLoad || generating ? (
               <StrategySkeleton />
             ) : strategy.length === 0 ? (
-              <div className="bg-slate-800 rounded-2xl p-12 border border-slate-700 text-center">
-                <Target className="w-16 h-16 text-slate-600 mx-auto mb-4" />
-                <p className="text-slate-400">
-                  Vul je gegevens in en krijg een strategie op maat
-                </p>
-              </div>
+              <EmptyState
+                icon="target"
+                title="Vul je gegevens in en krijg een strategie op maat"
+                description="Kies industry, locatie, budget en kanalen om een gepersonaliseerde marketing strategie te krijgen"
+              />
             ) : (
               <div className="space-y-4">
                 {strategy.map((item, index) => (

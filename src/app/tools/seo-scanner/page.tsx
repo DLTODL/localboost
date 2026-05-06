@@ -3,13 +3,14 @@
 import { useState, useEffect } from 'react'
 import { 
   Search, Globe, Shield, AlertTriangle, CheckCircle, 
-  Clock, Image, Smartphone, ExternalLink, RefreshCw, Zap
+  Clock, Image, Smartphone, ExternalLink, RefreshCw, Zap, Sparkles
 } from 'lucide-react'
 import { useTemplates, useToolInputs } from '@/lib/useSharedData'
 import Link from 'next/link'
 import TemplateSwitcher from '@/components/polish/TemplateSwitcher'
 import ProfileBar from '@/components/polish/ProfileBar'
-import { FormSkeleton, CardSkeleton } from '@/components/polish/Skeleton'
+import { FormSkeleton, CardSkeleton, Skeleton } from '@/components/polish/Skeleton'
+import { EmptyState } from '@/components/polish/EmptyState'
 
 interface ScanResult {
   url: string
@@ -353,11 +354,12 @@ export default function SEOScanner() {
 
         {/* Empty State */}
         {!results && !loading && (
-          <div className="text-center py-16">
-            <div className="text-6xl mb-4">🎯</div>
-            <h3 className="text-xl font-semibold mb-2 text-slate-300">Voer een URL in om te scannen</h3>
-            <p className="text-slate-500">Krijg een complete SEO-analyse met directe verbeterpunten</p>
-          </div>
+          <EmptyState
+            icon="search"
+            title="Voer een URL in om te scannen"
+            description="Krijg een complete SEO-analyse met directe verbeterpunten"
+            className="mt-12"
+          />
         )}
 
         {/* Scan History */}

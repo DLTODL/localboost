@@ -6,6 +6,7 @@ import { useBusinessProfile, useToolInputs, useSelectedBusiness, useTemplates, c
 import TemplateSwitcher from '@/components/polish/TemplateSwitcher'
 import ProfileBar from '@/components/polish/ProfileBar'
 import { FormSkeleton, EmailSkeleton } from '@/components/polish/Skeleton'
+import { EmptyState } from '@/components/polish/EmptyState'
 
 interface ClientData {
   name: string
@@ -438,12 +439,11 @@ Groet`,
             </h2>
             
             {campaign.length === 0 && !generating ? (
-              <div className="bg-slate-800 rounded-2xl p-12 border border-slate-700 text-center">
-                <Mail className="w-16 h-16 text-slate-600 mx-auto mb-4" />
-                <p className="text-slate-400">
-                  Vul de klantgegevens in en klik op "Genereer Campaign"
-                </p>
-              </div>
+              <EmptyState
+                icon="mail"
+                title="Nog geen campaign"
+                description="Vul de klantgegevens in en klik op 'Genereer Campaign' om te beginnen"
+              />
             ) : generating ? (
               <div className="space-y-4 animate-pulse">
                 {[1, 2, 3, 4].map(i => (
