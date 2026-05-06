@@ -48,6 +48,14 @@ const allTools = [
         popular: false
       },
       {
+        name: 'Competitor Scanner',
+        desc: 'Ontdek wat je concurrenten doen',
+        icon: '🔎',
+        href: '/tools/competitor-scanner',
+        color: 'from-orange-600 to-amber-600',
+        popular: false
+      },
+      {
         name: 'Email Sequences',
         desc: 'Kopieer bewezen email templates',
         icon: '📧',
@@ -151,7 +159,6 @@ export default function ToolsHub() {
           
           <div className="grid md:grid-cols-3 gap-4">
             {[
-              { name: 'Competitor Scanner', icon: '🔍', desc: 'Analyseer wat je concurrenten doen' },
               { name: 'Quote Generator', icon: '📋', desc: 'Genereer professionele offertes' },
               { name: 'ROI Calculator', icon: '📈', desc: 'Bereken je return on investment' },
             ].map((tool, i) => (

@@ -41,7 +41,7 @@
 ### Phase 5: New Tools ✅ DONE
 - [x] Local Keyword Finder ✅ (2026-05-05)
 - [x] Settings Page ✅ (2026-05-05)
-- [ ] Competitor Scanner
+- [x] Competitor Scanner ✅ (2026-05-06)
 - [ ] Quote Generator
 - [ ] ROI Calculator
 
@@ -53,7 +53,7 @@
 
 ---
 
-## Current Tools (v12)
+## Current Tools (v12.7)
 
 ### Free Tools (all working)
 | Tool | Status | Quality | Cross-Tool |
@@ -67,13 +67,14 @@
 | Email Sequences | ✅ | 7/10 | Email Campaign CTA |
 | Email Campaign Builder | ✅ | 9/10 | Pre-fill from business, skeleton loading |
 | Local Keyword Finder | ✅ | 8/10 | - |
+| **Competitor Scanner** | ✅ | 8/10 | Lead Finder integration |
 | Settings Page | ✅ | 8/10 | Data management |
 
 ### Business Tools
 | Tool | Status | Quality |
 |------|--------|---------|
 | Dashboard | ✅ | 8/10 |
-| Task Manager | ✅ | 6/10 |
+| Task Manager | ✅ | 7/10 |
 | Client Portal | 🟡 | 5/10 |
 
 ---
@@ -106,21 +107,26 @@ f36d102 v10: Add Local Keyword Finder tool
 - Fixed: email-sequences, proposal-generator, email-campaign-builder, seo-scanner, lead-conversion-calculator
 - Build verified: all 26 routes compile successfully
 
-## Polish Session 2026-05-06 (v12.2)
+## Polish Session 2026-05-06 (v12.2-12.6)
 - Lead Finder: Use ListSkeleton from polish components, consolidated inline skeleton
 - Lead Conversion Calculator: Add business profile pre-fill, tool input persistence, cross-tool Email Campaign link
 - Email Sequences: Add profile pre-fill support, tool input persistence
 - Build verified: all 26 routes compile successfully
+- **Complete TemplateSwitcher integration** - All 11 tools now have template system
 
----
+## Polish Session 2026-05-06 (v12.7) - Competitor Scanner Added
+- **Competitor Scanner** - Full feature with:
+  - City + Industry selection with pre-fill from business profile
+  - Mock competitor data generation with realistic info
+  - Opportunity scoring (high/medium/low) based on gaps
+  - Service availability matrix (Google Business, Website, SEO, Google Ads, Facebook, Instagram)
+  - Gap analysis with actionable insights
+  - Copy to clipboard with toast feedback
+  - Export functionality
+  - Insights panel with Quick Wins and Growth Opportunities
+  - Skeleton loading states
+- Updated Tools Hub to include Competitor Scanner
+- Removed "Coming Soon" placeholder from Tools Hub
+- Build verified: all routes compile successfully
 
-Last Updated: 2026-05-06 02:21
-
-## Polish Session 2026-05-06 (v12.6) - Template System Complete
-- **Complete TemplateSwitcher integration** - All 11 tools now have template system:
-  - Lead Finder, Review Generator, SEO Scanner, Marketing Strategy, Local Keyword Finder, Email Sequences, Email Campaign Builder, Lead Conversion Calculator, Task Manager, Google Business Guide, Social Post Generator, Proposal Generator
-- Each tool: imports `useTemplates`, uses `getTemplatesForTool`, renders `TemplateSwitcher` in header
-- Cross-tool data flow: Profile → Tool → Template → Cross-tool CTA
-- Build verified: All 26 routes compile successfully ✅
-
-**Status: LocalBoost v12.6 is production-ready**
+**Status: LocalBoost v12.7 is production-ready**
