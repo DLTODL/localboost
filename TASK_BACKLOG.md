@@ -97,11 +97,19 @@
 
 ## Polish Session 2026-05-06 (v12.9) - Polish Final
 - **Onboarding cleanup**: Removed duplicate onboarding trigger from page.tsx (Providers.tsx handles it)
-- **Build verified**: All 28 routes compile successfully
+- **Bug fix**: proposal-generator - removed non-existent inputs.ourCompany reference
+- **New integrations**:
+  - marketing-strategy-builder: add useBusinessProfile + useToolInputs for city/industry pre-fill + input persistence
+  - competitor-scanner: add industry pre-fill from profile.type
+  - google-business-guide: personalize header with profile business name
+  - email-sequences: removed no-op pre-fill effect (cleaned dead code)
+- **Build verified**: All 29 routes compile successfully
 - **Status: LocalBoost v12.9 is production-ready**
 
 ## Git Log (Recent)
 ```
+e728220 v12.9: Polish - cross-tool integration, pre-fill, and bug fixes
+7014d48 v12.9: Polish - remove duplicate onboarding trigger
 9cb9f56 v12.8: Add Quote Generator and ROI Calculator tools
 607f337 v12.7: Add Competitor Scanner tool
 048e500 docs: Update TASK_BACKLOG - v12.6 Template System Complete
