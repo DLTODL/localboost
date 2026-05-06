@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { Target, TrendingUp, DollarSign, Users, MapPin, Star, Clock, AlertCircle, Check, Loader2 } from 'lucide-react'
 import { copyWithToast, useBusinessProfile, useToolInputs, useTemplates } from '@/lib/useSharedData'
 import TemplateSwitcher from '@/components/polish/TemplateSwitcher'
+import ProfileBar from '@/components/polish/ProfileBar'
 
 interface LeadData {
   industry: string
@@ -135,6 +136,7 @@ export default function MarketingStrategyBuilder() {
 
   return (
     <div className="min-h-screen bg-slate-900 text-white">
+      <ProfileBar />
       <div className="max-w-6xl mx-auto p-6">
         {/* Header */}
         <div className="mb-8">

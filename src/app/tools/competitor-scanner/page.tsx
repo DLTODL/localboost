@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { Target, Search, Globe, MapPin, Star, Copy, Check, Download, ExternalLink, RefreshCw, AlertCircle, CheckCircle, TrendingUp } from 'lucide-react'
 import { useBusinessProfile, useToolInputs, useTemplates, copyWithToast } from '@/lib/useSharedData'
 import TemplateSwitcher from '@/components/polish/TemplateSwitcher'
+import ProfileBar from '@/components/polish/ProfileBar'
 
 interface Competitor {
   name: string
@@ -168,6 +169,7 @@ export default function CompetitorScanner() {
 
   return (
     <div className="min-h-screen bg-slate-900 text-white">
+      <ProfileBar />
       <div className="max-w-6xl mx-auto p-6">
         {/* Header */}
         <div className="mb-8">

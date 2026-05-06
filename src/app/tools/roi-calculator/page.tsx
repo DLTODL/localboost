@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { TrendingUp, TrendingDown, Euro, Users, Target, Calculator, RefreshCw, Save, Copy, Check, BarChart3, PieChart, ArrowRight, Info } from 'lucide-react'
 import { useBusinessProfile, useToolInputs, useTemplates, copyWithToast } from '@/lib/useSharedData'
 import TemplateSwitcher from '@/components/polish/TemplateSwitcher'
+import ProfileBar from '@/components/polish/ProfileBar'
 
 interface ROIInputs {
   monthlySpend: number
@@ -243,6 +244,7 @@ Payback: ${results.paybackMonths.toFixed(1)} maanden`
 
   return (
     <div className="min-h-screen bg-slate-900 text-white">
+      <ProfileBar />
       <div className="max-w-5xl mx-auto p-6">
         {/* Header */}
         <div className="mb-8">

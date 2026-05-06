@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { Search, MapPin, TrendingUp, Copy, Check, Download, RefreshCw, BarChart3, Globe, Star, Filter } from 'lucide-react'
 import { useBusinessProfile, useToolInputs, useTemplates, copyWithToast } from '@/lib/useSharedData'
 import TemplateSwitcher from '@/components/polish/TemplateSwitcher'
+import ProfileBar from '@/components/polish/ProfileBar'
 
 interface Keyword {
   keyword: string
@@ -155,6 +156,7 @@ export default function LocalKeywordFinder() {
 
   return (
     <div className="min-h-screen bg-slate-900 text-white">
+      <ProfileBar />
       <div className="max-w-5xl mx-auto p-6">
         {/* Header */}
         <div className="mb-8">

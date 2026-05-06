@@ -7,6 +7,7 @@ import {
 } from 'lucide-react'
 import { copyWithToast, useTemplates } from '@/lib/useSharedData'
 import TemplateSwitcher from '@/components/polish/TemplateSwitcher'
+import ProfileBar from '@/components/polish/ProfileBar'
 
 interface ScanResult {
   url: string
@@ -112,6 +113,7 @@ export default function SEOScanner() {
 
   return (
     <div className="min-h-screen bg-slate-900 text-white">
+      <ProfileBar />
       <div className="max-w-5xl mx-auto px-6 py-8">
         {/* Header */}
         <div className="mb-8">

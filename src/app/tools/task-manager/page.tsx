@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { CheckSquare, Plus, Trash2, Calendar, User, Play, CheckCircle, X, Loader2 } from 'lucide-react'
 import { useLeads, showToast, copyWithToast, useTemplates } from '@/lib/useSharedData'
 import TemplateSwitcher from '@/components/polish/TemplateSwitcher'
+import ProfileBar from '@/components/polish/ProfileBar'
 import { ListSkeleton } from '@/components/polish/Skeleton'
 import { EmptyState } from '@/components/polish/EmptyState'
 
@@ -142,6 +143,7 @@ export default function TaskManager() {
 
   return (
     <div className="min-h-screen bg-slate-900 text-white">
+      <ProfileBar />
       <div className="bg-gradient-to-b from-slate-800/50 to-slate-900 border-b border-slate-800">
         <div className="max-w-7xl mx-auto px-6 py-6">
           <div className="flex items-center justify-between">

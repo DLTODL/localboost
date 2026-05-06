@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { FileText, Copy, Check, Download, Save, RefreshCw, Building, User, Mail, Phone, MapPin, Briefcase, Euro, Clock, Shield, Star, Send, ChevronDown, ChevronUp, Printer } from 'lucide-react'
 import { useBusinessProfile, useToolInputs, useSelectedBusiness, useTemplates, copyWithToast, useLeads, showToast } from '@/lib/useSharedData'
 import TemplateSwitcher from '@/components/polish/TemplateSwitcher'
+import ProfileBar from '@/components/polish/ProfileBar'
 
 interface QuoteLine {
   description: string
@@ -270,6 +271,7 @@ export default function QuoteGenerator() {
 
   return (
     <div className="min-h-screen bg-slate-900 text-white">
+      <ProfileBar />
       <div className="max-w-5xl mx-auto p-6">
         {/* Header */}
         <div className="mb-8">

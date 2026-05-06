@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { CheckCircle, Circle, ExternalLink, Lightbulb, ChevronDown, ChevronUp, Star } from 'lucide-react'
 import { useBusinessProfile, useTemplates } from '@/lib/useSharedData'
 import TemplateSwitcher from '@/components/polish/TemplateSwitcher'
+import ProfileBar from '@/components/polish/ProfileBar'
 
 interface Task { id: number; title: string; category: string; completed: boolean }
 
@@ -81,6 +82,7 @@ export default function GoogleBusinessGuide() {
 
   return (
     <div className="min-h-screen bg-slate-900 text-white">
+      <ProfileBar />
       <div className="bg-gradient-to-b from-slate-800/50 to-slate-900 border-b border-slate-800">
         <div className="max-w-5xl mx-auto px-6 py-6">
           <div className="flex items-center justify-between">

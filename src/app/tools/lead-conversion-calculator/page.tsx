@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { TrendingUp, Users, DollarSign, Target, ArrowDown, Loader2, Check, AlertCircle, Mail, Send, Star } from 'lucide-react'
 import { copyWithToast, useBusinessProfile, useToolInputs, useTemplates } from '@/lib/useSharedData'
 import TemplateSwitcher from '@/components/polish/TemplateSwitcher'
+import ProfileBar from '@/components/polish/ProfileBar'
 import { FormSkeleton } from '@/components/polish/Skeleton'
 
 interface FunnelData {
@@ -168,6 +169,7 @@ export default function LeadConversionCalculator() {
 
   return (
     <div className="min-h-screen bg-slate-900 text-white">
+      <ProfileBar />
       <div className="max-w-6xl mx-auto p-6">
         {/* Header */}
         <div className="mb-8">
