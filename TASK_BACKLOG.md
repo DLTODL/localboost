@@ -42,8 +42,8 @@
 - [x] Local Keyword Finder ✅ (2026-05-05)
 - [x] Settings Page ✅ (2026-05-05)
 - [x] Competitor Scanner ✅ (2026-05-06)
-- [ ] Quote Generator
-- [ ] ROI Calculator
+- [x] Quote Generator ✅ (2026-05-06)
+- [x] ROI Calculator ✅ (2026-05-06)
 
 ### Phase 6: Data Management ✅ DONE
 - [x] Settings page with profile edit, data export/import/clear
@@ -53,7 +53,7 @@
 
 ---
 
-## Current Tools (v12.7)
+## Current Tools (v12.8)
 
 ### Free Tools (all working)
 | Tool | Status | Quality | Cross-Tool |
@@ -67,7 +67,9 @@
 | Email Sequences | ✅ | 7/10 | Email Campaign CTA |
 | Email Campaign Builder | ✅ | 9/10 | Pre-fill from business, skeleton loading |
 | Local Keyword Finder | ✅ | 8/10 | - |
-| **Competitor Scanner** | ✅ | 8/10 | Lead Finder integration |
+| Competitor Scanner | ✅ | 8/10 | Lead Finder integration |
+| **Quote Generator** | ✅ | 8/10 | Save to CRM, print, copy |
+| **ROI Calculator** | ✅ | 8/10 | Industry benchmarks, projections |
 | Settings Page | ✅ | 8/10 | Data management |
 
 ### Business Tools
@@ -95,11 +97,10 @@
 
 ## Git Log (Recent)
 ```
-e2f5829 v12: Add Settings page, Dashboard link to settings, ErrorBoundary in layout
-11e3cfd v11: Add ErrorBoundary wrapper to layout.tsx
-465d4f3 v11 patch: Proposal Generator cross-tool CTA, Email Campaign Builder skeleton loading
-4a83b51 v11: Cross-tool integration polish - Email Campaign Builder pre-fill, Social Post Generator industry field, cross-tool CTAs
-f36d102 v10: Add Local Keyword Finder tool
+9cb9f56 v12.8: Add Quote Generator and ROI Calculator tools
+607f337 v12.7: Add Competitor Scanner tool
+048e500 docs: Update TASK_BACKLOG - v12.6 Template System Complete
+ebf2bd0 v12.6: Proposal Generator gets full TemplateSwitcher
 ```
 
 ## Polish Session 2026-05-05 (v12.1)
@@ -129,4 +130,26 @@ f36d102 v10: Add Local Keyword Finder tool
 - Removed "Coming Soon" placeholder from Tools Hub
 - Build verified: all routes compile successfully
 
-**Status: LocalBoost v12.7 is production-ready**
+## Polish Session 2026-05-06 (v12.8) - Quote Generator & ROI Calculator Added
+- **Quote Generator** - Professional quote/offerta tool:
+  - Client info (name, company, email, phone, address)
+  - Line items with quantity × unit price, quick-add suggestions
+  - Subtotal, discount %, tax (21%), grand total
+  - Professional white-theme print preview
+  - Copy as plain text, save to CRM, print
+  - TemplateSwitcher + useToolInputs persistence
+  - Pre-fill from business profile and selectedBusiness
+- **ROI Calculator** - Full marketing ROI analysis:
+  - Monthly spend, expected leads, conversion rate, deal value inputs
+  - Industry benchmarks (auto-suggest CPL, conv rate, deal value)
+  - ROI %, net profit, payback months, cost-per-lead
+  - Break-even analysis with visual progress bar
+  - Cost-per-order vs deal value comparison
+  - Monthly projections table (leads, conversions, revenue, costs, profit, cumulative)
+  - Color-coded verdict (green/yellow/red)
+  - Copy results to clipboard
+  - TemplateSwitcher + useToolInputs persistence
+- **Tools Hub**: Quote Generator and ROI Calculator promoted from Coming Soon → full tools
+- Build verified: all 28 routes compile successfully
+
+**Status: LocalBoost v12.8 is production-ready**
